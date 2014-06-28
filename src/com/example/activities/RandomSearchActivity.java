@@ -6,6 +6,7 @@ import java.util.Random;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
@@ -29,7 +30,6 @@ GooglePlayServicesClient.OnConnectionFailedListener{
     // Declare Variables
     List<ParseObject> ob;
     Integer obCount, position;
-    ProgressDialog mProgressDialog;
     ArrayAdapter<String> adapter;
     private Location currentLocation = null;
     Intent intent;
@@ -46,11 +46,18 @@ GooglePlayServicesClient.OnConnectionFailedListener{
     }
 	// RemoteDataTask AsyncTask
     private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
+    	Context context;
+   	 ProgressDialog mProgressDialog;
+   	 
+   	  public RemoteDataTask(Context context){
+   	   this.context=context;
+   	  }
+    	
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             // Create a progressdialog
-            mProgressDialog = new ProgressDialog(RandomSearchActivity.this);
+            mProgressDialog = new ProgressDialog(context);
             // Set progressdialog message
             mProgressDialog.setMessage("Loading...");
             mProgressDialog.setIndeterminate(false);
@@ -186,7 +193,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		// Execute RemoteDataTask AsyncTask
-        new RemoteDataTask().execute();
+        new RemoteDataTask(RandomSearchActivity.this).execute();
 		
 	}
 	@Override

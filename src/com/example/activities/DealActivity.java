@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
@@ -33,7 +34,6 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	// Declare Variables
     ListView listview;
     List<ParseObject> ob;
-    ProgressDialog mProgressDialog;
     ArrayAdapter<String> adapter;
     private Location currentLocation = null;
     Intent intent;
@@ -55,12 +55,19 @@ GooglePlayServicesClient.OnConnectionFailedListener{
     
  // RemoteDataTask AsyncTask
     private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
+    	Context context;
+   	 ProgressDialog mProgressDialog;
+   	 
+   	  public RemoteDataTask(Context context){
+   	   this.context=context;
+   	  }
+   	  
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             
             // Create a progressdialog
-            mProgressDialog = new ProgressDialog(DealActivity.this);
+            mProgressDialog = new ProgressDialog(context);
             // Set progressdialog message
             mProgressDialog.setMessage("Searching...");
             mProgressDialog.setIndeterminate(false);
@@ -239,7 +246,7 @@ public void onConnectionFailed(ConnectionResult result) {
 @Override
 public void onConnected(Bundle connectionHint) {
 	// TODO Auto-generated method stub
-	new RemoteDataTask().execute();
+	new RemoteDataTask(DealActivity.this).execute();
 	
 }
 

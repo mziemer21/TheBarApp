@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
@@ -39,7 +40,6 @@ GooglePlayServicesClient.OnConnectionFailedListener{
     // Declare Variables
     ListView listview;
     List<ParseObject> ob;
-    ProgressDialog mProgressDialog;
     ArrayAdapter<String> adapter;
     String query = "", distanceMiles = "3", establishment_id;
 	int distanceMeters = 4828;
@@ -101,11 +101,18 @@ GooglePlayServicesClient.OnConnectionFailedListener{
  
     // RemoteDataTask AsyncTask
     private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
-        @Override
+    	Context context;
+   	 ProgressDialog mProgressDialog;
+   	 
+   	  public RemoteDataTask(Context context){
+   	   this.context=context;
+   	  }
+    	
+    	@Override
         protected void onPreExecute() {
             super.onPreExecute();
             // Create a progressdialog
-            mProgressDialog = new ProgressDialog(ListActivity.this);
+            mProgressDialog = new ProgressDialog(context);
             // Set progressdialog message
             mProgressDialog.setMessage("Loading...");
             mProgressDialog.setIndeterminate(false);
@@ -277,7 +284,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		// TODO Auto-generated method stub
-		new RemoteDataTask().execute();
+		new RemoteDataTask(ListActivity.this).execute();
 	}
 
 	@Override

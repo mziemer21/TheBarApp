@@ -42,7 +42,6 @@ public class DealsTabFragment extends Fragment {
 	// Declare Variables
     ListView dealListview;
     List<ParseObject> obDeal;
-    ProgressDialog mProgressDialog;
     ArrayAdapter<String> dealAdapter;
 	
 	@Override
@@ -119,16 +118,17 @@ public class DealsTabFragment extends Fragment {
 	
 	// RemoteDataTask AsyncTask
     private class RemoteDataTaskDeal extends AsyncTask<Void, Void, Void> {
+    	ProgressDialog mProgressDialog;
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            /*// Create a progressdialog
+            // Create a progressdialog
             mProgressDialog = new ProgressDialog(getActivity());
             // Set progressdialog message
             mProgressDialog.setMessage("Loading...");
             mProgressDialog.setIndeterminate(false);
             // Show progressdialog
-            mProgressDialog.show();*/
+            mProgressDialog.show();
         }
  
         @Override

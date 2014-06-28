@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
@@ -15,12 +16,14 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.thebarapp.R;
 import com.example.yelp.API_Static_Stuff;
@@ -51,7 +54,6 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 
 	private GoogleMap myMap;
 	List<ParseObject> ob;
-    ProgressDialog mProgressDialog;
     ArrayAdapter<String> adapter;
     Map<Marker, Business> theMap = new HashMap<Marker, Business>();
     Button redoMapButton, filterMapButton;
@@ -107,46 +109,10 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 			  LatLng currentLatLng = myMap.getCameraPosition().target;
 			  currentLocation.setLatitude(currentLatLng.latitude);
 			  currentLocation.setLongitude(currentLatLng.longitude);
-			  new RemoteDataTask().execute();
+			  new RemoteDataTask(MapActivity.this).execute();
 				
 			  }
 	});
-	  
-	filterMapButton = (Button) findViewById(R.id.filter_map_button);
-		  
-		  filterMapButton.setOnClickListener(new OnClickListener() {
-			  
-			  @Override
-			  public void onClick(View arg0) {
-				  Toast.makeText(getApplicationContext(), "filter", Toast.LENGTH_SHORT).show();
-					
-				  }
-		});
-		  
-		  /*Calendar calendar = Calendar.getInstance();
-		  day = calendar.get(Calendar.DAY_OF_WEEK);
-		  if(day == 1)
-		  {
-			  weekday = "Sunday";
-		  } else if(day == 2)
-		  {
-			  weekday = "Monday";
-		  } else if(day == 3)
-		  {
-			  weekday = "Tuesday";
-		  } else if(day == 4)
-		  {
-			  weekday = "Wednesday";
-		  } else if(day == 5)
-		  {
-			  weekday = "Thursday";
-		  } else if(day == 6)
-		  {
-			  weekday = "Friday";
-		  } else if(day == 7)
-		  {
-			  weekday = "Saturday";
-		  }*/
   
   // Getting reference to the SupportMapFragment of activity_main.xml
   SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -231,14 +197,53 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 
  }
  
+ @Override
+ public boolean onCreateOptionsMenu(Menu menu) {
+     MenuInflater inflater = getMenuInflater();
+     inflater.inflate(R.menu.filter_actions, menu);
+
+     return super.onCreateOptionsMenu(menu);
+ }
+ 
+ /**
+  * On selecting action bar icons
+  * */
+ @Override
+ public boolean onOptionsItemSelected(MenuItem item) {
+     // Take appropriate action for each action item click
+     switch (item.getItemId()) {
+     case R.id.action_filter:
+     	Intent i = new Intent(MapActivity.this, MapSearchActivity.class);
+     	finish();
+     	i.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
+         startActivity(i);
+         return true;
+     case R.id.action_clear_search:
+     	Intent j = new Intent(MapActivity.this, MapActivity.class);
+     	finish();
+     	j.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
+     	startActivity(j);
+     	return true;
+     default:
+         return super.onOptionsItemSelected(item);
+     }
+ }
+ 
 //RemoteDataTask AsyncTask
  private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
-     @Override
+	 Context context;
+	 ProgressDialog mProgressDialog;
+	 
+	  public RemoteDataTask(Context context){
+	   this.context=context;
+	  }
+	 
+	 @Override
      protected void onPreExecute() {
          super.onPreExecute();
          
          // Create a progressdialog
-         mProgressDialog = new ProgressDialog(MapActivity.this);
+         mProgressDialog = new ProgressDialog(context);
          // Set progressdialog message
          mProgressDialog.setMessage("Loading...");
          mProgressDialog.setIndeterminate(false);
@@ -422,7 +427,7 @@ public void onConnected(Bundle connectionHint) {
 	// TODO Auto-generated method stub
 	locationClient.requestLocationUpdates(mLocationRequest, this);
 	currentLocation = getLocation();
-	new RemoteDataTask().execute();
+	new RemoteDataTask(MapActivity.this).execute();
 	
 }
 

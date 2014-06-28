@@ -85,6 +85,10 @@
                   android:label="@string/app_name" 
                   android:launchMode="singleTop"/>
         
+        <activity android:name="com.example.activities.MapSearchActivity"
+                  android:label="@string/app_name" 
+                  android:launchMode="singleTop"/>
+        
         <meta-data android:name="com.facebook.sdk.ApplicationId" 
             android:value="1403369603273131"/>
         
