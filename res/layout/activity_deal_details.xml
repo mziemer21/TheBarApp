@@ -1,0 +1,71 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/gradient_background" >
+
+    <TextView
+        android:id="@+id/pageTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal"
+        android:text="Deal"
+        android:textSize="35sp"
+        android:textStyle="bold" />
+    
+    <TextView
+        android:id="@+id/deallabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pageTitle"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:text="Title: " />
+    
+    <TextView
+        android:id="@+id/dealTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:layout_below="@+id/pageTitle"
+        android:layout_toRightOf="@+id/deallabel"
+        android:textSize="20sp"
+		/>
+    
+    <TextView
+        android:id="@+id/dealDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:layout_below="@+id/dealTitle"
+        android:layout_toRightOf="@+id/detaillabel"
+        android:textSize="20sp"
+        />
+    
+    <TextView
+        android:id="@+id/dealEstablishment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:layout_below="@+id/dealDetail"
+        android:layout_toRightOf="@+id/establishmentlabel"
+        android:textSize="20sp"
+        />
+
+    <TextView
+        android:id="@+id/detaillabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/deallabel"
+        android:text="Details: "
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/establishmentlabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/detaillabel"
+        android:text="Establishment: "
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>

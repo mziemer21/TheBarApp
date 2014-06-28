@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/capitol_2" >
+    
+    <ListView
+        android:id="@+id/deal_tab_listview"
+        android:layout_width="fill_parent"
+        android:textColor="#ffffff"
+        android:layout_height="fill_parent" />
+
+    <Button
+        android:id="@+id/add_deal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:text="@string/add_deal"
+        android:onClick="onButtonClick" />
+
+</RelativeLayout>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">The Bar App</string>
+    <string name="action_settings">Settings</string>
+    <string name="skip">Skip</string>
+    <string name="add_deal">Add Deal</string>
+    <string name="deal_type_prompt">Select a deal type</string>
+    <string name="deal_types">Deal Types</string>
+    <string name="food">Food</string>
+    <string name="drinks">Drinks</string>
+    <string name="search_distance">Search Distance</string>
+    <string name="search">Search</string>
+    <string name="sort_by">Sort results by</string>
+    <string name="filter_by">Filter results by</string>
+    
+    <!-- Content Description -->
+    <string name="desc_list_item_icon">Item Icon</string>
+    
+    <!-- Facebook -->
+    <string name="app_id">YOUR_FACEBOOK_APP_ID</string>
+    <string name="login">Log In</string>
+    <string name="logout">Log Out</string>
+    <string name="login_intro">Check out your Facebook profile by logging in with the button below!</string>
+    <string name="location">Location</string>
+    <string name="gender">Gender</string>
+    <string name="date_of_birth">Date of Birth</string>
+    <string name="relationship">Relationship</string>
+    <!-- Facebook End -->
+    
+    <!-- Add Fields -->
+    <string name="title">Title:</string>
+    <string name="details">Details:</string>
+    <string name="restrictions">Restrictions:</string>
+    <string name="time_of_day">Time of day:</string>
+    <string name="until">Until</string>
+    <string name="day_of_week">Day of the week:</string>
+    <string name="start_date">Start Date:</string>
+    <string name="end_date">End Date:</string>
+    <string name="type">Type:</string>
+    <string name="tag">Tag:</string>
+    <string name="name">Name: </string>
+    <string name="description">Description: </string>
+    <string name="rating">Rating: </string>
+    <string name="price">Price: </string>
+    <string name="address">Address:</string>
+    <string name="city">City:</string>
+    <string name="state">State:</string>
+    <string name="zip">Zip:</string>
+    <string name="website">Website:</string>
+    <string name="facebook">Facebook:</string>
+    <string name="menu">Menu:</string>
+    <string name="submit">Submit</string>
+    <!-- End Add Fields -->
+    
+    <!-- Nav Drawer Menu Items -->
+    <string-array name="nav_drawer_items">
+        <item >Home</item>
+        <item >Notifications</item>
+        <item >Logout</item>
+        <item >Change Location</item>
+        <item >Feedback</item>
+        <item >About</item>
+    </string-array>
+    <!-- End Nav Drawer Menu Items -->
+    
+    <!-- Nav Drawer List Item Icons -->
+    <!-- Keep them in order as the titles are in -->
+    <array name="nav_drawer_icons">
+        <item>@drawable/ic_home</item>
+        <item>@drawable/ic_notifications</item>
+        <item>@drawable/ic_logout</item>
+        <item>@drawable/ic_change_location</item>
+        <item>@drawable/ic_feedback</item>
+        <item>@drawable/ic_about</item>
+    </array>
+    <!-- End Nav Drawer List Item Icons -->
+    
+    <!-- Tab Names -->
+    <array name="detailsTabs">
+        <item>Details</item>
+        <item>Deals</item>
+        <!-- <item>Pictures</item>  -->
+    </array>
+    <!-- End Tab Names -->
+    
+    <!-- Deal Types Dropdown -->
+    <array name="deal_type_dropdown">
+        <item>Drinks</item>
+        <item>Food</item>
+    </array>
+    <!-- End Deal Types Dropdown -->
+    
+    <!-- Days of the week -->
+    <array name="day_of_week_dropdown">
+        <item>Sunday</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+    </array>
+    
+    <string name="sunday">Sun</string>
+    <string name="monday">Mon</string>
+    <string name="tuesday">Tues</string>
+    <string name="wednesday">Wed</string>
+    <string name="thursday">Thurs</string>
+    <string name="friday">Fri</string>
+    <string name="saturday">Sat</string>
+    <!-- End Days of the week -->
+    
+     <!-- Action Bar action items -->
+    <string name="action_search">Search</string>
+    <string name="action_filter">Filter</string>
+    <string name="action_clear">Clear</string>
+
+    
+    <!-- Search  -->
+    <string name="keyword">Keyword</string>
+    
+    <!-- Search Types -->
+    <array name="search_type_dropdown">
+        <item>Best matched</item>
+        <item>Distance</item>
+        <item>Highest Rated</item>
+    </array>
+    <!-- End Search Types -->
+    
+    <!-- Distances -->
+	<string name="one_mile">1mi</string>
+	<string name="three_miles">3mi</string>
+	<string name="five_miles">5mi</string>
+	<string name="ten_miles">10mi</string>
+	<string name="twenty_miles">20mi</string>
+	<!-- End Distances -->
+</resources>

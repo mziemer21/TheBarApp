@@ -1,0 +1,133 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/list_filter_keyword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/keyword"
+        android:inputType="text"
+        android:singleLine="true" />
+    
+    <TextView
+        android:id="@+id/list_filter_sort_by"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sort_by"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Spinner
+        android:id="@+id/list_filter_search_type"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/search_type_dropdown"
+        android:prompt="@string/sort_by" />
+    
+    <TextView
+        android:id="@+id/list_filter_filter_by"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/filter_by"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <Spinner
+        android:id="@+id/list_filter_day_of_week"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/day_of_week_dropdown"
+        android:prompt="@string/day_of_week" />
+
+    <LinearLayout 
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal">
+	    
+	    <ToggleButton
+	        android:id="@+id/list_filter_type_drinks"
+	        android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="2"
+	        android:textOff="@string/drinks"
+	        android:textOn="@string/drinks" />
+	
+	    <ToggleButton
+	        android:id="@+id/list_filter_type_food"
+	        android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="2"
+	        android:textOff="@string/food"
+	        android:textOn="@string/food" />
+	 </LinearLayout>
+	 
+    <LinearLayout 
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal">
+	    
+	    <ToggleButton
+	        android:id="@+id/list_filter_one_mile"
+	        android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+	        android:textOff="@string/one_mile"
+	        android:textOn="@string/one_mile" 
+	        android:layout_marginLeft="-5dip"
+    		android:layout_marginRight="-5dip"/>
+	    
+	    <ToggleButton
+	        android:id="@+id/list_filter_three_miles"
+	        android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+	        android:textOff="@string/three_miles"
+	        android:textOn="@string/three_miles" 
+	        android:layout_marginLeft="-5dip"
+    		android:layout_marginRight="-5dip"/>
+	
+	    <ToggleButton
+	        android:id="@+id/list_filter_five_miles"
+	        android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+	        android:textOff="@string/five_miles"
+	        android:textOn="@string/five_miles" 
+	        android:layout_marginLeft="-5dip"
+    		android:layout_marginRight="-5dip"/>
+	    
+	    <ToggleButton
+	        android:id="@+id/list_filter_ten_miles"
+	        android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+	        android:textOff="@string/ten_miles"
+	        android:textOn="@string/ten_miles" 
+	        android:layout_marginLeft="-5dip"
+    		android:layout_marginRight="-5dip"/>
+	
+	    <ToggleButton
+	        android:id="@+id/list_filter_twenty_miles"
+	        android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+	        android:textOff="@string/twenty_miles"
+	        android:textOn="@string/twenty_miles" 
+	        android:layout_marginLeft="-5dip"
+    		android:layout_marginRight="-5dip"/>
+	    
+	    
+	</LinearLayout>
+        
+    <Button
+        android:id="@+id/list_filter_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/search" />
+
+</LinearLayout>
+
+    
+

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" 
+    android:background="@drawable/capitol_1">
+ 
+    <TextView
+        android:id="@+id/namelabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/name"
+        android:textColor="#ffffff"
+        android:textSize="25sp" />
+ 
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/namelabel"
+        android:textColor="#ffffff"
+        android:textSize="25sp" />
+    
+    <TextView
+        android:id="@+id/descriptionlabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/name"
+        android:text="@string/description"
+        android:textColor="#ffffff"
+        android:textSize="25sp" />
+    
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/name"
+        android:layout_toRightOf="@+id/descriptionlabel"
+        android:textColor="#ffffff"
+        android:textSize="25sp" />
+    
+    <TextView
+        android:id="@+id/ratinglabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/description"
+        android:textColor="#ffffff"
+        android:text="@string/rating"
+        android:textSize="25sp" />
+    
+    <TextView
+        android:id="@+id/rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/description"
+        android:layout_toRightOf="@+id/ratinglabel"
+        android:textColor="#ffffff"
+        android:textSize="25sp" />
+    
+    <TextView
+        android:id="@+id/pricelabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rating"
+        android:textColor="#ffffff"
+        android:text="@string/price"
+        android:textSize="25sp" />
+    
+    <TextView
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rating"
+        android:layout_toRightOf="@+id/pricelabel"
+        android:textColor="#ffffff"
+        android:textSize="25sp" />
+    
+    <TextView
+        android:id="@+id/addresslabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/price"
+        android:textColor="#ffffff"
+        android:text="@string/address"
+        android:textSize="25sp" />
+    
+    <TextView
+        android:id="@+id/address"
+        android:layout_width="wrap_content"
+        android:textColor="#ffffff"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/price"
+        android:layout_toRightOf="@+id/addresslabel"
+        android:textSize="25sp" />
+    
+    
+ 
+</RelativeLayout>
