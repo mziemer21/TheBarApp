@@ -1,71 +1,83 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/gradient_background" >
+    android:background="@drawable/gradient_background"
+    android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/pageTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:gravity="center_horizontal"
-        android:text="Deal"
-        android:textSize="35sp"
-        android:textStyle="bold" />
-    
-    <TextView
-        android:id="@+id/deallabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/pageTitle"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:text="Title: " />
-    
     <TextView
         android:id="@+id/dealTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-		android:layout_below="@+id/pageTitle"
-        android:layout_toRightOf="@+id/deallabel"
-        android:textSize="20sp"
-		/>
-    
-    <TextView
-        android:id="@+id/dealDetail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-		android:layout_below="@+id/dealTitle"
-        android:layout_toRightOf="@+id/detaillabel"
-        android:textSize="20sp"
-        />
-    
-    <TextView
-        android:id="@+id/dealEstablishment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-		android:layout_below="@+id/dealDetail"
-        android:layout_toRightOf="@+id/establishmentlabel"
-        android:textSize="20sp"
-        />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="14dp"
+        android:text="Large Text"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
-        android:id="@+id/detaillabel"
+        android:id="@+id/dealDetailsLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/deallabel"
-        android:text="Details: "
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/dealTitle"
+        android:layout_marginLeft="14dp"
+        android:text="@string/details"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
-        android:id="@+id/establishmentlabel"
+        android:id="@+id/dealRestrictions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/detaillabel"
-        android:text="Establishment: "
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/dealDetailsLabel"
+        android:layout_marginLeft="14dp"
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <TextView
+        android:id="@+id/dealTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/dealRestrictions"
+        android:layout_below="@+id/dealRestrictions"
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <TextView 
+        android:id="@+id/dealRestrictionsLabel" 
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_alignLeft="@+id/dealTime" 
+        android:layout_below="@+id/dealTime" 
+        android:text="@string/restrictions" 
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <TextView android:id="@+id/dealDetails" 
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_alignLeft="@+id/dealTime" 
+        android:layout_below="@+id/dealRestrictionsLabel" 
+        android:text="Medium Text" 
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" >
+
+        <Button
+            android:id="@+id/deal_down_vote_button"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Down Vote" />
+
+        <Button
+            android:id="@+id/deal_up_vote_button"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Up Vote" />
+    </LinearLayout>
 
 </RelativeLayout>

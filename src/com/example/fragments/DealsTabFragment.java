@@ -1,5 +1,6 @@
 package com.example.fragments;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -23,6 +24,8 @@ import android.widget.ListView;
 import com.example.activities.DealAddActivity;
 import com.example.activities.DealsDetailsActivity;
 import com.example.activities.LoginActivity;
+import com.example.thebarapp.DealListViewAdapter;
+import com.example.thebarapp.DealRowItem;
 import com.example.thebarapp.R;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -42,7 +45,6 @@ public class DealsTabFragment extends Fragment {
 	// Declare Variables
     ListView dealListview;
     List<ParseObject> obDeal;
-    ArrayAdapter<String> dealAdapter;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -160,16 +162,22 @@ public class DealsTabFragment extends Fragment {
             // Locate the listview in listview_main.xml
             dealListview = (ListView) getView().findViewById(R.id.deal_tab_listview);
             // Pass the results into an ArrayAdapter
-            dealAdapter = new ArrayAdapter<String>(getActivity(), R.layout.listview_item_deal);
-            // Retrieve object "name" from Parse.com database
+            List<DealRowItem> rowItems = new ArrayList<DealRowItem>();
+            
+         // Retrieve object "title" from Parse.com database
             for (ParseObject deal : obDeal) {
-            	dealAdapter.add((String) deal.get("title"));
+            	DealRowItem item = new DealRowItem(deal.get("title").toString(), deal.get("rating").toString());
+                rowItems.add(item);
             }
+
+            // Pass the results into an ArrayAdapter
+            DealListViewAdapter dealAdapter = new DealListViewAdapter(getActivity(), R.layout.listview_item_deal, rowItems);
             // Binds the Adapter to the ListView
             dealListview.setAdapter(dealAdapter);
             // Close the progressdialog
             //mProgressDialog.dismiss();
             // Capture button clicks on ListView items
+            mProgressDialog.dismiss();
             dealListview.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
@@ -182,6 +190,8 @@ public class DealsTabFragment extends Fragment {
                 	iDeal.putExtra("deal_id", obDeal.get(position).getObjectId().toString());
                     iDeal.putExtra("deal_details", obDeal.get(position).getString("details").toString());
                     iDeal.putExtra("deal_title", obDeal.get(position).getString("title").toString());
+                    
+                    
                     // Open SingleItemView.java Activity
                     startActivity(iDeal);
                 }

@@ -6,6 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.example.thebarapp.Business;
+
 public class YelpParser {
     
     private String yelp_response;

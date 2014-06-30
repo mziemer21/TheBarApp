@@ -1,11 +1,10 @@
-package com.example.yelp;
+package com.example.thebarapp;
 
 import org.json.JSONException;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Verb;
 
-import com.example.thebarapp.LocationParser;
 
 
 public class Business {

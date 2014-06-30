@@ -25,9 +25,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.thebarapp.Business;
 import com.example.thebarapp.R;
 import com.example.yelp.API_Static_Stuff;
-import com.example.yelp.Business;
 import com.example.yelp.Yelp;
 import com.example.yelp.YelpParser;
 import com.google.android.gms.common.ConnectionResult;

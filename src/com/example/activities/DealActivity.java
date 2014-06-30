@@ -1,5 +1,6 @@
 package com.example.activities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -19,10 +20,13 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.example.thebarapp.DealListViewAdapter;
+import com.example.thebarapp.DealRowItem;
 import com.example.thebarapp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -34,7 +38,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	// Declare Variables
     ListView listview;
     List<ParseObject> ob;
-    ArrayAdapter<String> adapter;
+    ArrayAdapter<DealRowItem> adapter;
     private Location currentLocation = null;
     Intent intent;
     Integer obCount;
@@ -46,7 +50,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Get the view from listview_main.xml
+        // Get the view from deal_listview.xml
         setContentView(R.layout.deal_listview);
         
         intent = getIntent();
@@ -111,7 +115,6 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 					try {
 						deal_type = queryDealType.getFirst();
 					} catch (ParseException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					queryDealSearch.whereEqualTo("deal_type", deal_type);
@@ -122,7 +125,6 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 					try {
 						deal_type = queryDealType.getFirst();
 					} catch (ParseException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					queryDealSearch.whereEqualTo("deal_type", deal_type);
@@ -140,17 +142,23 @@ GooglePlayServicesClient.OnConnectionFailedListener{
  
         @Override
         protected void onPostExecute(Void result) {
+        	// if we found deals
         	if(obCount > 0)
         	{
-	            // Locate the listview in listview_main.xml
+        		List<DealRowItem> rowItems = new ArrayList<DealRowItem>();
+        	
+	            // Locate the listview in deal_listview.xml
 	            listview = (ListView) findViewById(R.id.deal_listview);
-	            // Pass the results into an ArrayAdapter
-	            adapter = new ArrayAdapter<String>(DealActivity.this,
-	                    R.layout.listview_item_deal);
-	            // Retrieve object "name" from Parse.com database
+	            
+	         // Retrieve object "title" from Parse.com database
 	            for (ParseObject deal : ob) {
-	                adapter.add((String) deal.get("title"));
+	            	DealRowItem item = new DealRowItem(deal.get("title").toString(), deal.get("rating").toString());
+	                rowItems.add(item);
 	            }
+
+	            // Pass the results into an ArrayAdapter
+	            DealListViewAdapter adapter = new DealListViewAdapter(context, R.layout.listview_item_deal, rowItems);
+	            
 	            // Binds the Adapter to the ListView
 	            listview.setAdapter(adapter);
 	            // Close the progressdialog
@@ -161,10 +169,9 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	                public void onItemClick(AdapterView<?> parent, View view,
 	                        int position, long id) {
 	                    // Send single item click data to SingleItemView Class
-	                Intent i = new Intent(DealActivity.this,
-	                		DealsDetailsActivity.class);
-	                est = (ParseObject) ob.get(position).get("establishment");
-	                    // Pass data "name" followed by the position
+	                	Intent i = new Intent(DealActivity.this,DealsDetailsActivity.class);
+	                	est = (ParseObject) ob.get(position).get("establishment");
+	                    // Pass data to next activity
 	                	i.putExtra("deal_id", ob.get(position).getObjectId().toString());
 	                    i.putExtra("deal_title", ob.get(position).getString("title")
 	                            .toString());
@@ -178,9 +185,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	                    
 	                }
 	            });
-	        }
-        	else
-        	{
+	        } else { // no deals found so display a popup and return to search options
         		AlertDialog.Builder builder = new AlertDialog.Builder(DealActivity.this);
 				 
 				// set title
@@ -208,25 +213,21 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 @Override
 public void onLocationChanged(Location arg0) {
 	// TODO Auto-generated method stub
-	
 }
 
 @Override
 public void onProviderDisabled(String arg0) {
 	// TODO Auto-generated method stub
-	
 }
 
 @Override
 public void onProviderEnabled(String arg0) {
 	// TODO Auto-generated method stub
-	
 }
 
 @Override
 public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
 	// TODO Auto-generated method stub
-	
 }
 
 private ParseGeoPoint geoPointFromLocation(Location loc) {
@@ -240,20 +241,16 @@ private Location getLocation() {
 @Override
 public void onConnectionFailed(ConnectionResult result) {
 	// TODO Auto-generated method stub
-	
 }
 
 @Override
 public void onConnected(Bundle connectionHint) {
-	// TODO Auto-generated method stub
 	new RemoteDataTask(DealActivity.this).execute();
-	
 }
 
 @Override
 public void onDisconnected() {
 	// TODO Auto-generated method stub
-	
 }
 @Override
 public void onStop() {

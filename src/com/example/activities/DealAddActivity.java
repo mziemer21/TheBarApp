@@ -51,7 +51,6 @@ public class DealAddActivity extends Activity {
 			@Override
 			public void onClick(View arg0)
 			{
-				
 				// Create a progressdialog
 	            mProgressDialog = new ProgressDialog(DealAddActivity.this);
 	            // Set progressdialog message
@@ -186,6 +185,9 @@ public class DealAddActivity extends Activity {
 						deal.put("deal_type", deal_type);
 						deal.put("user", ParseUser.getCurrentUser());
 						deal.put("location", location);
+						deal.put("up_votes", 0);
+						deal.put("down_votes", 0);
+						deal.put("rating", 0);
 						try {
 							deal.save();
 						} catch (ParseException e) {
