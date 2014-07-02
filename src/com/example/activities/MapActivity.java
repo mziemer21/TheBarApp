@@ -232,7 +232,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 //RemoteDataTask AsyncTask
  private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
 	 Context context;
-	 ProgressDialog mProgressDialog;
+	 ProgressDialog mapProgressDialog;
 	 
 	  public RemoteDataTask(Context context){
 	   this.context=context;
@@ -243,15 +243,15 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
          super.onPreExecute();
          
          // Create a progressdialog
-         if(mProgressDialog != null){
-         	mProgressDialog.dismiss();
+         if(mapProgressDialog != null){
+         	mapProgressDialog.dismiss();
          }
-         mProgressDialog = new ProgressDialog(context);
+         mapProgressDialog = new ProgressDialog(context);
          // Set progressdialog message
-         mProgressDialog.setMessage("Loading...");
-         mProgressDialog.setIndeterminate(false);
+         mapProgressDialog.setMessage("Searching Yelp...");
+         mapProgressDialog.setIndeterminate(false);
          // Show progressdialog
-         mProgressDialog.show();
+         mapProgressDialog.show();
          
          businesses.clear();
      }
@@ -368,7 +368,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 				theMap.put(marker, businesses.get(i));
     	  }
     	  
-    	  mProgressDialog.dismiss();
+    	  mapProgressDialog.dismiss();
      }
      
      }

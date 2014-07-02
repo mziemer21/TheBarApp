@@ -120,17 +120,20 @@ public class DealsTabFragment extends Fragment {
 	
 	// RemoteDataTask AsyncTask
     private class RemoteDataTaskDeal extends AsyncTask<Void, Void, Void> {
-    	ProgressDialog mProgressDialog;
+    	ProgressDialog dealTabProgressDialog;
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             // Create a progressdialog
-            mProgressDialog = new ProgressDialog(getActivity());
+            if(dealTabProgressDialog != null){
+            	dealTabProgressDialog.dismiss();
+            }
+            dealTabProgressDialog = new ProgressDialog(getActivity());
             // Set progressdialog message
-            mProgressDialog.setMessage("Loading...");
-            mProgressDialog.setIndeterminate(false);
+            dealTabProgressDialog.setMessage("Loading...");
+            dealTabProgressDialog.setIndeterminate(false);
             // Show progressdialog
-            mProgressDialog.show();
+            dealTabProgressDialog.show();
         }
  
         @Override
@@ -175,9 +178,9 @@ public class DealsTabFragment extends Fragment {
             // Binds the Adapter to the ListView
             dealListview.setAdapter(dealAdapter);
             // Close the progressdialog
-            //mProgressDialog.dismiss();
+            //dealTabProgressDialog.dismiss();
             // Capture button clicks on ListView items
-            mProgressDialog.dismiss();
+            dealTabProgressDialog.dismiss();
             dealListview.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,

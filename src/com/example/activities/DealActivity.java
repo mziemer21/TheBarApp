@@ -60,7 +60,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
  // RemoteDataTask AsyncTask
     private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
     	Context context;
-   	 ProgressDialog mProgressDialog;
+   	 ProgressDialog dealProgressDialog;
    	 
    	  public RemoteDataTask(Context context){
    	   this.context=context;
@@ -71,15 +71,15 @@ GooglePlayServicesClient.OnConnectionFailedListener{
             super.onPreExecute();
             
             // Create a progressdialog
-            if(mProgressDialog != null){
-            	mProgressDialog.dismiss();
+            if(dealProgressDialog != null){
+            	dealProgressDialog.dismiss();
             }
-            mProgressDialog = new ProgressDialog(context);
+            dealProgressDialog = new ProgressDialog(context);
             // Set progressdialog message
-            mProgressDialog.setMessage("Searching...");
-            mProgressDialog.setIndeterminate(false);
+            dealProgressDialog.setMessage("Loading Yelp Data...");
+            dealProgressDialog.setIndeterminate(false);
             // Show progressdialog
-            mProgressDialog.show();
+            dealProgressDialog.show();
         }
  
         @Override
@@ -167,7 +167,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	            // Binds the Adapter to the ListView
 	            listview.setAdapter(adapter);
 	            // Close the progressdialog
-	            mProgressDialog.dismiss();
+	            dealProgressDialog.dismiss();
 	            // Capture button clicks on ListView items
 	            listview.setOnItemClickListener(new OnItemClickListener() {
 	                @Override

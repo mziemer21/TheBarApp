@@ -1,7 +1,5 @@
 package com.example.activities;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,7 +9,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.thebarapp.R;
-import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
