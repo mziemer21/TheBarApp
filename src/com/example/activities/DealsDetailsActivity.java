@@ -72,7 +72,7 @@ public class DealsDetailsActivity extends Activity{
 					e.printStackTrace();
 				}
 				ParseQuery<ParseObject> queryDealVoteUser = ParseQuery.getQuery("deal_vote_users");
-				queryDealVoteUser.whereContains("deal", deal.getObjectId()).whereContains("user", ParseUser.getCurrentUser().getObjectId());
+				queryDealVoteUser.whereEqualTo("deal", deal).whereEqualTo("user", ParseUser.getCurrentUser());
 				try {
 					dealVoteUser = queryDealVoteUser.getFirst();
 				} catch (ParseException e) {
@@ -89,17 +89,17 @@ public class DealsDetailsActivity extends Activity{
 						dealVoteUser.put("vote", 1);
 						up_votes = deal.getInt("up_votes") +1;
 						down_votes = deal.getInt("down_votes");
-					} else if(dealVoteUser.get("vote").toString() == "0"){
+					} else if(dealVoteUser.get("vote").toString().equals("0")){
 						// change vote to 1
 						dealVoteUser.put("vote", 1);
 						up_votes = deal.getInt("up_votes") +1;
 						down_votes = deal.getInt("down_votes") -1;
-					} else if(dealVoteUser.get("vote").toString() == "1"){
+					} else if(dealVoteUser.get("vote").toString().equals("1")){
 						// already voted up
 						dealVoteUser.put("vote", 2);
 						up_votes = deal.getInt("up_votes") -1;
 						down_votes = deal.getInt("down_votes");
-					} else if(dealVoteUser.get("vote").toString() == "2"){
+					} else if(dealVoteUser.get("vote").toString().equals("2")){
 						// change vote to 1
 						dealVoteUser.put("vote", 1);
 						up_votes = deal.getInt("up_votes") +1;
@@ -141,20 +141,20 @@ public class DealsDetailsActivity extends Activity{
 			@Override
 			public void onClick(View arg0) {
 				ParseObject deal = null, dealVoteUser = null;
-
-				ParseQuery<ParseObject> queryDealVoteUser = ParseQuery.getQuery("deal_vote_users");
-				queryDealVoteUser.whereContains("deal", deal_id).whereContains("user", ParseUser.getCurrentUser().getObjectId().toString());
+				
+				ParseQuery<ParseObject> queryDeal = ParseQuery.getQuery("Deal");
+				queryDeal.whereEqualTo("objectId", deal_id);
 				try {
-					dealVoteUser = queryDealVoteUser.getFirst();
+					deal = queryDeal.getFirst();
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
-				ParseQuery<ParseObject> queryDeal = ParseQuery.getQuery("Deal");
-				queryDeal.whereEqualTo("objectId", deal_id);
+				ParseQuery<ParseObject> queryDealVoteUser = ParseQuery.getQuery("deal_vote_users");
+				queryDealVoteUser.whereEqualTo("deal", deal).whereEqualTo("user", ParseUser.getCurrentUser());
 				try {
-					deal = queryDeal.getFirst();
+					dealVoteUser = queryDealVoteUser.getFirst();
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -169,15 +169,15 @@ public class DealsDetailsActivity extends Activity{
 						dealVoteUser.put("vote", 0);
 						down_votes = deal.getInt("down_votes") +1;
 						up_votes = deal.getInt("up_votes");
-					} else if(dealVoteUser.get("vote").toString() == "0"){
+					} else if(dealVoteUser.get("vote").toString().equals("0")){
 						// already voted down
 						dealVoteUser.put("vote", 2);
 						down_votes = deal.getInt("down_votes") -1;
-					} else if (dealVoteUser.get("vote").toString() == "1") {
+					} else if (dealVoteUser.get("vote").toString().equals("1")) {
 						dealVoteUser.put("vote", 0);
 						down_votes = deal.getInt("down_votes") +1;
 						up_votes = deal.getInt("up_votes") -1;
-					} else if (dealVoteUser.get("vote").toString() == "2") {
+					} else if (dealVoteUser.get("vote").toString().equals("2")) {
 						dealVoteUser.put("vote", 0);
 						down_votes = deal.getInt("down_votes") +1;
 						up_votes = deal.getInt("up_votes");

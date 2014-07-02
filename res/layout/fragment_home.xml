@@ -11,74 +11,88 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:scaleType="center" android:src="@drawable/capitol_night"/>
+    
+    <TableLayout
+        android:id="@+id/buttonBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:stretchColumns="*" >
+        
+        <TableRow
+        android:id="@+id/tr1"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1" >
 
-    <Button
-        android:id="@+id/buttonDeals"
-        android:layout_width="120dp"
-        android:layout_height="110dp"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/buttonRandom"
-        android:layout_marginRight="42dp"
-        android:layout_marginTop="55dp"
-        android:background="@drawable/selector_fragment_home"
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
-        android:text="Deals"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
-        android:onClick="onButtonClick" />
-
-    <Button
-        android:id="@+id/buttonRandom"
-        android:layout_width="120dp"
-        android:layout_height="110dp"
-        android:layout_alignLeft="@+id/buttonDeals"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="90dp"
-        android:background="@drawable/selector_fragment_home"
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
-        android:text="Random"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
-        android:onClick="onButtonClick" />
-
-    <Button
-        android:id="@+id/buttonList"
-        android:layout_width="120dp"
-        android:layout_height="110dp"
-        android:layout_alignTop="@+id/buttonRandom"
-        android:layout_marginRight="28dp"
-        android:layout_toLeftOf="@+id/buttonRandom"
-        android:background="@drawable/selector_fragment_home"
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
-        android:text="Bars"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
-        android:onClick="onButtonClick" />
-
-    <Button
-        android:id="@+id/buttonMap"
-        android:layout_width="120dp"
-        android:layout_height="110dp"
-        android:layout_alignBaseline="@+id/buttonDeals"
-        android:layout_alignBottom="@+id/buttonDeals"
-        android:layout_alignLeft="@+id/buttonList"
-        android:background="@drawable/selector_fragment_home"
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
-        android:text="Map"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
-        android:onClick="onButtonClick" />
+		    <Button
+		        android:id="@+id/buttonList"
+				android:layout_width="0dip"
+            	android:layout_height="match_parent"
+            	android:layout_weight="0.5"
+		        android:background="@drawable/selector_fragment_home"
+		        android:shadowColor="#A8A8A8"
+		        android:shadowDx="0"
+		        android:shadowDy="0"
+		        android:shadowRadius="5"
+		        android:text="Bars"
+		        android:textColor="#FFFFFF"
+		        android:textSize="30sp"
+		        android:layout_margin="15dip" />
+	
+		    <Button
+		        android:id="@+id/buttonRandom"
+		        android:layout_width="0dip"
+            	android:layout_height="match_parent"
+            	android:layout_weight="0.5"
+		        android:background="@drawable/selector_fragment_home"
+		        android:shadowColor="#A8A8A8"
+		        android:shadowDx="0"
+		        android:shadowDy="0"
+		        android:shadowRadius="5"
+		        android:text="Random"
+		        android:textColor="#FFFFFF"
+		        android:textSize="30sp"
+		        android:layout_margin="15dip" />
+		</TableRow>
+		
+        <TableRow
+        android:id="@+id/tr1"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1" >
+		
+		    <Button
+		        android:id="@+id/buttonMap"
+		        android:layout_width="0dip"
+            	android:layout_height="match_parent"
+            	android:layout_weight="0.5"
+		        android:background="@drawable/selector_fragment_home"
+		        android:shadowColor="#A8A8A8"
+		        android:shadowDx="0"
+		        android:shadowDy="0"
+		        android:shadowRadius="5"
+		        android:text="Map"
+		        android:textColor="#FFFFFF"
+		        android:textSize="30sp"
+		        android:layout_margin="15dip" />
+		    
+		    <Button
+		        android:id="@+id/buttonDeals"
+		        android:layout_width="0dip"
+            	android:layout_height="match_parent"
+            	android:layout_weight="0.5"
+		        android:background="@drawable/selector_fragment_home"
+		        android:shadowColor="#A8A8A8"
+		        android:shadowDx="0"
+		        android:shadowDy="0"
+		        android:shadowRadius="5"
+		        android:text="Deals"
+		        android:textColor="#FFFFFF"
+		        android:textSize="30sp"
+		        android:layout_margin="15dip" />
+		    
+		</TableRow>
+	</TableLayout>
     
 </RelativeLayout>
