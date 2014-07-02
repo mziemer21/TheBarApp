@@ -46,8 +46,20 @@ public class LocationParser {
      * @return
      * @throws JSONException 
      */
-    public String getLat() throws JSONException{return geometry.get("lat").toString();}
+    public String getLat() throws JSONException{
+    	if(geometry.get("lat") == null){
+    		return null;
+    	} else {
+    		return geometry.get("lat").toString();
+    	}
+    }
     
-    public String getLng() throws JSONException{return geometry.get("lng").toString();}
+    public String getLng() throws JSONException{
+    	if(geometry.get("lng") == null){
+    		return null;
+    	} else {
+    		return geometry.get("lng").toString();
+    	}
+    }
     
 }

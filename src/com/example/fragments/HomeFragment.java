@@ -53,8 +53,8 @@ public class HomeFragment extends Fragment {
 			 
 			  @Override
 			  public void onClick(View arg0) {
-				  Intent MapActivity = new Intent(getActivity(), MapActivity.class);
-					startActivity(MapActivity);
+				  Intent RandomActivity = new Intent(getActivity(), RandomSearchActivity.class);
+					startActivity(RandomActivity);
 			  }
 		});
 		
@@ -62,8 +62,8 @@ public class HomeFragment extends Fragment {
 			 
 			  @Override
 			  public void onClick(View arg0) {
-				  Intent RandomActivity = new Intent(getActivity(), RandomSearchActivity.class);
-					startActivity(RandomActivity);
+				  Intent MapActivity = new Intent(getActivity(), MapActivity.class);
+					startActivity(MapActivity);
 			  }
 		});
 		
