@@ -112,6 +112,9 @@ GooglePlayServicesClient.OnConnectionFailedListener{
         protected void onPreExecute() {
             super.onPreExecute();
             // Create a progressdialog
+            if(mProgressDialog != null){
+            	mProgressDialog.dismiss();
+            }
             mProgressDialog = new ProgressDialog(context);
             // Set progressdialog message
             mProgressDialog.setMessage("Loading...");

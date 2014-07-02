@@ -19,7 +19,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.activities.DealSearchActivity;
@@ -27,7 +29,7 @@ import com.example.activities.DetailsActivity;
 import com.example.activities.ListActivity;
 import com.example.activities.LogoutActivity;
 import com.example.activities.MapActivity;
-import com.example.activities.RandomActivity;
+import com.example.activities.RandomSearchActivity;
 import com.example.fragments.ChangeLocationFragment;
 import com.example.fragments.FeedbackFragment;
 import com.example.fragments.HomeFragment;
@@ -67,10 +69,7 @@ public class NavDrawer extends FragmentActivity {
 		navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
 
 		// nav drawer icons from resources
-		navMenuIcons = getResources()
-				.obtainTypedArray(R.array.nav_drawer_icons);
-		
-		
+		navMenuIcons = getResources().obtainTypedArray(R.array.nav_drawer_icons);
 		
 		if(callingClass.equalsIgnoreCase("DetailsActivity"))
 		{
@@ -289,37 +288,6 @@ public class NavDrawer extends FragmentActivity {
 	public void onTabReselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
 		
-	}
-	
-	/*** For home fragment buttons ***/
-	public void onButtonClick(View v)
-	{
-		
-		switch(v.getId())
-		{
-		case R.id.buttonList:
-			Intent ListActivity = new Intent(this, ListActivity.class);
-	        startActivity(ListActivity);
-			break;
-			
-		case R.id.buttonDeals:
-			Intent DealActivity = new Intent(this, DealSearchActivity.class);
-			startActivity(DealActivity);
-			break;
-			
-		case R.id.buttonMap:
-			Intent MapActivity = new Intent(this, MapActivity.class);
-			startActivity(MapActivity);
-			break;
-		
-		case R.id.buttonRandom:
-			Intent RandomActivity = new Intent(this, RandomActivity.class);
-			startActivity(RandomActivity);
-			break;
-			
-			default:
-			
-		}
 	}
 
 }

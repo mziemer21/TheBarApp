@@ -147,7 +147,7 @@ public class DealsTabFragment extends Fragment {
             // Locate the class table named "establishment" in Parse.com
             ParseQuery<ParseObject> queryDeal = new ParseQuery<ParseObject>(
                     "Deal").whereEqualTo("establishment", est);
-            queryDeal.orderByDescending("_created_at");
+            queryDeal.orderByDescending("rating");
             try {
                 obDeal = queryDeal.find();
             } catch (Exception e) {

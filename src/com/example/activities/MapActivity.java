@@ -243,6 +243,9 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
          super.onPreExecute();
          
          // Create a progressdialog
+         if(mProgressDialog != null){
+         	mProgressDialog.dismiss();
+         }
          mProgressDialog = new ProgressDialog(context);
          // Set progressdialog message
          mProgressDialog.setMessage("Loading...");

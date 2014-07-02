@@ -1,207 +1,245 @@
 package com.example.activities;
 
-import java.util.Calendar;
+import java.util.List;
+import java.util.Random;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.ToggleButton;
+import android.util.Log;
+import android.widget.ArrayAdapter;
 
-import com.example.thebarapp.R;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
+import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
-public class RandomActivity extends FragmentActivity{
-
-	private Button randomDealButton;
-	private ToggleButton oneMi, threeMi, fiveMi, tenMi, twentyMi; 
-	String distance = "3";
-	Calendar calendar = Calendar.getInstance();
-	int today = calendar.get(Calendar.DAY_OF_WEEK), search_type;
-	Spinner day_of_week, search_type_spinner;
-	ToggleButton food, drinks;
-	EditText query;
-
-	@Override
+public class RandomActivity extends Activity implements LocationListener,
+GooglePlayServicesClient.ConnectionCallbacks,
+GooglePlayServicesClient.OnConnectionFailedListener{
+    // Declare Variables
+    List<ParseObject> ob;
+    Integer obCount, position;
+    ArrayAdapter<String> adapter;
+    private Location currentLocation = null;
+    Intent intent;
+    
+    // Stores the current instantiation of the location client in this object
+    private LocationClient locationClient;
+ 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Get the view from listview_main.xml
-        setContentView(R.layout.random_filter); 
         
-        randomDealButton = (Button) findViewById(R.id.random_filter_button);
-		oneMi = (ToggleButton) findViewById(R.id.random_filter_one_mile);
-        threeMi = (ToggleButton) findViewById(R.id.random_filter_three_miles);
-        fiveMi = (ToggleButton) findViewById(R.id.random_filter_five_miles);
-        tenMi = (ToggleButton) findViewById(R.id.random_filter_ten_miles);
-        twentyMi = (ToggleButton) findViewById(R.id.random_filter_twenty_miles);    	
-    	search_type_spinner = (Spinner)findViewById(R.id.random_filter_search_type);
-    	day_of_week = (Spinner)findViewById(R.id.random_filter_day_of_week);
-    	food = (ToggleButton)findViewById(R.id.random_filter_type_food);
-    	drinks = (ToggleButton)findViewById(R.id.random_filter_type_drinks);
-    	query = (EditText)findViewById(R.id.random_filter_keyword);
-		
-		setDate(today);
-        
-        threeMi.setChecked(true);
-
-		randomDealButton.setOnClickListener(new OnClickListener() {
- 
-			  @Override
-			  public void onClick(View arg0) {
-
-					if(search_type_spinner.getSelectedItem().toString() == "Best Matched"){
-					  search_type = 0;
-				  } else if(search_type_spinner.getSelectedItem().toString() == "Distance"){
-					  search_type = 1;
-				  } else if(search_type_spinner.getSelectedItem().toString() == "Highest Rated"){
-					  search_type = 2;
-				  }
-			  
-					Intent dealSearchActivity = new Intent(RandomActivity.this, RandomSearchActivity.class);
-					dealSearchActivity.putExtra("day_of_week", day_of_week.getSelectedItem().toString());
-					dealSearchActivity.putExtra("distance", distance);
-					dealSearchActivity.putExtra("food", food.isChecked());
-					dealSearchActivity.putExtra("drinks", drinks.isChecked());
-					dealSearchActivity.putExtra("query", query.getText().toString());
-					startActivity(dealSearchActivity);
-				  }
-		});
-		
-		oneMi.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				if(oneMi.isChecked()){
-					threeMi.setChecked(false);
-					fiveMi.setChecked(false);
-					tenMi.setChecked(false);
-					twentyMi.setChecked(false);
-
-					distance = "1";
-				} else {
-				distance = "3";
-				}
-			}
-		});
-
-		threeMi.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				if(threeMi.isChecked()){
-					oneMi.setChecked(false);
-					fiveMi.setChecked(false);
-					tenMi.setChecked(false);
-					twentyMi.setChecked(false);
-				}
-				distance = "3";
-			}
-		});
-
-		fiveMi.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				if(fiveMi.isChecked()){
-					threeMi.setChecked(false);
-					oneMi.setChecked(false);
-					tenMi.setChecked(false);
-					twentyMi.setChecked(false);
-
-					distance = "5";
-				} else {
-				distance = "3";
-				}
-			}
-		});
-
-		tenMi.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				if(tenMi.isChecked()){
-					threeMi.setChecked(false);
-					fiveMi.setChecked(false);
-					oneMi.setChecked(false);
-					twentyMi.setChecked(false);
-
-					distance = "10";
-				} else {
-				distance = "3";
-				}
-			}
-		});
-
-		twentyMi.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				if(twentyMi.isChecked()){
-					threeMi.setChecked(false);
-					fiveMi.setChecked(false);
-					tenMi.setChecked(false);
-					oneMi.setChecked(false);
-
-					distance = "20";
-				} else {
-				distance = "3";
-				}
-			}
-		});
+        intent = getIntent();
+        locationClient = new LocationClient(this, this, this);
     }
-	
+	// RemoteDataTask AsyncTask
+    private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
+    	Context context;
+   	 ProgressDialog mProgressDialog;
+   	 
+   	  public RemoteDataTask(Context context){
+   	   this.context=context;
+   	  }
+    	
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Create a progressdialog
+            if(mProgressDialog != null){
+            	mProgressDialog.dismiss();
+            }
+            mProgressDialog = new ProgressDialog(context);
+            // Set progressdialog message
+            mProgressDialog.setMessage("Loading...");
+            mProgressDialog.setIndeterminate(false);
+            // Show progressdialog
+            mProgressDialog.show();
+        }
+ 
+        @Override
+        protected Void doInBackground(Void... params) {
+        	String distance, day_of_week, query;
+        	Boolean food, drinks;
+        	ParseObject deal_type = null;
+        	
+        	currentLocation = getLocation();
+        	distance  = intent.getStringExtra("distance");
+        	day_of_week = intent.getStringExtra("day_of_week");
+        	food = intent.getBooleanExtra("food", true);
+        	drinks = intent.getBooleanExtra("drinks", true);
+        	query = intent.getStringExtra("query");
+        	
+        	// Locate the class table named "establishment" in Parse.com
+            ParseQuery<ParseObject> queryRandomSearch = new ParseQuery<ParseObject>(
+                    "Deal");
+            queryRandomSearch.setLimit(10);
+            if(query != ""){
+            	queryRandomSearch.whereContains("title", query);
+            }
+            if(day_of_week != null)
+            {
+            	queryRandomSearch.whereContains("day", day_of_week);
+            }
+            if(distance != null)
+            {
+            	queryRandomSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation), Double.parseDouble(distance));
+            }
+            if((food == true)|| (drinks == true))
+            {
+	            if(food == false)
+	            {
+	            	ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
+					queryDealType.whereEqualTo("name", "Drinks");
+					try {
+						deal_type = queryDealType.getFirst();
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					queryRandomSearch.whereEqualTo("deal_type", deal_type);
+	            } 
+	            if(drinks == false) {
+	            	ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
+					queryDealType.whereEqualTo("name", "Food");
+					try {
+						deal_type = queryDealType.getFirst();
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					queryRandomSearch.whereEqualTo("deal_type", deal_type);
+	            }
+            }
+            try {
+            	obCount = queryRandomSearch.count();
+                ob = queryRandomSearch.find();
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return null;
+        }
+ 
+        @Override
+        protected void onPostExecute(Void result) {
+        	if(obCount > 1)
+        	{
+        	Random random = new Random();
+        	position = random.nextInt(obCount);
+        	Intent i = new Intent(RandomActivity.this,
+            		DealsDetailsActivity.class);
+        		ParseObject establishment = (ParseObject) ob.get(position).get("establishment");
+                // Pass data "name" followed by the position
+            	i.putExtra("deal_id", ob.get(position).getObjectId().toString());
+                i.putExtra("deal_details", ob.get(position).getString("details").toString());
+                i.putExtra("deal_title", ob.get(position).getString("title").toString());
+                i.putExtra("establishment_id", establishment.getObjectId());
+                i.putExtra("deal_restrictions", ob.get(position).getInt("description"));
+                i.putExtra("yelp_id", ob.get(position).getString("yelp_id"));
+                // Open SingleItemView.java Activity
+                ob = null;
+                startActivity(i);
+                RandomActivity.this.finish();
+        	}
+        	else
+        	{
+        		AlertDialog.Builder builder = new AlertDialog.Builder(RandomActivity.this);
+				 
+				// set title
+				builder.setTitle("No Results");
+	 
+				// set dialog message
+				builder
+					.setMessage("Sorry, nothing was found.  Try and widen your search.")
+					.setCancelable(false)
+					.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,int id) {
+							dialog.cancel();
+							finish();
+						}
+					  });
+					// create alert dialog
+					AlertDialog alertDialog = builder.create();
+	 
+					// show it
+					alertDialog.show();
+        	}
+                
+        }
+    }
+    
+    private ParseGeoPoint geoPointFromLocation(Location loc) {
+        return new ParseGeoPoint(loc.getLatitude(), loc.getLongitude());
+      }
+
+    private Location getLocation() {
+          return locationClient.getLastLocation();
+      }
+    
 	@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.filter_clear, menu);
- 
-        return super.onCreateOptionsMenu(menu);
-    }
-    
-    /**
-     * On selecting action bar icons
-     * */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Take appropriate action for each action item click
-        switch (item.getItemId()) {
-        case R.id.filter_clear:
-        	threeMi.setChecked(true);
-        	oneMi.setChecked(false);
-			fiveMi.setChecked(false);
-			tenMi.setChecked(false);
-			twentyMi.setChecked(false);
-        	setDate(today);
-        	query.setText("");
-        	food.setChecked(false);
-        	drinks.setChecked(false);
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
-        }
-    }
-    
-    private void setDate(Integer day){
-    	if(today == 1){
-        	day_of_week.setSelection(0);
-        } else if(today == 2){
-        	day_of_week.setSelection(1);
-        } else if(today == 3){
-        	day_of_week.setSelection(2);
-        } else if(today == 4){
-        	day_of_week.setSelection(3);
-        } else if(today == 5){
-        	day_of_week.setSelection(4);
-        } else if(today == 6){
-        	day_of_week.setSelection(5);
-        } else if(today == 7){
-        	day_of_week.setSelection(6);
-        }
-    }
+	public void onConnectionFailed(ConnectionResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		// Execute RemoteDataTask AsyncTask
+        new RemoteDataTask(RandomActivity.this).execute();
+		
+	}
+	@Override
+	public void onDisconnected() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onLocationChanged(Location arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onProviderDisabled(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onProviderEnabled(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onStop() {
+	  // After disconnect() is called, the client is considered "dead".
+	  locationClient.disconnect();
+
+	  super.onStop();
+	}
+
+	/*
+	 * Called when the Activity is restarted, even before it becomes visible.
+	 */
+	@Override
+	public void onStart() {
+	  super.onStart();
+
+	  // Connect to the location services client
+	  locationClient.connect();
+	}
 }

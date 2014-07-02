@@ -71,6 +71,9 @@ GooglePlayServicesClient.OnConnectionFailedListener{
             super.onPreExecute();
             
             // Create a progressdialog
+            if(mProgressDialog != null){
+            	mProgressDialog.dismiss();
+            }
             mProgressDialog = new ProgressDialog(context);
             // Set progressdialog message
             mProgressDialog.setMessage("Searching...");
@@ -130,6 +133,8 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 					queryDealSearch.whereEqualTo("deal_type", deal_type);
 	            }
             }
+            
+            queryDealSearch.orderByDescending("rating");
             try {
             	obCount = queryDealSearch.count();
                 ob = queryDealSearch.find();
