@@ -17,11 +17,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.example.thebarapp.Business;
+import com.example.thebarapp.EstablishmentListViewAdapter;
+import com.example.thebarapp.EstablishmentRowItem;
 import com.example.thebarapp.R;
 import com.example.yelp.API_Static_Stuff;
 import com.example.yelp.Yelp;
@@ -40,14 +41,13 @@ GooglePlayServicesClient.OnConnectionFailedListener{
     // Declare Variables
     ListView listview;
     List<ParseObject> ob;
-    ArrayAdapter<String> adapter;
     String query = "", distanceMiles = "3", establishment_id;
 	int distanceMeters = 4828;
     Object loc;
     SearchView searchView;
     private Location currentLocation = null;
     Intent intent;
-    int obCount, sort_mode = 0;
+    Integer obCount, sort_mode = 0;
     Boolean filter = false;
     YelpParser yParser;
     ArrayList<Business> businesses = new ArrayList<Business>();
@@ -215,16 +215,20 @@ GooglePlayServicesClient.OnConnectionFailedListener{
         protected void onPostExecute(Void result) {
             // Locate the listview in listview_main.xml
             listview = (ListView) findViewById(R.id.listview);
-            // Pass the results into an ArrayAdapter
-            adapter = new ArrayAdapter<String>(ListActivity.this,
-                    R.layout.listview_item_list);
+         // Pass the results into an ArrayAdapter
+            List<EstablishmentRowItem> rowItems = new ArrayList<EstablishmentRowItem>();
             
-            // Retrieve object "name" from Parse.com database
-            for (int i =0; businesses.size() > i; i++) {
-				adapter.add(businesses.get(i).getName());
+         // Retrieve object "title" from Parse.com database
+            for(int k = 0; businesses.size() > k; k++){
+            	// String title, Integer rating, String address, String distance, String dealCount, String ratingCount
+            	EstablishmentRowItem item = new EstablishmentRowItem(businesses.get(k).getName(), Double.parseDouble(businesses.get(k).getRating()), businesses.get(k).getAddress(), businesses.get(k).getDistance(), businesses.get(k).getDealCount(), businesses.get(k).getRatingCount());
+                rowItems.add(item);
             }
+
+            // Pass the results into an ArrayAdapter
+            EstablishmentListViewAdapter establishmentAdapter = new EstablishmentListViewAdapter(ListActivity.this, R.layout.listview_item_establishment, rowItems);
             // Binds the Adapter to the ListView
-            listview.setAdapter(adapter);
+            listview.setAdapter(establishmentAdapter);
             // Close the progressdialog
             listProgressDialog.dismiss();
             // Capture button clicks on ListView items

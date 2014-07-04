@@ -178,7 +178,6 @@ public class DealsTabFragment extends Fragment {
             // Binds the Adapter to the ListView
             dealListview.setAdapter(dealAdapter);
             // Close the progressdialog
-            //dealTabProgressDialog.dismiss();
             // Capture button clicks on ListView items
             dealTabProgressDialog.dismiss();
             dealListview.setOnItemClickListener(new OnItemClickListener() {

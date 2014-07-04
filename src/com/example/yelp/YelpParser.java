@@ -27,6 +27,8 @@ public class YelpParser {
     public String getBusinessName(int i) throws JSONException{return businesses.getJSONObject(i).get("name").toString();}
     
     public String getBusinessRating(int i) throws JSONException{return businesses.getJSONObject(i).get("rating").toString();}
+    
+    public String getBusinessRatingCount(int i) throws JSONException{return businesses.getJSONObject(i).get("review_count").toString();}
      
     public String getBusinessMobileURL(int i) throws JSONException{ return businesses.getJSONObject(i).get("mobile_url").toString();} 
     
@@ -36,7 +38,9 @@ public class YelpParser {
     
     public String getBusinessPhone(int i) throws JSONException{ return businesses.getJSONObject(i).get("phone").toString();}
     
-    public String getBusinessDistance(int i) throws JSONException{ return businesses.getJSONObject(i).get("distance").toString();}
+    public String getBusinessDistance(int i) throws JSONException{ 
+    	Double distance = Double.parseDouble(businesses.getJSONObject(i).get("distance").toString()) * 0.00062137119;
+    	return distance.toString().substring(0, 4);}
     
     public Object getBusinessLocation(int i) throws JSONException { return businesses.getJSONObject(i).get("location");}
     
@@ -70,6 +74,11 @@ public class YelpParser {
 				e1.printStackTrace();
 			} try {
 				b.setRating(getBusinessRating(i));
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} try {
+				b.setRatingCount(getBusinessRatingCount(i));
 			} catch (JSONException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

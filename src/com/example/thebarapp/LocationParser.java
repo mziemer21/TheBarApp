@@ -4,6 +4,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
+import com.parse.codec.binary.StringUtils;
+
 public class LocationParser {
     
     private String location_response;
@@ -46,20 +50,8 @@ public class LocationParser {
      * @return
      * @throws JSONException 
      */
-    public String getLat() throws JSONException{
-    	if(geometry.get("lat") == null){
-    		return null;
-    	} else {
-    		return geometry.get("lat").toString();
-    	}
-    }
+    public String getLat() throws JSONException{return (geometry.getString("lat") == null) ? "" : geometry.getString("lat").toString();}
     
-    public String getLng() throws JSONException{
-    	if(geometry.get("lng") == null){
-    		return null;
-    	} else {
-    		return geometry.get("lng").toString();
-    	}
-    }
+    public String getLng() throws JSONException{return (geometry.getString("lng") == null) ? "" : geometry.getString("lng").toString();}
     
 }

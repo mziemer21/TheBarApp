@@ -9,13 +9,17 @@ import org.scribe.model.Verb;
 
 public class Business {
 	
-	String establishment_id, mobile_url, rating, name, yelp_id, address, city, state, zip, display_phone, phone, distance, latitude, longitude;
+	String establishment_id, mobile_url, rating, rating_count, deal_count = "NA", name, yelp_id, address, city, state, zip, display_phone, phone, distance, latitude, longitude;
 	
 	public String getEstablishmentId(){return establishment_id;}
 	
 	public String getName(){return name;}
     
     public String getRating(){return rating;}
+    
+	public String getRatingCount(){return rating_count;}
+	
+	public String getDealCount(){return deal_count;}
      
     public String getMobileURL(){return mobile_url;} 
     
@@ -46,6 +50,10 @@ public class Business {
     public void setName(String val){name = val;}
     
     public void setRating(String val){rating = val;}
+    
+    public void setRatingCount(String val){rating_count = val;}
+    
+    public void setDealCount(String val){deal_count = val;}
      
     public void setMobileURL(String val){mobile_url = val;} 
     
