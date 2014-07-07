@@ -471,7 +471,7 @@ private ArrayList<Business> searchYelp(){
     String response = yelp.search(query, currentLocation.getLatitude(), currentLocation.getLongitude(), String.valueOf(distanceMeters), sort_mode);
  
     yParser = new YelpParser();
-    return yParser.getBusinesses(response);
+    return yParser.getBusinesses(response, true, "", "");
 }
 
 }

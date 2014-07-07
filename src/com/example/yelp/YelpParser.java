@@ -52,7 +52,7 @@ public class YelpParser {
     
     public String getBusinessState(JSONObject location) throws JSONException{ return location.get("state_code").toString();}
     
-    public ArrayList<Business> getBusinesses(String json){
+    public ArrayList<Business> getBusinesses(String json, boolean location, String lat, String lng){
     	ArrayList<Business> BusinessList = new ArrayList<Business>();
     	Object loc = null;
     	
@@ -133,7 +133,12 @@ public class YelpParser {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} try { 
-				b.setLatLng(getBusinessAddress((JSONObject) loc), getBusinessCity((JSONObject) loc), getBusinessState((JSONObject) loc), getBusinessZipcode((JSONObject) loc));
+				if(location){
+					b.setLatLng(getBusinessAddress((JSONObject) loc), getBusinessCity((JSONObject) loc), getBusinessState((JSONObject) loc), getBusinessZipcode((JSONObject) loc));
+				} else {
+					b.setLat(lng);
+					b.setLng(lng);
+				}
     	    } catch (JSONException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

@@ -73,10 +73,19 @@ public class Business {
     
     public void setState(String val){state = val;}
     
+    public void setLat(String val){latitude = val;}
+    
+    public void setLng(String val){longitude = val;}
+    
     public void setLatLng(String address, String city, String state, String zip){
     	String searchString = address.replaceAll("\\s+","+") + "+" + city.replaceAll("\\s+","+") + "+" + state.replaceAll("\\s+","+") + "+" + zip;
 		OAuthRequest request = new OAuthRequest(Verb.GET, "http://maps.googleapis.com/maps/api/geocode/json?address="+searchString+"&sensor=true");
         Response response = request.send();
+        try {
+            Thread.sleep(101);
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
         String sResult = response.getBody();
         
         LocationParser lParser = new LocationParser();
@@ -97,4 +106,31 @@ public class Business {
 				e1.printStackTrace();
 			}
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((yelp_id == null) ? 0 : yelp_id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Business other = (Business) obj;
+		if (yelp_id == null) {
+			if (other.yelp_id != null)
+				return false;
+		} else if (!yelp_id.equals(other.yelp_id))
+			return false;
+		return true;
+	}
+    
+    
 }
