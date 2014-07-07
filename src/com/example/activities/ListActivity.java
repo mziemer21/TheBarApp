@@ -46,14 +46,13 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 	// Declare Variables
 	ListView listview;
 	List<ParseObject> ob;
-	String query = "", distanceMiles = "20", establishment_id, obLat, obLng;
-	int distanceMeters = 32186;
+	String query = "", distanceMiles, establishment_id, obLat, obLng;
 	Object loc;
 	SearchView searchView;
 	private Location currentLocation = null;
 	Intent intent;
-	Integer obCount, sort_mode;
-	Boolean filter = false;
+	Integer obCount, sort_mode, distanceMeters;
+	Boolean filter = false, onlyDeals = false;
 	YelpParser yParser;
 	ArrayList<Business> businesses = new ArrayList<Business>();
 	ArrayList<Business> tempBusiness = new ArrayList<Business>();
@@ -128,7 +127,7 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 			listProgressDialog.setMessage("Searching Yelp...");
 			listProgressDialog.setIndeterminate(false);
 			// Show progressdialog
-			// listProgressDialog.show();
+			listProgressDialog.show();
 
 			businesses.clear();
 		}
@@ -153,7 +152,7 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 			if (filter) {
 
 				query = intent.getStringExtra("query");
-				distanceMiles = "20";// intent.getStringExtra("distance");
+				distanceMiles = (intent.getStringExtra("distance") == null) ? "3" : intent.getStringExtra("distance");
 				distanceMeters = Integer.parseInt(distanceMiles) * 1609;
 				// Locate the class table named "establishment" in Parse.com
 				ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>(
@@ -217,7 +216,7 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 							businesses.add(tempBusiness.get(0));
 						}
 					}
-					if (businesses.size() < 20) {
+					if ((businesses.size() < 20) && (onlyDeals)) {
 						if (intent.getStringExtra("query") != null) {
 							query = intent.getStringExtra("query");
 						} else {
@@ -236,7 +235,7 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 				}
 			} else {
 				query = intent.getStringExtra("query");
-				distanceMiles = "20";// intent.getStringExtra("distance");
+				distanceMiles = (intent.getStringExtra("distance") == null) ? "3" : intent.getStringExtra("distance");
 				distanceMeters = Integer.parseInt(distanceMiles) * 1609;
 				// Locate the class table named "establishment" in Parse.com
 				ParseQuery<ParseObject> queryEstSearch = new ParseQuery<ParseObject>(
@@ -267,7 +266,7 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 							businesses.add(tempBusiness.get(0));
 						}
 					}
-					if (businesses.size() < 20) {
+					if ((businesses.size() < 20) && (onlyDeals)) {
 						if (intent.getStringExtra("query") != null) {
 							query = intent.getStringExtra("query");
 						} else {
