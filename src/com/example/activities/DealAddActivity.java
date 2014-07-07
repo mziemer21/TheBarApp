@@ -147,7 +147,6 @@ public class DealAddActivity extends Activity {
 			        	    
 							Log.d("establishment", "CREATING ESTABLISHMENT");
 							ParseObject addEstablishment = new ParseObject("Establishment");
-							addEstablishment.put("name", intent.getStringExtra("name"));
 							addEstablishment.put("location", newLocation);
 							addEstablishment.put("yelp_id", intent.getStringExtra("yelp_id"));
 							addEstablishment.put("deal_count", 1);
