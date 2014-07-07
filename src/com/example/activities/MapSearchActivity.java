@@ -55,11 +55,11 @@ public class MapSearchActivity extends FragmentActivity{
 			  @Override
 			  public void onClick(View arg0) {
 				  
-				  if(search_type_spinner.getSelectedItem().toString() == "Best Matched"){
+				  if(search_type_spinner.getSelectedItem().toString().compareTo("Best Matched") == 0){
 					  search_type = 0;
-				  } else if(search_type_spinner.getSelectedItem().toString() == "Distance"){
+				  } else if(search_type_spinner.getSelectedItem().toString().compareTo("Distance") == 0){
 					  search_type = 1;
-				  } else if(search_type_spinner.getSelectedItem().toString() == "Highest Rated"){
+				  } else if(search_type_spinner.getSelectedItem().toString().compareTo("Highest Rated") == 0){
 					  search_type = 2;
 				  }
 					  

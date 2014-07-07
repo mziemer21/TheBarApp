@@ -43,7 +43,7 @@ public class Yelp {
         request.addQuerystringParameter("category_filter", "bars");
         request.addQuerystringParameter("term", term);
         request.addQuerystringParameter("ll", latitude + "," + longitude);
-        request.addQuerystringParameter("limit", "20");
+        request.addQuerystringParameter("limit", "15");
         request.addQuerystringParameter("radius_filter", distance);
         request.addQuerystringParameter("sort", String.valueOf(sort_mode));
         
