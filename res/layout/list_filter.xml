@@ -120,6 +120,12 @@
 	    
 	    
 	</LinearLayout>
+
+    <CheckBox
+        android:id="@+id/list_filter_check_box_only_deals"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/only_deals" />
         
     <Button
         android:id="@+id/list_filter_button"

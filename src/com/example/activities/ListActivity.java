@@ -52,7 +52,7 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 	private Location currentLocation = null;
 	Intent intent;
 	Integer obCount, sort_mode, distanceMeters;
-	Boolean filter = false, onlyDeals = false;
+	Boolean filter = false, onlyDeals;
 	YelpParser yParser;
 	ArrayList<Business> businesses = new ArrayList<Business>();
 	ArrayList<Business> tempBusiness = new ArrayList<Business>();
@@ -145,6 +145,7 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 			food = intent.getBooleanExtra("food", true);
 			drinks = intent.getBooleanExtra("drinks", true);
 			sort_mode = intent.getIntExtra("search_type", 1);
+			onlyDeals = intent.getBooleanExtra("only_deals", false);
 
 			if ((day_of_week != null) || (food == false) || (drinks == false)) {
 				filter = true;

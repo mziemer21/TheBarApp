@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.ToggleButton;
@@ -27,6 +28,7 @@ public class ListSearchActivity extends FragmentActivity{
 	Spinner day_of_week, search_type_spinner;
 	ToggleButton food, drinks;
 	EditText query;
+	CheckBox only_deals;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,7 @@ public class ListSearchActivity extends FragmentActivity{
     	food = (ToggleButton)findViewById(R.id.list_filter_type_food);
     	drinks = (ToggleButton)findViewById(R.id.list_filter_type_drinks);
     	query = (EditText)findViewById(R.id.list_filter_keyword);
+    	only_deals = (CheckBox)findViewById(R.id.list_filter_check_box_only_deals);
         
         setDate(today);
         
@@ -70,6 +73,7 @@ public class ListSearchActivity extends FragmentActivity{
 					listActivity.putExtra("food", food.isChecked());
 					listActivity.putExtra("drinks", drinks.isChecked());
 					listActivity.putExtra("query", query.getText().toString());
+					listActivity.putExtra("only_deals", only_deals.isChecked());
 					listActivity.setFlags( Intent.FLAG_ACTIVITY_NO_HISTORY);
 					startActivity(listActivity);
 				  }
