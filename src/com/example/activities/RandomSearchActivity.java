@@ -40,7 +40,6 @@ public class RandomSearchActivity extends FragmentActivity{
         fiveMi = (ToggleButton) findViewById(R.id.random_filter_five_miles);
         tenMi = (ToggleButton) findViewById(R.id.random_filter_ten_miles);
         twentyMi = (ToggleButton) findViewById(R.id.random_filter_twenty_miles);    	
-    	search_type_spinner = (Spinner)findViewById(R.id.random_filter_search_type);
     	day_of_week = (Spinner)findViewById(R.id.random_filter_day_of_week);
     	food = (ToggleButton)findViewById(R.id.random_filter_type_food);
     	drinks = (ToggleButton)findViewById(R.id.random_filter_type_drinks);

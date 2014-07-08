@@ -12,20 +12,6 @@
         android:singleLine="true" />
     
     <TextView
-        android:id="@+id/random_filter_sort_by"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/sort_by"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <Spinner
-        android:id="@+id/random_filter_search_type"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/search_type_dropdown"
-        android:prompt="@string/sort_by" />
-    
-    <TextView
         android:id="@+id/random_filter_filter_by"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
