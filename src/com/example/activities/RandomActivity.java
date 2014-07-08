@@ -33,6 +33,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
     ArrayAdapter<String> adapter;
     private Location currentLocation = null;
     Intent intent;
+    ProgressDialog randomProgressDialog;
     
     // Stores the current instantiation of the location client in this object
     private LocationClient locationClient;
@@ -47,7 +48,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	// RemoteDataTask AsyncTask
     private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
     	Context context;
-   	 ProgressDialog mProgressDialog;
+   	 
    	 
    	  public RemoteDataTask(Context context){
    	   this.context=context;
@@ -57,15 +58,16 @@ GooglePlayServicesClient.OnConnectionFailedListener{
         protected void onPreExecute() {
             super.onPreExecute();
             // Create a progressdialog
-            if(mProgressDialog != null){
-            	mProgressDialog.dismiss();
+            if(randomProgressDialog != null){
+            	randomProgressDialog.dismiss();
+            	randomProgressDialog = null;
             }
-            mProgressDialog = new ProgressDialog(context);
+            randomProgressDialog = new ProgressDialog(context);
             // Set progressdialog message
-            mProgressDialog.setMessage("Loading...");
-            mProgressDialog.setIndeterminate(false);
+            randomProgressDialog.setMessage("Loading...");
+            randomProgressDialog.setIndeterminate(false);
             // Show progressdialog
-            mProgressDialog.show();
+            randomProgressDialog.show();
         }
  
         @Override
@@ -173,6 +175,10 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 					// create alert dialog
 					AlertDialog alertDialog = builder.create();
 	 
+					if(randomProgressDialog != null){
+						randomProgressDialog.dismiss();
+						randomProgressDialog = null;
+					}
 					// show it
 					alertDialog.show();
         	}
@@ -241,5 +247,14 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 
 	  // Connect to the location services client
 	  locationClient.connect();
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		if(randomProgressDialog != null){
+			randomProgressDialog.dismiss();
+			randomProgressDialog = null;
+		}
 	}
 }

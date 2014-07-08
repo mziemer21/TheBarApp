@@ -68,6 +68,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
     private LocationClient locationClient;
     LocationRequest mLocationRequest;
     Intent intent;
+    ProgressDialog mapProgressDialog;
     
  // Milliseconds per second
     private static final int MILLISECONDS_PER_SECOND = 1000;
@@ -232,7 +233,6 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 //RemoteDataTask AsyncTask
  private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
 	 Context context;
-	 ProgressDialog mapProgressDialog;
 	 
 	  public RemoteDataTask(Context context){
 	   this.context=context;
@@ -245,6 +245,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
          // Create a progressdialog
          if(mapProgressDialog != null){
          	mapProgressDialog.dismiss();
+         	mapProgressDialog = null;
          }
          mapProgressDialog = new ProgressDialog(context);
          // Set progressdialog message
@@ -367,8 +368,10 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 				Marker marker = myMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(businesses.get(i).getLatitude()), Double.parseDouble(businesses.get(i).getLongitude()))).title(businesses.get(i).getName()));
 				theMap.put(marker, businesses.get(i));
     	  }
-    	  
-    	  mapProgressDialog.dismiss();
+    	  if(mapProgressDialog != null){
+	    	  mapProgressDialog.dismiss();
+	    	  mapProgressDialog = null;
+    	  }
      }
      
      }
@@ -457,6 +460,15 @@ public void onStart() {
 
   // Connect to the location services client
   locationClient.connect();
+}
+
+@Override
+public void onPause() {
+	super.onPause();
+	if(mapProgressDialog != null){
+  	  mapProgressDialog.dismiss();
+  	  mapProgressDialog = null;
+	} 
 }
 
 private ParseGeoPoint geoPointFromLocation(Location loc) {

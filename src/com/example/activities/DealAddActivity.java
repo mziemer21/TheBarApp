@@ -34,7 +34,7 @@ public class DealAddActivity extends Activity {
 
 	private Button submitButton;
 	Intent intent;
-	ProgressDialog mProgressDialog;
+	ProgressDialog dealAddProgressDialog;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +51,17 @@ public class DealAddActivity extends Activity {
 			@Override
 			public void onClick(View arg0)
 			{
+				if(dealAddProgressDialog != null){
+        			dealAddProgressDialog.dismiss();
+        			dealAddProgressDialog = null;
+        		}
 				// Create a progressdialog
-	            mProgressDialog = new ProgressDialog(DealAddActivity.this);
+				dealAddProgressDialog = new ProgressDialog(DealAddActivity.this);
 	            // Set progressdialog message
-	            mProgressDialog.setMessage("Saving...");
-	            mProgressDialog.setIndeterminate(false);
+				dealAddProgressDialog.setMessage("Saving...");
+				dealAddProgressDialog.setIndeterminate(false);
 	            // Show progressdialog
-	            mProgressDialog.show();
+				dealAddProgressDialog.show();
 	            
 	            new AsyncTask<Void, Void, Void>()
 	            {
@@ -199,7 +203,10 @@ public class DealAddActivity extends Activity {
 	            	@Override
 		            protected void onPostExecute(Void result)
 		            {
-						mProgressDialog.dismiss();
+	            		if(dealAddProgressDialog != null){
+	            			dealAddProgressDialog.dismiss();
+	            			dealAddProgressDialog = null;
+	            		}
 						DealAddActivity.this.finish();
 		            }
 	            }.execute(); 
@@ -217,6 +224,15 @@ public class DealAddActivity extends Activity {
 		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MILLISECOND, 0);
 		return cal;
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		if(dealAddProgressDialog != null){
+			dealAddProgressDialog.dismiss();
+			dealAddProgressDialog = null;
+		}
 	}
 	
 }

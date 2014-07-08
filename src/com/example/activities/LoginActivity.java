@@ -27,7 +27,7 @@ import com.parse.ParseUser;
 
 public class LoginActivity extends Activity {
 
-	private Dialog progressDialog;
+	private Dialog loginProgressDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,14 +89,23 @@ public class LoginActivity extends Activity {
 	}
 
 	private void onLoginButtonClicked() {
-		LoginActivity.this.progressDialog = ProgressDialog.show(
+		if(loginProgressDialog != null){
+			loginProgressDialog.dismiss();
+			loginProgressDialog = null;
+		}
+		
+		loginProgressDialog = ProgressDialog.show(
 				LoginActivity.this, "", "Logging in...", true);
 		List<String> permissions = Arrays.asList("public_profile", "user_about_me",
 				"user_relationships", "user_birthday", "user_location");
 		ParseFacebookUtils.logIn(permissions, this, new LogInCallback() {
 			@Override
 			public void done(ParseUser user, ParseException err) {
-				LoginActivity.this.progressDialog.dismiss();
+				if(loginProgressDialog != null){
+					loginProgressDialog.dismiss();
+					loginProgressDialog = null;
+				}
+				
 				if (user == null) {
 					Log.d("The Bar App",
 							"Uh oh. The user cancelled the Facebook login.");
@@ -121,6 +130,15 @@ public class LoginActivity extends Activity {
 		} else 
 		{
 			finish();
+		}
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		if(loginProgressDialog != null){
+			loginProgressDialog.dismiss();
+			loginProgressDialog = null;
 		}
 	}
 }

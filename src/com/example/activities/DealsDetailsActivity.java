@@ -24,6 +24,7 @@ public class DealsDetailsActivity extends Activity {
 	ParseObject est = null;
 	Button upVoteButton, downVoteButton;
 	ParseObject deal = null, dealVoteUser = null;
+	ProgressDialog upVoteProgressDialog, downVoteProgressDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -122,13 +123,14 @@ public class DealsDetailsActivity extends Activity {
 	
 	// UpVoteTask AsyncTask
     private class UpVoteTask extends AsyncTask<Void, Void, Void> {
-    	ProgressDialog upVoteProgressDialog;
+    	
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             // Create a progressdialog
             if(upVoteProgressDialog != null){
             	upVoteProgressDialog.dismiss();
+            	upVoteProgressDialog = null;
             }
             upVoteProgressDialog = new ProgressDialog(DealsDetailsActivity.this);
             // Set progressdialog message
@@ -201,19 +203,23 @@ public class DealsDetailsActivity extends Activity {
         @Override
         protected void onPostExecute(Void result) {
 			setButtons(false);
-			upVoteProgressDialog.dismiss();
+			if(upVoteProgressDialog != null){
+            	upVoteProgressDialog.dismiss();
+            	upVoteProgressDialog = null;
+            }
         }
     }
     
  // DownVoteTask AsyncTask
     private class DownVoteTask extends AsyncTask<Void, Void, Void> {
-    	ProgressDialog downVoteProgressDialog;
+    	
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             // Create a progressdialog
             if(downVoteProgressDialog != null){
             	downVoteProgressDialog.dismiss();
+            	downVoteProgressDialog = null;
             }
             downVoteProgressDialog = new ProgressDialog(DealsDetailsActivity.this);
             // Set progressdialog message
@@ -274,7 +280,6 @@ public class DealsDetailsActivity extends Activity {
 						e.printStackTrace();
 					}
 					setButtons(false);
-					downVoteProgressDialog.dismiss();
 				} else {
 					// deal not found problem
 				}
@@ -285,6 +290,22 @@ public class DealsDetailsActivity extends Activity {
         @Override
         protected void onPostExecute(Void result) {
 			setButtons(false);
+			if(downVoteProgressDialog != null){
+            	downVoteProgressDialog.dismiss();
+            	downVoteProgressDialog = null;
+            }
+        }
+    }
+    @Override
+	public void onPause() {
+		super.onPause();
+		if(downVoteProgressDialog != null){
+        	downVoteProgressDialog.dismiss();
+        	downVoteProgressDialog = null;
+        }
+		if(upVoteProgressDialog != null){
+        	upVoteProgressDialog.dismiss();
+        	upVoteProgressDialog = null;
         }
     }
 }

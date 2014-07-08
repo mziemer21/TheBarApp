@@ -45,6 +45,7 @@ public class DealsTabFragment extends Fragment {
 	// Declare Variables
     ListView dealListview;
     List<ParseObject> obDeal;
+    ProgressDialog dealTabProgressDialog;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -120,13 +121,14 @@ public class DealsTabFragment extends Fragment {
 	
 	// RemoteDataTask AsyncTask
     private class RemoteDataTaskDeal extends AsyncTask<Void, Void, Void> {
-    	ProgressDialog dealTabProgressDialog;
+    	
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             // Create a progressdialog
             if(dealTabProgressDialog != null){
             	dealTabProgressDialog.dismiss();
+            	dealTabProgressDialog = null;
             }
             dealTabProgressDialog = new ProgressDialog(getActivity());
             // Set progressdialog message
@@ -179,7 +181,10 @@ public class DealsTabFragment extends Fragment {
             dealListview.setAdapter(dealAdapter);
             // Close the progressdialog
             // Capture button clicks on ListView items
-            dealTabProgressDialog.dismiss();
+            if(dealTabProgressDialog != null){
+            	dealTabProgressDialog.dismiss();
+            	dealTabProgressDialog = null;
+            }
             dealListview.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
@@ -200,4 +205,12 @@ public class DealsTabFragment extends Fragment {
             });
         }
     }
+    @Override
+	public void onPause() {
+		super.onPause();
+		if(dealTabProgressDialog != null){
+			dealTabProgressDialog.dismiss();
+			dealTabProgressDialog = null;
+		}
+	}
 }

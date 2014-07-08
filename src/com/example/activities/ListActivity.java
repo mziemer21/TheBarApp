@@ -57,6 +57,7 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 	ArrayList<Business> businesses = new ArrayList<Business>();
 	ArrayList<Business> tempBusiness = new ArrayList<Business>();
 	Business checkBusiness;
+	ProgressDialog listProgressDialog;
 
 	// Stores the current instantiation of the location client in this object
 	private LocationClient locationClient;
@@ -109,7 +110,6 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 	// RemoteDataTask AsyncTask
 	private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
 		Context context;
-		ProgressDialog listProgressDialog;
 
 		public RemoteDataTask(Context context) {
 			this.context = context;
@@ -121,6 +121,7 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 			// Create a progressdialog
 			if (listProgressDialog != null) {
 				listProgressDialog.dismiss();
+				listProgressDialog = null;
 			}
 			listProgressDialog = new ProgressDialog(context);
 			// Set progressdialog message
@@ -152,11 +153,13 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 			if (filter) {
 
 				query = intent.getStringExtra("query");
-				distanceMiles = (intent.getStringExtra("distance") == null) ? "3" : intent.getStringExtra("distance");
+				distanceMiles = (intent.getStringExtra("distance") == null) ? "3"
+						: intent.getStringExtra("distance");
 				distanceMeters = Integer.parseInt(distanceMiles) * 1609;
 				// Locate the class table named "establishment" in Parse.com
 				ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>(
 						"Deal");
+				queryDealSearch.include("establishment");
 				queryDealSearch.setLimit(20);
 				if (day_of_week != null) {
 					queryDealSearch.whereContains("day", day_of_week);
@@ -191,6 +194,7 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 						}
 						queryDealSearch.whereEqualTo("deal_type", deal_type);
 					}
+
 				}
 				try {
 					obCount = queryDealSearch.count();
@@ -213,10 +217,16 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 										.getLongitude()));
 						if ((tempBusiness.size() > 0)
 								&& (!businesses.contains(tempBusiness.get(0)))) {
+							ParseObject curDeal = ob.get(j);
+							ParseObject curEst = curDeal
+									.getParseObject("establishment");
+							String estabDealCount = curEst
+									.getString("deal_count");
+							tempBusiness.get(0).setDealCount(estabDealCount);
 							businesses.add(tempBusiness.get(0));
 						}
 					}
-					if ((businesses.size() < 20) && (onlyDeals)) {
+					if ((businesses.size() < 20) && (!onlyDeals)) {
 						if (intent.getStringExtra("query") != null) {
 							query = intent.getStringExtra("query");
 						} else {
@@ -235,12 +245,16 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 				}
 			} else {
 				query = intent.getStringExtra("query");
-				distanceMiles = (intent.getStringExtra("distance") == null) ? "3" : intent.getStringExtra("distance");
+				distanceMiles = (intent.getStringExtra("distance") == null) ? "3"
+						: intent.getStringExtra("distance");
 				distanceMeters = Integer.parseInt(distanceMiles) * 1609;
 				// Locate the class table named "establishment" in Parse.com
 				ParseQuery<ParseObject> queryEstSearch = new ParseQuery<ParseObject>(
-						"Deal");
+						"Establishment");
 				queryEstSearch.setLimit(20);
+				queryEstSearch.whereWithinMiles("location",
+						geoPointFromLocation(currentLocation),
+						Double.parseDouble(distanceMiles));
 
 				try {
 					obCount = queryEstSearch.count();
@@ -263,10 +277,12 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 										.getLongitude()));
 						if ((tempBusiness.size() > 0)
 								&& (!businesses.contains(tempBusiness.get(0)))) {
+							tempBusiness.get(0).setDealCount(
+									ob.get(j).get("deal_count").toString());
 							businesses.add(tempBusiness.get(0));
 						}
 					}
-					if ((businesses.size() < 20) && (onlyDeals)) {
+					if ((businesses.size() < 20) && (!onlyDeals)) {
 						if (intent.getStringExtra("query") != null) {
 							query = intent.getStringExtra("query");
 						} else {
@@ -284,11 +300,11 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 					}
 				}
 			}
-			if(sort_mode == 0){
+			if (sort_mode == 0) {
 				Collections.sort(businesses, new BusinessBestMatchComparator());
-			} else if(sort_mode == 1){
+			} else if (sort_mode == 1) {
 				Collections.sort(businesses, new BusinessDistanceComparator());
-			} else if(sort_mode == 2){
+			} else if (sort_mode == 2) {
 				Collections.sort(businesses, new BusinessRatingComparator());
 			}
 
@@ -321,8 +337,10 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 					rowItems);
 			// Binds the Adapter to the ListView
 			listview.setAdapter(establishmentAdapter);
-			// Close the progressdialog
-			listProgressDialog.dismiss();
+			if (listProgressDialog != null) {
+				// Close the progressdialog
+				listProgressDialog.dismiss();
+			}
 			// Capture button clicks on ListView items
 			listview.setOnItemClickListener(new OnItemClickListener() {
 				@Override
@@ -441,6 +459,15 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 
 		// Connect to the location services client
 		locationClient.connect();
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		if (listProgressDialog != null) {
+			listProgressDialog.dismiss();
+			listProgressDialog = null;
+		}
 	}
 
 	private ArrayList<Business> searchYelp(boolean location, String lat,
