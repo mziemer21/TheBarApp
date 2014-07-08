@@ -55,12 +55,10 @@ public class DealSearchActivity extends FragmentActivity{
 			  @Override
 			  public void onClick(View arg0) {
 
-				  if(search_type_spinner.getSelectedItem().toString().compareTo("Best Matched") == 0){
+				  if(search_type_spinner.getSelectedItem().toString().compareTo("Distance") == 0){
 					  search_type = 0;
-				  } else if(search_type_spinner.getSelectedItem().toString().compareTo("Distance") == 0){
-					  search_type = 1;
 				  } else if(search_type_spinner.getSelectedItem().toString().compareTo("Highest Rated") == 0){
-					  search_type = 2;
+					  search_type = 1;
 				  }
 
 					Intent dealSearchActivity = new Intent(DealSearchActivity.this, DealActivity.class);
@@ -69,6 +67,7 @@ public class DealSearchActivity extends FragmentActivity{
 					dealSearchActivity.putExtra("food", food.isChecked());
 					dealSearchActivity.putExtra("drinks", drinks.isChecked());
 					dealSearchActivity.putExtra("query", query.getText().toString());
+					dealSearchActivity.putExtra("search_type", search_type);
 					startActivity(dealSearchActivity);
 				  }
 		});

@@ -87,6 +87,7 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 			String distance, day_of_week, query;
 			Boolean food, drinks;
 			ParseObject deal_type = null;
+			Integer search_type;
 
 			currentLocation = getLocation();
 			distance = intent.getStringExtra("distance");
@@ -94,6 +95,7 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 			food = intent.getBooleanExtra("food", true);
 			drinks = intent.getBooleanExtra("drinks", true);
 			query = intent.getStringExtra("query");
+			search_type = intent.getIntExtra("search_type", 0);
 
 			// Locate the class table named "establishment" in Parse.com
 			ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>(
@@ -134,8 +136,12 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 					queryDealSearch.whereEqualTo("deal_type", deal_type);
 				}
 			}
-
-			queryDealSearch.orderByDescending("rating");
+			if(search_type == 0){
+				// already distance sorted
+			} else if(search_type == 1){
+				queryDealSearch.orderByDescending("rating");
+			} 
+			
 			try {
 				obCount = queryDealSearch.count();
 				ob = queryDealSearch.find();

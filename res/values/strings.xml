@@ -126,6 +126,11 @@
         <item>Distance</item>
         <item>Highest Rated</item>
     </array>
+    
+    <array name="search_type_dropdown_short">
+        <item>Distance</item>
+        <item>Highest Rated</item>
+    </array>
     <!-- End Search Types -->
     
     <!-- Distances -->
