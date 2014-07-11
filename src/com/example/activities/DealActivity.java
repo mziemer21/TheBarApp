@@ -5,12 +5,10 @@ import java.util.List;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -26,6 +24,8 @@ import com.example.thebarapp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
+import com.parse.CountCallback;
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -40,9 +40,13 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 	ArrayAdapter<DealRowItem> adapter;
 	private Location currentLocation = null;
 	Intent intent;
-	Integer obCount;
 	ParseObject est;
 	ProgressDialog dealProgressDialog;
+
+	String distance, day_of_week, query;
+	Boolean food, drinks;
+	ParseObject deal_type = null;
+	Integer search_type;
 
 	// Stores the current instantiation of the location client in this object
 	private LocationClient locationClient;
@@ -55,186 +59,6 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 
 		intent = getIntent();
 		locationClient = new LocationClient(this, this, this);
-	}
-
-	// RemoteDataTask AsyncTask
-	private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
-		Context context;
-
-		public RemoteDataTask(Context context) {
-			this.context = context;
-		}
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-
-			// Create a progressdialog
-			if (dealProgressDialog != null) {
-				dealProgressDialog.dismiss();
-				dealProgressDialog = null;
-			}
-			dealProgressDialog = new ProgressDialog(context);
-			// Set progressdialog message
-			dealProgressDialog.setMessage("Loading Yelp Data...");
-			dealProgressDialog.setIndeterminate(false);
-			// Show progressdialog
-			dealProgressDialog.show();
-		}
-
-		@Override
-		protected Void doInBackground(Void... params) {
-			String distance, day_of_week, query;
-			Boolean food, drinks;
-			ParseObject deal_type = null;
-			Integer search_type;
-
-			currentLocation = getLocation();
-			distance = intent.getStringExtra("distance");
-			day_of_week = intent.getStringExtra("day_of_week");
-			food = intent.getBooleanExtra("food", true);
-			drinks = intent.getBooleanExtra("drinks", true);
-			query = intent.getStringExtra("query");
-			search_type = intent.getIntExtra("search_type", 0);
-
-			// Locate the class table named "establishment" in Parse.com
-			ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>(
-					"Deal");
-			queryDealSearch.setLimit(10);
-			if (query != "") {
-				queryDealSearch.whereContains("title", query);
-			}
-			if (day_of_week != null) {
-				queryDealSearch.whereContains("day", day_of_week);
-			}
-			if (distance != null) {
-				queryDealSearch.whereWithinMiles("location",
-						geoPointFromLocation(currentLocation),
-						Double.parseDouble(distance));
-			}
-			if ((food == true) || (drinks == true)) {
-				if (food == false) {
-					ParseQuery<ParseObject> queryDealType = ParseQuery
-							.getQuery("deal_type");
-					queryDealType.whereEqualTo("name", "Drinks");
-					try {
-						deal_type = queryDealType.getFirst();
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
-					queryDealSearch.whereEqualTo("deal_type", deal_type);
-				}
-				if (drinks == false) {
-					ParseQuery<ParseObject> queryDealType = ParseQuery
-							.getQuery("deal_type");
-					queryDealType.whereEqualTo("name", "Food");
-					try {
-						deal_type = queryDealType.getFirst();
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
-					queryDealSearch.whereEqualTo("deal_type", deal_type);
-				}
-			}
-			if(search_type == 0){
-				// already distance sorted
-			} else if(search_type == 1){
-				queryDealSearch.orderByDescending("rating");
-			} 
-			
-			try {
-				obCount = queryDealSearch.count();
-				ob = queryDealSearch.find();
-			} catch (Exception e) {
-				Log.e("Error", e.getMessage());
-				e.printStackTrace();
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void result) {
-			// if we found deals
-			if (obCount > 0) {
-				List<DealRowItem> rowItems = new ArrayList<DealRowItem>();
-
-				// Locate the listview in deal_listview.xml
-				listview = (ListView) findViewById(R.id.deal_listview);
-
-				// Retrieve object "title" from Parse.com database
-				for (ParseObject deal : ob) {
-					DealRowItem item = new DealRowItem(deal.get("title")
-							.toString(), deal.get("rating").toString());
-					rowItems.add(item);
-				}
-
-				// Pass the results into an ArrayAdapter
-				DealListViewAdapter adapter = new DealListViewAdapter(context,
-						R.layout.listview_item_deal, rowItems);
-
-				// Binds the Adapter to the ListView
-				listview.setAdapter(adapter);
-				// Close the progressdialog
-				if (dealProgressDialog != null) {
-					dealProgressDialog.dismiss();
-					dealProgressDialog = null;
-				}
-				// Capture button clicks on ListView items
-				listview.setOnItemClickListener(new OnItemClickListener() {
-					@Override
-					public void onItemClick(AdapterView<?> parent, View view,
-							int position, long id) {
-						// Send single item click data to SingleItemView Class
-						Intent i = new Intent(DealActivity.this,
-								DealsDetailsActivity.class);
-						est = (ParseObject) ob.get(position).get(
-								"establishment");
-						// Pass data to next activity
-						i.putExtra("deal_id", ob.get(position).getObjectId()
-								.toString());
-						i.putExtra("deal_title",
-								ob.get(position).getString("title").toString());
-						i.putExtra("deal_details",
-								ob.get(position).getString("details")
-										.toString());
-						i.putExtra("deal_restrictions", ob.get(position)
-								.getInt("description"));
-						i.putExtra("yelp_id",
-								ob.get(position).getString("yelp_id"));
-						i.putExtra("establishment_id", est.getObjectId()
-								.toString());
-						// Open SingleItemView.java Activity
-						startActivity(i);
-
-					}
-				});
-			} else { // no deals found so display a popup and return to search
-						// options
-				AlertDialog.Builder builder = new AlertDialog.Builder(
-						DealActivity.this);
-
-				// set title
-				builder.setTitle("No Results");
-
-				// set dialog message
-				builder.setMessage(
-						"Sorry, nothing was found.  Try and widen your search.")
-						.setCancelable(false)
-						.setPositiveButton("Ok",
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
-										dialog.cancel();
-										finish();
-									}
-								});
-				// create alert dialog
-				AlertDialog alertDialog = builder.create();
-
-				// show it
-				alertDialog.show();
-			}
-		}
 	}
 
 	@Override
@@ -272,7 +96,174 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		new RemoteDataTask(DealActivity.this).execute();
+		// Create a progressdialog
+		if (dealProgressDialog != null) {
+			dealProgressDialog.dismiss();
+			dealProgressDialog = null;
+		}
+		dealProgressDialog = new ProgressDialog(DealActivity.this);
+		// Set progressdialog message
+		dealProgressDialog.setMessage("Loading Yelp Data...");
+		dealProgressDialog.setIndeterminate(false);
+		// Show progressdialog
+		dealProgressDialog.show();
+
+		currentLocation = getLocation();
+		distance = intent.getStringExtra("distance");
+		day_of_week = intent.getStringExtra("day_of_week");
+		food = intent.getBooleanExtra("food", true);
+		drinks = intent.getBooleanExtra("drinks", true);
+		query = intent.getStringExtra("query");
+		search_type = intent.getIntExtra("search_type", 0);
+
+		// Locate the class table named "establishment" in Parse.com
+		ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>(
+				"Deal");
+		queryDealSearch.setLimit(10);
+		if (query != "") {
+			queryDealSearch.whereContains("title", query);
+		}
+		if (day_of_week != null) {
+			queryDealSearch.whereContains("day", day_of_week);
+		}
+		if (distance != null) {
+			queryDealSearch.whereWithinMiles("location",
+					geoPointFromLocation(currentLocation),
+					Double.parseDouble(distance));
+		}
+		if ((food == true) || (drinks == true)) {
+			if (food == false) {
+				ParseQuery<ParseObject> queryDealType = ParseQuery
+						.getQuery("deal_type");
+				queryDealType.whereEqualTo("name", "Drinks");
+				try {
+					deal_type = queryDealType.getFirst();
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				queryDealSearch.whereEqualTo("deal_type", deal_type);
+			}
+			if (drinks == false) {
+				ParseQuery<ParseObject> queryDealType = ParseQuery
+						.getQuery("deal_type");
+				queryDealType.whereEqualTo("name", "Food");
+				try {
+					deal_type = queryDealType.getFirst();
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				queryDealSearch.whereEqualTo("deal_type", deal_type);
+			}
+		}
+		if (search_type == 0) {
+			// already distance sorted
+		} else if (search_type == 1) {
+			queryDealSearch.orderByDescending("rating");
+		}
+
+		final ParseQuery<ParseObject> queryDealSearchCount = queryDealSearch;
+
+		queryDealSearch.findInBackground(new FindCallback<ParseObject>() {
+			public void done(List<ParseObject> dealList, ParseException e) {
+				if (e == null) {
+					ob = dealList;
+
+					queryDealSearchCount.countInBackground(new CountCallback() {
+						public void done(int count, ParseException e) {
+							if (e == null) {
+								// The count request succeeded. Log the count
+								if (count > 0) {
+									makeList();
+								} else {
+									displayError();
+								}
+							} else {
+								Log.d("Deal Count Error", e.toString());
+							}
+						}
+					});
+				} else {
+					Log.d("Deal Search Error", e.toString());
+				}
+			}
+		});
+	}
+
+	public void makeList() {
+		List<DealRowItem> rowItems = new ArrayList<DealRowItem>();
+
+		// Locate the listview in deal_listview.xml
+		listview = (ListView) findViewById(R.id.deal_listview);
+
+		// Retrieve object "title" from Parse.com
+		// database
+		for (ParseObject deal : ob) {
+			DealRowItem item = new DealRowItem(deal.get("title").toString(),
+					deal.get("rating").toString());
+			rowItems.add(item);
+		}
+
+		// Pass the results into an ArrayAdapter
+		DealListViewAdapter adapter = new DealListViewAdapter(
+				DealActivity.this, R.layout.listview_item_deal, rowItems);
+
+		// Binds the Adapter to the ListView
+		listview.setAdapter(adapter);
+		// Close the progressdialog
+		if (dealProgressDialog != null) {
+			dealProgressDialog.dismiss();
+			dealProgressDialog = null;
+		}
+		// Capture button clicks on ListView items
+		listview.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				// Send single item click data to
+				// SingleItemView
+				// Class
+				Intent i = new Intent(DealActivity.this,
+						DealsDetailsActivity.class);
+				est = (ParseObject) ob.get(position).get("establishment");
+				// Pass data to next activity
+				i.putExtra("deal_id", ob.get(position).getObjectId().toString());
+				i.putExtra("deal_title", ob.get(position).getString("title")
+						.toString());
+				i.putExtra("deal_details", ob.get(position)
+						.getString("details").toString());
+				i.putExtra("deal_restrictions",
+						ob.get(position).getInt("description"));
+				i.putExtra("yelp_id", ob.get(position).getString("yelp_id"));
+				i.putExtra("establishment_id", est.getObjectId().toString());
+				// Open SingleItemView.java Activity
+				startActivity(i);
+
+			}
+		});
+	}
+
+	public void displayError() {
+		// no deals found so display a popup and return to search options
+		AlertDialog.Builder builder = new AlertDialog.Builder(DealActivity.this);
+
+		// set title
+		builder.setTitle("No Results");
+
+		// set dialog message
+		builder.setMessage(
+				"Sorry, nothing was found.  Try and widen your search.")
+				.setCancelable(false)
+				.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+						finish();
+					}
+				});
+		// create alert dialog
+		AlertDialog alertDialog = builder.create();
+
+		// show it
+		alertDialog.show();
 	}
 
 	@Override
