@@ -9,21 +9,22 @@ import android.view.ViewGroup;
 import com.example.thebarapp.R;
 
 /****
- * This is a fragment launched from the nav drawer
- * It allows the user to force a location
+ * This is a fragment launched from the nav drawer It allows the user to force a
+ * location
+ * 
  * @author zieme_000
- *
+ * 
  */
 public class ChangeLocationFragment extends Fragment {
-	
-	public ChangeLocationFragment(){}
-	
+
+	public ChangeLocationFragment() {
+	}
+
 	@Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
- 
-        View rootView = inflater.inflate(R.layout.fragment_change_location, container, false);
-         
-        return rootView;
-    }
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+		View rootView = inflater.inflate(R.layout.fragment_change_location, container, false);
+
+		return rootView;
+	}
 }

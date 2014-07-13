@@ -9,5 +9,5 @@ public class BusinessBestMatchComparator implements Comparator<Business> {
 		// TODO Auto-generated method stub
 		return lhs.name.compareTo(rhs.name);
 	}
-    
+
 }

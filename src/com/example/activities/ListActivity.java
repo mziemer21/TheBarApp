@@ -91,15 +91,13 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 		case R.id.action_filter:
 			Intent i = new Intent(ListActivity.this, ListSearchActivity.class);
 			finish();
-			i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-					| Intent.FLAG_ACTIVITY_NO_HISTORY);
+			i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
 			startActivity(i);
 			return true;
 		case R.id.action_clear_search:
 			Intent j = new Intent(ListActivity.this, ListActivity.class);
 			finish();
-			j.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-					| Intent.FLAG_ACTIVITY_NO_HISTORY);
+			j.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
 			startActivity(j);
 			return true;
 		default:
@@ -154,12 +152,11 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 			if (filter) {
 
 				query = intent.getStringExtra("query");
-				distanceMiles = (intent.getStringExtra("distance") == null) ? "3"
-						: intent.getStringExtra("distance");
+				distanceMiles = (intent.getStringExtra("distance") == null) ? "3" : intent
+						.getStringExtra("distance");
 				distanceMeters = Integer.parseInt(distanceMiles) * 1609;
 				// Locate the class table named "establishment" in Parse.com
-				ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>(
-						"Deal");
+				ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>("Deal");
 				queryDealSearch.include("establishment");
 				queryDealSearch.setLimit(20);
 				if (day_of_week != null) {
@@ -172,8 +169,7 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 				}
 				if ((food == true) || (drinks == true)) {
 					if (food == false) {
-						ParseQuery<ParseObject> queryDealType = ParseQuery
-								.getQuery("deal_type");
+						ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
 						queryDealType.whereEqualTo("name", "Drinks");
 						try {
 							deal_type = queryDealType.getFirst();
@@ -184,8 +180,7 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 						queryDealSearch.whereEqualTo("deal_type", deal_type);
 					}
 					if (drinks == false) {
-						ParseQuery<ParseObject> queryDealType = ParseQuery
-								.getQuery("deal_type");
+						ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
 						queryDealType.whereEqualTo("name", "Food");
 						try {
 							deal_type = queryDealType.getFirst();
@@ -210,19 +205,15 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 						query = ob.get(j).get("yelp_id").toString();
 						tempBusiness = searchYelp(
 								false,
-								Double.toString(ob.get(j)
-										.getParseGeoPoint("location")
+								Double.toString(ob.get(j).getParseGeoPoint("location")
 										.getLatitude()),
-								Double.toString(ob.get(j)
-										.getParseGeoPoint("location")
+								Double.toString(ob.get(j).getParseGeoPoint("location")
 										.getLongitude()));
 						if ((tempBusiness.size() > 0)
 								&& (!businesses.contains(tempBusiness.get(0)))) {
 							ParseObject curDeal = ob.get(j);
-							ParseObject curEst = curDeal
-									.getParseObject("establishment");
-							String estabDealCount = curEst
-									.getString("deal_count");
+							ParseObject curEst = curDeal.getParseObject("establishment");
+							String estabDealCount = curEst.getString("deal_count");
 							tempBusiness.get(0).setDealCount(estabDealCount);
 							businesses.add(tempBusiness.get(0));
 						}
@@ -246,15 +237,14 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 				}
 			} else {
 				query = intent.getStringExtra("query");
-				distanceMiles = (intent.getStringExtra("distance") == null) ? "3"
-						: intent.getStringExtra("distance");
+				distanceMiles = (intent.getStringExtra("distance") == null) ? "3" : intent
+						.getStringExtra("distance");
 				distanceMeters = Integer.parseInt(distanceMiles) * 1609;
 				// Locate the class table named "establishment" in Parse.com
 				ParseQuery<ParseObject> queryEstSearch = new ParseQuery<ParseObject>(
 						"Establishment");
 				queryEstSearch.setLimit(20);
-				queryEstSearch.whereWithinMiles("location",
-						geoPointFromLocation(currentLocation),
+				queryEstSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation),
 						Double.parseDouble(distanceMiles));
 
 				try {
@@ -270,16 +260,14 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 						query = ob.get(j).get("yelp_id").toString();
 						tempBusiness = searchYelp(
 								false,
-								Double.toString(ob.get(j)
-										.getParseGeoPoint("location")
+								Double.toString(ob.get(j).getParseGeoPoint("location")
 										.getLatitude()),
-								Double.toString(ob.get(j)
-										.getParseGeoPoint("location")
+								Double.toString(ob.get(j).getParseGeoPoint("location")
 										.getLongitude()));
 						if ((tempBusiness.size() > 0)
 								&& (!businesses.contains(tempBusiness.get(0)))) {
-							tempBusiness.get(0).setDealCount(
-									ob.get(j).get("deal_count").toString());
+							tempBusiness.get(0)
+									.setDealCount(ob.get(j).get("deal_count").toString());
 							businesses.add(tempBusiness.get(0));
 						}
 					}
@@ -323,19 +311,16 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 			for (int k = 0; businesses.size() > k; k++) {
 				// String title, Integer rating, String address, String
 				// distance, String dealCount, String ratingCount
-				EstablishmentRowItem item = new EstablishmentRowItem(businesses
-						.get(k).getName(), Double.parseDouble(businesses.get(k)
-						.getRating()), businesses.get(k).getAddress(),
-						businesses.get(k).getDistance(), businesses.get(k)
-								.getDealCount(), businesses.get(k)
-								.getRatingCount());
+				EstablishmentRowItem item = new EstablishmentRowItem(businesses.get(k).getName(),
+						Double.parseDouble(businesses.get(k).getRating()), businesses.get(k)
+								.getAddress(), businesses.get(k).getDistance(), businesses.get(k)
+								.getDealCount(), businesses.get(k).getRatingCount());
 				rowItems.add(item);
 			}
 
 			// Pass the results into an ArrayAdapter
 			EstablishmentListViewAdapter establishmentAdapter = new EstablishmentListViewAdapter(
-					ListActivity.this, R.layout.listview_item_establishment,
-					rowItems);
+					ListActivity.this, R.layout.listview_item_establishment, rowItems);
 			// Binds the Adapter to the ListView
 			listview.setAdapter(establishmentAdapter);
 			if (listProgressDialog != null) {
@@ -345,13 +330,10 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 			// Capture button clicks on ListView items
 			listview.setOnItemClickListener(new OnItemClickListener() {
 				@Override
-				public void onItemClick(AdapterView<?> parent, View view,
-						int position, long id) {
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-					ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(
-							"Establishment");
-					query.whereEqualTo("yelp_id", businesses.get(position)
-							.getYelpId());
+					ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Establishment");
+					query.whereEqualTo("yelp_id", businesses.get(position).getYelpId());
 					try {
 						ob = query.find();
 					} catch (Exception e) {
@@ -366,8 +348,7 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 					}
 
 					// Send single item click data to SingleItemView Class
-					Intent i = new Intent(ListActivity.this,
-							DetailsActivity.class);
+					Intent i = new Intent(ListActivity.this, DetailsActivity.class);
 					// Pass data "name" followed by the position
 					i.putExtra("establishment_id", establishment_id);
 					i.putExtra("yelp_id", businesses.get(position).getYelpId());
@@ -378,12 +359,9 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 					i.putExtra("state", businesses.get(position).getState());
 					i.putExtra("zip", businesses.get(position).getZipcode());
 					i.putExtra("phone", businesses.get(position).getPhone());
-					i.putExtra("display_phone", businesses.get(position)
-							.getDisplayPhone());
-					i.putExtra("distance", businesses.get(position)
-							.getDistance());
-					i.putExtra("mobile_url", businesses.get(position)
-							.getMobileURL());
+					i.putExtra("display_phone", businesses.get(position).getDisplayPhone());
+					i.putExtra("distance", businesses.get(position).getDistance());
+					i.putExtra("mobile_url", businesses.get(position).getMobileURL());
 
 					businesses.clear();
 					// Open SingleItemView.java Activity
@@ -471,16 +449,13 @@ public class ListActivity extends FragmentActivity implements LocationListener,
 		}
 	}
 
-	private ArrayList<Business> searchYelp(boolean location, String lat,
-			String lng) {
+	private ArrayList<Business> searchYelp(boolean location, String lat, String lng) {
 		API_Static_Stuff api_keys = new API_Static_Stuff();
 
-		Yelp yelp = new Yelp(api_keys.getYelpConsumerKey(),
-				api_keys.getYelpConsumerSecret(), api_keys.getYelpToken(),
-				api_keys.getYelpTokenSecret());
+		Yelp yelp = new Yelp(api_keys.getYelpConsumerKey(), api_keys.getYelpConsumerSecret(),
+				api_keys.getYelpToken(), api_keys.getYelpTokenSecret());
 		String response = yelp.search(query, currentLocation.getLatitude(),
-				currentLocation.getLongitude(), String.valueOf(distanceMeters),
-				sort_mode);
+				currentLocation.getLongitude(), String.valueOf(distanceMeters), sort_mode);
 
 		yParser = new YelpParser();
 		return yParser.getBusinesses(response, location, lat, lng);

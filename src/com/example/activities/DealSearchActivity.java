@@ -17,10 +17,10 @@ import android.widget.ToggleButton;
 
 import com.example.thebarapp.R;
 
-public class DealSearchActivity extends FragmentActivity{
+public class DealSearchActivity extends FragmentActivity {
 
 	private Button searchDealButton;
-	private ToggleButton oneMi, threeMi, fiveMi, tenMi, twentyMi; 
+	private ToggleButton oneMi, threeMi, fiveMi, tenMi, twentyMi;
 	String distance = "3";
 	Calendar calendar = Calendar.getInstance();
 	int today = calendar.get(Calendar.DAY_OF_WEEK), search_type;
@@ -29,53 +29,55 @@ public class DealSearchActivity extends FragmentActivity{
 	EditText query;
 
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Get the view from listview_main.xml
-        setContentView(R.layout.deal_sort);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		// Get the view from listview_main.xml
+		setContentView(R.layout.deal_sort);
 
-        searchDealButton = (Button) findViewById(R.id.deal_filter_button);
+		searchDealButton = (Button) findViewById(R.id.deal_filter_button);
 		oneMi = (ToggleButton) findViewById(R.id.deal_filter_one_mile);
-        threeMi = (ToggleButton) findViewById(R.id.deal_filter_three_miles);
-        fiveMi = (ToggleButton) findViewById(R.id.deal_filter_five_miles);
-        tenMi = (ToggleButton) findViewById(R.id.deal_filter_ten_miles);
-        twentyMi = (ToggleButton) findViewById(R.id.deal_filter_twenty_miles);    	
-    	search_type_spinner = (Spinner)findViewById(R.id.deal_filter_search_type);
-    	day_of_week = (Spinner)findViewById(R.id.deal_filter_day_of_week);
-    	food = (ToggleButton)findViewById(R.id.deal_filter_type_food);
-    	drinks = (ToggleButton)findViewById(R.id.deal_filter_type_drinks);
-    	query = (EditText)findViewById(R.id.deal_filter_keyword);
-		
+		threeMi = (ToggleButton) findViewById(R.id.deal_filter_three_miles);
+		fiveMi = (ToggleButton) findViewById(R.id.deal_filter_five_miles);
+		tenMi = (ToggleButton) findViewById(R.id.deal_filter_ten_miles);
+		twentyMi = (ToggleButton) findViewById(R.id.deal_filter_twenty_miles);
+		search_type_spinner = (Spinner) findViewById(R.id.deal_filter_search_type);
+		day_of_week = (Spinner) findViewById(R.id.deal_filter_day_of_week);
+		food = (ToggleButton) findViewById(R.id.deal_filter_type_food);
+		drinks = (ToggleButton) findViewById(R.id.deal_filter_type_drinks);
+		query = (EditText) findViewById(R.id.deal_filter_keyword);
+
 		setDate(today);
-        
-        threeMi.setChecked(true);
+
+		threeMi.setChecked(true);
 
 		searchDealButton.setOnClickListener(new OnClickListener() {
- 
-			  @Override
-			  public void onClick(View arg0) {
-
-				  if(search_type_spinner.getSelectedItem().toString().compareTo("Distance") == 0){
-					  search_type = 0;
-				  } else if(search_type_spinner.getSelectedItem().toString().compareTo("Highest Rated") == 0){
-					  search_type = 1;
-				  }
-
-					Intent dealSearchActivity = new Intent(DealSearchActivity.this, DealActivity.class);
-					dealSearchActivity.putExtra("day_of_week", day_of_week.getSelectedItem().toString());
-					dealSearchActivity.putExtra("distance", distance);
-					dealSearchActivity.putExtra("food", food.isChecked());
-					dealSearchActivity.putExtra("drinks", drinks.isChecked());
-					dealSearchActivity.putExtra("query", query.getText().toString());
-					dealSearchActivity.putExtra("search_type", search_type);
-					startActivity(dealSearchActivity);
-				  }
-		});
-    oneMi.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
-				if(oneMi.isChecked()){
+
+				if (search_type_spinner.getSelectedItem().toString().compareTo("Distance") == 0) {
+					search_type = 0;
+				} else if (search_type_spinner.getSelectedItem().toString()
+						.compareTo("Highest Rated") == 0) {
+					search_type = 1;
+				}
+
+				Intent dealSearchActivity = new Intent(DealSearchActivity.this, DealActivity.class);
+				dealSearchActivity
+						.putExtra("day_of_week", day_of_week.getSelectedItem().toString());
+				dealSearchActivity.putExtra("distance", distance);
+				dealSearchActivity.putExtra("food", food.isChecked());
+				dealSearchActivity.putExtra("drinks", drinks.isChecked());
+				dealSearchActivity.putExtra("query", query.getText().toString());
+				dealSearchActivity.putExtra("search_type", search_type);
+				startActivity(dealSearchActivity);
+			}
+		});
+		oneMi.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				if (oneMi.isChecked()) {
 					threeMi.setChecked(false);
 					fiveMi.setChecked(false);
 					tenMi.setChecked(false);
@@ -83,7 +85,7 @@ public class DealSearchActivity extends FragmentActivity{
 
 					distance = "1";
 				} else {
-				distance = "3";
+					distance = "3";
 				}
 			}
 		});
@@ -92,7 +94,7 @@ public class DealSearchActivity extends FragmentActivity{
 
 			@Override
 			public void onClick(View arg0) {
-				if(threeMi.isChecked()){
+				if (threeMi.isChecked()) {
 					oneMi.setChecked(false);
 					fiveMi.setChecked(false);
 					tenMi.setChecked(false);
@@ -106,7 +108,7 @@ public class DealSearchActivity extends FragmentActivity{
 
 			@Override
 			public void onClick(View arg0) {
-				if(fiveMi.isChecked()){
+				if (fiveMi.isChecked()) {
 					threeMi.setChecked(false);
 					oneMi.setChecked(false);
 					tenMi.setChecked(false);
@@ -114,7 +116,7 @@ public class DealSearchActivity extends FragmentActivity{
 
 					distance = "5";
 				} else {
-				distance = "3";
+					distance = "3";
 				}
 			}
 		});
@@ -123,7 +125,7 @@ public class DealSearchActivity extends FragmentActivity{
 
 			@Override
 			public void onClick(View arg0) {
-				if(tenMi.isChecked()){
+				if (tenMi.isChecked()) {
 					threeMi.setChecked(false);
 					fiveMi.setChecked(false);
 					oneMi.setChecked(false);
@@ -131,7 +133,7 @@ public class DealSearchActivity extends FragmentActivity{
 
 					distance = "10";
 				} else {
-				distance = "3";
+					distance = "3";
 				}
 			}
 		});
@@ -140,7 +142,7 @@ public class DealSearchActivity extends FragmentActivity{
 
 			@Override
 			public void onClick(View arg0) {
-				if(twentyMi.isChecked()){
+				if (twentyMi.isChecked()) {
 					threeMi.setChecked(false);
 					fiveMi.setChecked(false);
 					tenMi.setChecked(false);
@@ -148,58 +150,58 @@ public class DealSearchActivity extends FragmentActivity{
 
 					distance = "20";
 				} else {
-				distance = "3";
+					distance = "3";
 				}
 			}
 		});
-    }
+	}
 
 	@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.filter_clear, menu);
- 
-        return super.onCreateOptionsMenu(menu);
-    }
-    
-    /**
-     * On selecting action bar icons
-     * */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Take appropriate action for each action item click
-        switch (item.getItemId()) {
-        case R.id.filter_clear:
-        	threeMi.setChecked(true);
-        	oneMi.setChecked(false);
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.filter_clear, menu);
+
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	/**
+	 * On selecting action bar icons
+	 * */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Take appropriate action for each action item click
+		switch (item.getItemId()) {
+		case R.id.filter_clear:
+			threeMi.setChecked(true);
+			oneMi.setChecked(false);
 			fiveMi.setChecked(false);
 			tenMi.setChecked(false);
 			twentyMi.setChecked(false);
-        	setDate(today);
-        	query.setText("");
-        	food.setChecked(false);
-        	drinks.setChecked(false);
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
-        }
-    }
-    
-    private void setDate(Integer day){
-    	if(today == 1){
-        	day_of_week.setSelection(0);
-        } else if(today == 2){
-        	day_of_week.setSelection(1);
-        } else if(today == 3){
-        	day_of_week.setSelection(2);
-        } else if(today == 4){
-        	day_of_week.setSelection(3);
-        } else if(today == 5){
-        	day_of_week.setSelection(4);
-        } else if(today == 6){
-        	day_of_week.setSelection(5);
-        } else if(today == 7){
-        	day_of_week.setSelection(6);
-        }
-    }
+			setDate(today);
+			query.setText("");
+			food.setChecked(false);
+			drinks.setChecked(false);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	private void setDate(Integer day) {
+		if (today == 1) {
+			day_of_week.setSelection(0);
+		} else if (today == 2) {
+			day_of_week.setSelection(1);
+		} else if (today == 3) {
+			day_of_week.setSelection(2);
+		} else if (today == 4) {
+			day_of_week.setSelection(3);
+		} else if (today == 5) {
+			day_of_week.setSelection(4);
+		} else if (today == 6) {
+			day_of_week.setSelection(5);
+		} else if (today == 7) {
+			day_of_week.setSelection(6);
+		}
+	}
 }

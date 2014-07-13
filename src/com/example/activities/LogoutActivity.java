@@ -88,48 +88,39 @@ public class LogoutActivity extends Activity {
 								userProfile.put("facebookId", user.getId());
 								userProfile.put("name", user.getName());
 								if (user.getLocation().getProperty("name") != null) {
-									userProfile.put("location", (String) user
-											.getLocation().getProperty("name"));
+									userProfile.put("location", (String) user.getLocation()
+											.getProperty("name"));
 								}
 								if (user.getProperty("gender") != null) {
-									userProfile.put("gender",
-											(String) user.getProperty("gender"));
+									userProfile.put("gender", (String) user.getProperty("gender"));
 								}
 								if (user.getBirthday() != null) {
-									userProfile.put("birthday",
-											user.getBirthday());
+									userProfile.put("birthday", user.getBirthday());
 								}
 								if (user.getProperty("relationship_status") != null) {
-									userProfile
-											.put("relationship_status",
-													(String) user
-															.getProperty("relationship_status"));
+									userProfile.put("relationship_status",
+											(String) user.getProperty("relationship_status"));
 								}
 
 								// Save the user profile info in a user property
-								ParseUser currentUser = ParseUser
-										.getCurrentUser();
+								ParseUser currentUser = ParseUser.getCurrentUser();
 								currentUser.put("profile", userProfile);
 								currentUser.saveInBackground();
 
 								// Show the user info
 								updateViewsWithProfileInfo();
 							} catch (JSONException e) {
-								Log.d("The Bar App",
-										"Error parsing returned user data.");
+								Log.d("The Bar App", "Error parsing returned user data.");
 							}
 
 						} else if (response.getError() != null) {
 							if ((response.getError().getCategory() == FacebookRequestError.Category.AUTHENTICATION_RETRY)
 									|| (response.getError().getCategory() == FacebookRequestError.Category.AUTHENTICATION_REOPEN_SESSION)) {
-								Log.d("The Bar App",
-										"The facebook session was invalidated.");
+								Log.d("The Bar App", "The facebook session was invalidated.");
 								onLogoutButtonClicked();
 							} else {
-								Log.d("The Bar App",
-										"Some other error: "
-												+ response.getError()
-														.getErrorMessage());
+								Log.d("The Bar App", "Some other error: "
+										+ response.getError().getErrorMessage());
 							}
 						}
 					}
@@ -144,8 +135,7 @@ public class LogoutActivity extends Activity {
 			JSONObject userProfile = currentUser.getJSONObject("profile");
 			try {
 				if (userProfile.getString("facebookId") != null) {
-					String facebookId = userProfile.get("facebookId")
-							.toString();
+					String facebookId = userProfile.get("facebookId").toString();
 					userProfilePictureView.setProfileId(facebookId);
 				} else {
 					// Show the default, blank user profile picture
@@ -167,20 +157,17 @@ public class LogoutActivity extends Activity {
 					userGenderView.setText("");
 				}
 				if (userProfile.getString("birthday") != null) {
-					userDateOfBirthView.setText(userProfile
-							.getString("birthday"));
+					userDateOfBirthView.setText(userProfile.getString("birthday"));
 				} else {
 					userDateOfBirthView.setText("");
 				}
 				if (userProfile.getString("relationship_status") != null) {
-					userRelationshipView.setText(userProfile
-							.getString("relationship_status"));
+					userRelationshipView.setText(userProfile.getString("relationship_status"));
 				} else {
 					userRelationshipView.setText("");
 				}
 			} catch (JSONException e) {
-				Log.d("The Bar App",
-						"Error parsing saved user data.");
+				Log.d("The Bar App", "Error parsing saved user data.");
 			}
 
 		}

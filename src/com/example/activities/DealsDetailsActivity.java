@@ -38,10 +38,8 @@ public class DealsDetailsActivity extends Activity {
 		deal_title = intent.getStringExtra("deal_title");
 		deal_details = intent.getStringExtra("deal_details");
 
-		ParseQuery<ParseObject> queryDeal = ParseQuery
-				.getQuery("Establishment");
-		queryDeal.whereEqualTo("objectId",
-				intent.getStringExtra("establishment_id"));
+		ParseQuery<ParseObject> queryDeal = ParseQuery.getQuery("Establishment");
+		queryDeal.whereEqualTo("objectId", intent.getStringExtra("establishment_id"));
 		try {
 			est = queryDeal.getFirst();
 		} catch (ParseException e1) {
@@ -59,10 +57,10 @@ public class DealsDetailsActivity extends Activity {
 
 		upVoteButton = (ToggleButton) findViewById(R.id.deal_up_vote_button);
 		upVoteButton.setOnClickListener(new OnClickListener() {
-			@Override			            
+			@Override
 			public void onClick(View view) {
-				
-				if(downVoteButton.isChecked()){
+
+				if (downVoteButton.isChecked()) {
 					downVoteButton.setChecked(false);
 				}
 			}
@@ -70,14 +68,14 @@ public class DealsDetailsActivity extends Activity {
 
 		downVoteButton = (ToggleButton) findViewById(R.id.deal_down_vote_button);
 		downVoteButton.setOnClickListener(new OnClickListener() {
-			@Override			            
+			@Override
 			public void onClick(View view) {
-				if(upVoteButton.isChecked()){
+				if (upVoteButton.isChecked()) {
 					upVoteButton.setChecked(false);
 				}
 			}
 		});
-		
+
 		queryParse(true);
 	}
 
@@ -111,27 +109,24 @@ public class DealsDetailsActivity extends Activity {
 					deal = dealObject;
 				}
 
-				ParseQuery<ParseObject> queryDealVoteUser = ParseQuery
-						.getQuery("deal_vote_users");
+				ParseQuery<ParseObject> queryDealVoteUser = ParseQuery.getQuery("deal_vote_users");
 				ParseUser user = ParseUser.getCurrentUser();
 				queryDealVoteUser.whereEqualTo("deal", deal);
 				queryDealVoteUser.whereEqualTo("user", user);
 
-				queryDealVoteUser
-						.getFirstInBackground(new GetCallback<ParseObject>() {
-							public void done(ParseObject dealUserObject,
-									ParseException e) {
-								if (dealUserObject == null) {
-									Log.d("get deal user", e.toString());
-								} else {
-									dealVoteUser = dealUserObject;
-									
-									if(setButtons){
-										setButtons();
-									}
-								}
+				queryDealVoteUser.getFirstInBackground(new GetCallback<ParseObject>() {
+					public void done(ParseObject dealUserObject, ParseException e) {
+						if (dealUserObject == null) {
+							Log.d("get deal user", e.toString());
+						} else {
+							dealVoteUser = dealUserObject;
+
+							if (setButtons) {
+								setButtons();
 							}
-						});
+						}
+					}
+				});
 			}
 		});
 	}
@@ -139,8 +134,8 @@ public class DealsDetailsActivity extends Activity {
 	@Override
 	public void onPause() {
 		super.onPause();
-		
-		if(upVoteButton.isChecked()){
+
+		if (upVoteButton.isChecked()) {
 			queryParse(false);
 
 			if (deal != null) {
@@ -152,20 +147,17 @@ public class DealsDetailsActivity extends Activity {
 					dealVoteUser.put("vote", 1);
 					up_votes = deal.getInt("up_votes") + 1;
 					down_votes = deal.getInt("down_votes");
-				} else if (dealVoteUser.get("vote").toString()
-						.equals("0")) {
+				} else if (dealVoteUser.get("vote").toString().equals("0")) {
 					// change vote to 1
 					dealVoteUser.put("vote", 1);
 					up_votes = deal.getInt("up_votes") + 1;
 					down_votes = deal.getInt("down_votes") - 1;
-				} else if (dealVoteUser.get("vote").toString()
-						.equals("1")) {
+				} else if (dealVoteUser.get("vote").toString().equals("1")) {
 					// already voted up
 					dealVoteUser.put("vote", 2);
 					up_votes = deal.getInt("up_votes") - 1;
 					down_votes = deal.getInt("down_votes");
-				} else if (dealVoteUser.get("vote").toString()
-						.equals("2")) {
+				} else if (dealVoteUser.get("vote").toString().equals("2")) {
 					// change vote to 1
 					dealVoteUser.put("vote", 1);
 					up_votes = deal.getInt("up_votes") + 1;
@@ -184,12 +176,12 @@ public class DealsDetailsActivity extends Activity {
 				deal.put("down_votes", down_votes);
 				deal.put("up_votes", up_votes);
 
-			}  else {
+			} else {
 				// deal not found problem
 			}
 		}
-		
-		if(downVoteButton.isChecked()){
+
+		if (downVoteButton.isChecked()) {
 			queryParse(false);
 
 			if (deal != null) {
@@ -230,14 +222,14 @@ public class DealsDetailsActivity extends Activity {
 				// deal not found problem
 			}
 		}
-		
-		if(deal.isDirty()){
-		deal.saveInBackground();
+
+		if (deal.isDirty()) {
+			deal.saveInBackground();
 		}
-		if(dealVoteUser.isDirty()){
-		dealVoteUser.saveInBackground();
+		if (dealVoteUser.isDirty()) {
+			dealVoteUser.saveInBackground();
 		}
-		
+
 		if (downVoteProgressDialog != null) {
 			downVoteProgressDialog.dismiss();
 			downVoteProgressDialog = null;

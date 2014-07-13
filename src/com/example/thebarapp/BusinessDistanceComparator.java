@@ -9,5 +9,5 @@ public class BusinessDistanceComparator implements Comparator<Business> {
 		// TODO Auto-generated method stub
 		return lhs.distance.compareTo(rhs.distance);
 	}
-    
+
 }

@@ -19,17 +19,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 
-import com.example.activities.DealSearchActivity;
 import com.example.activities.DetailsActivity;
-import com.example.activities.ListActivity;
 import com.example.activities.LogoutActivity;
-import com.example.activities.MapActivity;
-import com.example.activities.RandomSearchActivity;
 import com.example.fragments.ChangeLocationFragment;
 import com.example.fragments.FeedbackFragment;
 import com.example.fragments.HomeFragment;
@@ -58,11 +52,10 @@ public class NavDrawer extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		callingClass = this.getClass().getSimpleName();
-		if(callingClass.equalsIgnoreCase("MainActivity"))
-		{
+		if (callingClass.equalsIgnoreCase("MainActivity")) {
 			setContentView(R.layout.activity_main);
 		}
-		
+
 		mTitle = mDrawerTitle = getTitle();
 
 		// load slide menu items
@@ -70,14 +63,11 @@ public class NavDrawer extends FragmentActivity {
 
 		// nav drawer icons from resources
 		navMenuIcons = getResources().obtainTypedArray(R.array.nav_drawer_icons);
-		
-		if(callingClass.equalsIgnoreCase("DetailsActivity"))
-		{
+
+		if (callingClass.equalsIgnoreCase("DetailsActivity")) {
 			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_tabs);
 			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_tabs);
-		}
-		else if (callingClass.equalsIgnoreCase("MainActivity"))
-		{
+		} else if (callingClass.equalsIgnoreCase("MainActivity")) {
 			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 			mDrawerList = (ListView) findViewById(R.id.list_slidermenu);
 		}
@@ -92,12 +82,13 @@ public class NavDrawer extends FragmentActivity {
 		// Photos
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
 		// Communities, Will add a counter here
-		navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1), true, "22"));
+		navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1),
+				true, "22"));
 		// Pages
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
-		// What's hot, We  will add a counter here
-		navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1), true, "50+"));
-		
+		// What's hot, We will add a counter here
+		navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1),
+				true, "50+"));
 
 		// Recycle the typed array
 		navMenuIcons.recycle();
@@ -105,18 +96,21 @@ public class NavDrawer extends FragmentActivity {
 		mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
 
 		// setting the nav drawer list adapter
-		adapter = new NavDrawerListAdapter(getApplicationContext(),
-				navDrawerItems);
+		adapter = new NavDrawerListAdapter(getApplicationContext(), navDrawerItems);
 		mDrawerList.setAdapter(adapter);
 
 		// enabling action bar app icon and behaving it as toggle button
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
 
-		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-				R.drawable.ic_drawer, //nav menu toggle icon
-				R.string.app_name, // nav drawer open - description for accessibility
-				R.string.app_name // nav drawer close - description for accessibility
+		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, // nav
+																								// menu
+																								// toggle
+																								// icon
+				R.string.app_name, // nav drawer open - description for
+									// accessibility
+				R.string.app_name // nav drawer close - description for
+									// accessibility
 		) {
 			public void onDrawerClosed(View view) {
 				getActionBar().setTitle(mTitle);
@@ -134,8 +128,7 @@ public class NavDrawer extends FragmentActivity {
 
 		if (savedInstanceState == null) {
 			// on first time display view for first nav item
-			if(callingClass.equalsIgnoreCase("MainActivity"))
-			{
+			if (callingClass.equalsIgnoreCase("MainActivity")) {
 				displayView(0);
 			}
 		}
@@ -144,11 +137,9 @@ public class NavDrawer extends FragmentActivity {
 	/**
 	 * Slide menu item click listener
 	 * */
-	private class SlideMenuClickListener implements
-			ListView.OnItemClickListener {
+	private class SlideMenuClickListener implements ListView.OnItemClickListener {
 		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position,
-				long id) {
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			// display view for selected nav drawer item
 			displayView(position);
 		}
@@ -201,7 +192,7 @@ public class NavDrawer extends FragmentActivity {
 			break;
 		case 2:
 			Intent userDetailsFragment = new Intent(this, LogoutActivity.class);
-	        startActivity(userDetailsFragment);
+			startActivity(userDetailsFragment);
 			break;
 		case 3:
 			fragment = new ChangeLocationFragment();
@@ -211,7 +202,7 @@ public class NavDrawer extends FragmentActivity {
 			break;
 		case 5:
 			Intent detailsFragment = new Intent(this, DetailsActivity.class);
-	        startActivity(detailsFragment);
+			startActivity(detailsFragment);
 			break;
 
 		default:
@@ -220,23 +211,19 @@ public class NavDrawer extends FragmentActivity {
 
 		if (fragment != null) {
 			FragmentManager fragmentManager = getSupportFragmentManager();
-			
-			if(callingClass.equalsIgnoreCase("DetailsActivity"))
-			{
+
+			if (callingClass.equalsIgnoreCase("DetailsActivity")) {
 				ActionBar actionBar = getActionBar();
 				actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 				ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-				if(viewPager.getVisibility() == 0)
-				{
+				if (viewPager.getVisibility() == 0) {
 					viewPager.setVisibility(8);
 				}
-				fragmentManager.beginTransaction()
-					.replace(R.id.frame_container_tabs, fragment).addToBackStack(fragment.getTag()).commit();
-			}
-			else if (callingClass.equalsIgnoreCase("MainActivity"))
-			{
-				fragmentManager.beginTransaction()
-					.replace(R.id.frame_container, fragment).addToBackStack(fragment.getTag()).commit();
+				fragmentManager.beginTransaction().replace(R.id.frame_container_tabs, fragment)
+						.addToBackStack(fragment.getTag()).commit();
+			} else if (callingClass.equalsIgnoreCase("MainActivity")) {
+				fragmentManager.beginTransaction().replace(R.id.frame_container, fragment)
+						.addToBackStack(fragment.getTag()).commit();
 			}
 
 			// update selected item and title, then close the drawer
@@ -277,17 +264,17 @@ public class NavDrawer extends FragmentActivity {
 
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void onTabReselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

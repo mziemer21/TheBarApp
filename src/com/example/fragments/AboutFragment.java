@@ -8,24 +8,22 @@ import android.view.ViewGroup;
 
 import com.example.thebarapp.R;
 
-
 /***
- * This is a fragment launched from the nav drawer
- * It is just a short about page
+ * This is a fragment launched from the nav drawer It is just a short about page
+ * 
  * @author zieme_000
- *
+ * 
  */
 public class AboutFragment extends Fragment {
-	
-	public AboutFragment(){}
-	
-	
+
+	public AboutFragment() {
+	}
+
 	@Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
- 
-        View rootView = inflater.inflate(R.layout.fragment_about, container, false);
-         
-        return rootView;
-    }
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+		View rootView = inflater.inflate(R.layout.fragment_about, container, false);
+
+		return rootView;
+	}
 }
