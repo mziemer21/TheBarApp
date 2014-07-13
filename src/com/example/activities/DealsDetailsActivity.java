@@ -3,12 +3,10 @@ package com.example.activities;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -79,14 +77,11 @@ public class DealsDetailsActivity extends Activity {
 				}
 			}
 		});
-		setButtons(true);
+		
+		queryParse(true);
 	}
 
-	private void setButtons(Boolean queryDb) {
-
-		if (queryDb == true) {
-			queryParse();
-		}
+	private void setButtons() {
 
 		if (deal != null) {
 			if (dealVoteUser != null) {
@@ -104,7 +99,7 @@ public class DealsDetailsActivity extends Activity {
 		}
 	}
 
-	private void queryParse() {
+	private void queryParse(final boolean setButtons) {
 		ParseQuery<ParseObject> queryDeal = ParseQuery.getQuery("Deal");
 		queryDeal.whereEqualTo("objectId", deal_id);
 
@@ -130,6 +125,10 @@ public class DealsDetailsActivity extends Activity {
 									Log.d("get deal user", e.toString());
 								} else {
 									dealVoteUser = dealUserObject;
+									
+									if(setButtons){
+										setButtons();
+									}
 								}
 							}
 						});
@@ -142,7 +141,7 @@ public class DealsDetailsActivity extends Activity {
 		super.onPause();
 		
 		if(upVoteButton.isChecked()){
-			queryParse();
+			queryParse(false);
 
 			if (deal != null) {
 				if (dealVoteUser == null) {
@@ -191,7 +190,7 @@ public class DealsDetailsActivity extends Activity {
 		}
 		
 		if(downVoteButton.isChecked()){
-			queryParse();
+			queryParse(false);
 
 			if (deal != null) {
 				if (dealVoteUser == null) {
