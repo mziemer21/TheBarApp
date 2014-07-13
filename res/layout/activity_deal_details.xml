@@ -33,7 +33,7 @@
         android:layout_marginLeft="14dp"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-    
+
     <TextView
         android:id="@+id/dealTime"
         android:layout_width="wrap_content"
@@ -42,42 +42,47 @@
         android:layout_below="@+id/dealRestrictions"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-    
-    <TextView 
-        android:id="@+id/dealRestrictionsLabel" 
-        android:layout_width="wrap_content" 
-        android:layout_height="wrap_content" 
-        android:layout_alignLeft="@+id/dealTime" 
-        android:layout_below="@+id/dealTime" 
-        android:text="@string/restrictions" 
+
+    <TextView
+        android:id="@+id/dealRestrictionsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/dealTime"
+        android:layout_below="@+id/dealTime"
+        android:text="@string/restrictions"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-    
-    <TextView android:id="@+id/dealDetails" 
-        android:layout_width="wrap_content" 
-        android:layout_height="wrap_content" 
-        android:layout_alignLeft="@+id/dealTime" 
-        android:layout_below="@+id/dealRestrictionsLabel" 
-        android:text="Medium Text" 
+
+    <TextView
+        android:id="@+id/dealDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/dealTime"
+        android:layout_below="@+id/dealRestrictionsLabel"
+        android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <LinearLayout
+        android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true" >
 
-        <Button
+        <ToggleButton
             android:id="@+id/deal_down_vote_button"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Down Vote" />
+            android:textOn="Down Vote"
+            android:textOff="Down Vote" />
 
-        <Button
+        <ToggleButton
             android:id="@+id/deal_up_vote_button"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Up Vote" />
+            android:textOn="Up Vote"
+            android:textOff="Up Vote" />
     </LinearLayout>
+
 
 </RelativeLayout>

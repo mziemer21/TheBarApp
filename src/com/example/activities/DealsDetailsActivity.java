@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.example.thebarapp.R;
 import com.parse.GetCallback;
@@ -24,7 +25,7 @@ public class DealsDetailsActivity extends Activity {
 	Integer rating, price, up_votes, down_votes;
 	Intent intent;
 	ParseObject est = null;
-	Button upVoteButton, downVoteButton;
+	ToggleButton upVoteButton, downVoteButton;
 	ParseObject deal = null, dealVoteUser = null;
 	ProgressDialog upVoteProgressDialog, downVoteProgressDialog;
 
@@ -58,110 +59,26 @@ public class DealsDetailsActivity extends Activity {
 		TextView details = (TextView) findViewById(R.id.dealDetails);
 		details.setText(deal_details);
 
-		upVoteButton = (Button) findViewById(R.id.deal_up_vote_button);
+		upVoteButton = (ToggleButton) findViewById(R.id.deal_up_vote_button);
 		upVoteButton.setOnClickListener(new OnClickListener() {
 			@Override			            
 			public void onClick(View view) {
 				
-					queryParse();
-
-					if (deal != null) {
-						if (dealVoteUser == null) {
-							// create new and assign vote to 1
-							dealVoteUser = new ParseObject("deal_vote_users");
-							dealVoteUser.put("deal", deal);
-							dealVoteUser.put("user", ParseUser.getCurrentUser());
-							dealVoteUser.put("vote", 1);
-							up_votes = deal.getInt("up_votes") + 1;
-							down_votes = deal.getInt("down_votes");
-						} else if (dealVoteUser.get("vote").toString()
-								.equals("0")) {
-							// change vote to 1
-							dealVoteUser.put("vote", 1);
-							up_votes = deal.getInt("up_votes") + 1;
-							down_votes = deal.getInt("down_votes") - 1;
-						} else if (dealVoteUser.get("vote").toString()
-								.equals("1")) {
-							// already voted up
-							dealVoteUser.put("vote", 2);
-							up_votes = deal.getInt("up_votes") - 1;
-							down_votes = deal.getInt("down_votes");
-						} else if (dealVoteUser.get("vote").toString()
-								.equals("2")) {
-							// change vote to 1
-							dealVoteUser.put("vote", 1);
-							up_votes = deal.getInt("up_votes") + 1;
-							down_votes = deal.getInt("down_votes");
-						}
-
-						if ((up_votes + down_votes) != 0) {
-							rating = (up_votes / (up_votes + down_votes)) * 100;
-						} else if ((up_votes == 0) && (down_votes == 0)) {
-							rating = 0;
-						} else {
-							rating = 50;
-						}
-
-						deal.put("rating", rating);
-						deal.put("down_votes", down_votes);
-						deal.put("up_votes", up_votes);
-
-					}  else {
-						// deal not found problem
-					}
-					setButtons(false);
-			}
-		});
-
-		downVoteButton = (Button) findViewById(R.id.deal_down_vote_button);
-		downVoteButton.setOnClickListener(new OnClickListener() {
-			@Override			            
-			public void onClick(View view) {
-
-				queryParse();
-
-				if (deal != null) {
-					if (dealVoteUser == null) {
-						// create new and assign vote to 1
-						dealVoteUser = new ParseObject("deal_vote_users");
-						dealVoteUser.put("deal", deal);
-						dealVoteUser.put("user", ParseUser.getCurrentUser());
-						dealVoteUser.put("vote", 0);
-						down_votes = deal.getInt("down_votes") + 1;
-						up_votes = deal.getInt("up_votes");
-					} else if (dealVoteUser.get("vote").toString().equals("0")) {
-						// already voted down
-						dealVoteUser.put("vote", 2);
-						down_votes = deal.getInt("down_votes") - 1;
-					} else if (dealVoteUser.get("vote").toString().equals("1")) {
-						dealVoteUser.put("vote", 0);
-						down_votes = deal.getInt("down_votes") + 1;
-						up_votes = deal.getInt("up_votes") - 1;
-					} else if (dealVoteUser.get("vote").toString().equals("2")) {
-						dealVoteUser.put("vote", 0);
-						down_votes = deal.getInt("down_votes") + 1;
-						up_votes = deal.getInt("up_votes");
-					}
-
-					if ((up_votes + down_votes) != 0) {
-						rating = (up_votes / (up_votes + down_votes)) * 100;
-					} else if ((up_votes == 0) && (down_votes == 0)) {
-						rating = 0;
-					} else {
-						rating = 50;
-					}
-
-					deal.put("rating", rating);
-					deal.put("down_votes", down_votes);
-					deal.put("up_votes", up_votes);
-
-					setButtons(false);
-				} else {
-					// deal not found problem
+				if(downVoteButton.isChecked()){
+					downVoteButton.setChecked(false);
 				}
 			}
 		});
 
+		downVoteButton = (ToggleButton) findViewById(R.id.deal_down_vote_button);
+		downVoteButton.setOnClickListener(new OnClickListener() {
+			@Override			            
+			public void onClick(View view) {
+				if(upVoteButton.isChecked()){
+					upVoteButton.setChecked(false);
+				}
+			}
+		});
 		setButtons(true);
 	}
 
@@ -174,14 +91,14 @@ public class DealsDetailsActivity extends Activity {
 		if (deal != null) {
 			if (dealVoteUser != null) {
 				if (dealVoteUser.get("vote").toString().equals("0")) {
-					upVoteButton.setBackgroundResource(android.R.drawable.btn_default);
-					downVoteButton.setBackgroundColor(Color.RED);
+					upVoteButton.setChecked(false);
+					downVoteButton.setChecked(true);
 				} else if (dealVoteUser.get("vote").toString().equals("1")) {
-					upVoteButton.setBackgroundColor(Color.GREEN);
-					downVoteButton.setBackgroundResource(android.R.drawable.btn_default);
+					upVoteButton.setChecked(true);
+					downVoteButton.setChecked(false);
 				} else if (dealVoteUser.get("vote").toString().equals("2")) {
-					upVoteButton.setBackgroundResource(android.R.drawable.btn_default);
-					downVoteButton.setBackgroundResource(android.R.drawable.btn_default);
+					upVoteButton.setChecked(false);
+					downVoteButton.setChecked(false);
 				}
 			}
 		}
@@ -223,6 +140,98 @@ public class DealsDetailsActivity extends Activity {
 	@Override
 	public void onPause() {
 		super.onPause();
+		
+		if(upVoteButton.isChecked()){
+			queryParse();
+
+			if (deal != null) {
+				if (dealVoteUser == null) {
+					// create new and assign vote to 1
+					dealVoteUser = new ParseObject("deal_vote_users");
+					dealVoteUser.put("deal", deal);
+					dealVoteUser.put("user", ParseUser.getCurrentUser());
+					dealVoteUser.put("vote", 1);
+					up_votes = deal.getInt("up_votes") + 1;
+					down_votes = deal.getInt("down_votes");
+				} else if (dealVoteUser.get("vote").toString()
+						.equals("0")) {
+					// change vote to 1
+					dealVoteUser.put("vote", 1);
+					up_votes = deal.getInt("up_votes") + 1;
+					down_votes = deal.getInt("down_votes") - 1;
+				} else if (dealVoteUser.get("vote").toString()
+						.equals("1")) {
+					// already voted up
+					dealVoteUser.put("vote", 2);
+					up_votes = deal.getInt("up_votes") - 1;
+					down_votes = deal.getInt("down_votes");
+				} else if (dealVoteUser.get("vote").toString()
+						.equals("2")) {
+					// change vote to 1
+					dealVoteUser.put("vote", 1);
+					up_votes = deal.getInt("up_votes") + 1;
+					down_votes = deal.getInt("down_votes");
+				}
+
+				if ((up_votes + down_votes) != 0) {
+					rating = (up_votes / (up_votes + down_votes)) * 100;
+				} else if ((up_votes == 0) && (down_votes == 0)) {
+					rating = 0;
+				} else {
+					rating = 50;
+				}
+
+				deal.put("rating", rating);
+				deal.put("down_votes", down_votes);
+				deal.put("up_votes", up_votes);
+
+			}  else {
+				// deal not found problem
+			}
+		}
+		
+		if(downVoteButton.isChecked()){
+			queryParse();
+
+			if (deal != null) {
+				if (dealVoteUser == null) {
+					// create new and assign vote to 1
+					dealVoteUser = new ParseObject("deal_vote_users");
+					dealVoteUser.put("deal", deal);
+					dealVoteUser.put("user", ParseUser.getCurrentUser());
+					dealVoteUser.put("vote", 0);
+					down_votes = deal.getInt("down_votes") + 1;
+					up_votes = deal.getInt("up_votes");
+				} else if (dealVoteUser.get("vote").toString().equals("0")) {
+					// already voted down
+					dealVoteUser.put("vote", 2);
+					down_votes = deal.getInt("down_votes") - 1;
+				} else if (dealVoteUser.get("vote").toString().equals("1")) {
+					dealVoteUser.put("vote", 0);
+					down_votes = deal.getInt("down_votes") + 1;
+					up_votes = deal.getInt("up_votes") - 1;
+				} else if (dealVoteUser.get("vote").toString().equals("2")) {
+					dealVoteUser.put("vote", 0);
+					down_votes = deal.getInt("down_votes") + 1;
+					up_votes = deal.getInt("up_votes");
+				}
+
+				if ((up_votes + down_votes) != 0) {
+					rating = (up_votes / (up_votes + down_votes)) * 100;
+				} else if ((up_votes == 0) && (down_votes == 0)) {
+					rating = 0;
+				} else {
+					rating = 50;
+				}
+
+				deal.put("rating", rating);
+				deal.put("down_votes", down_votes);
+				deal.put("up_votes", up_votes);
+			} else {
+				// deal not found problem
+			}
+		}
+		
 		if(deal.isDirty()){
 		deal.saveInBackground();
 		}
