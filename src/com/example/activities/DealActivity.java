@@ -117,8 +117,7 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 		search_type = intent.getIntExtra("search_type", 0);
 
 		// Locate the class table named "establishment" in Parse.com
-		ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>(
-				"Deal");
+		ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>("Deal");
 		queryDealSearch.setLimit(10);
 		if (query != "") {
 			queryDealSearch.whereContains("title", query);
@@ -127,14 +126,12 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 			queryDealSearch.whereContains("day", day_of_week);
 		}
 		if (distance != null) {
-			queryDealSearch.whereWithinMiles("location",
-					geoPointFromLocation(currentLocation),
+			queryDealSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation),
 					Double.parseDouble(distance));
 		}
 		if ((food == true) || (drinks == true)) {
 			if (food == false) {
-				ParseQuery<ParseObject> queryDealType = ParseQuery
-						.getQuery("deal_type");
+				ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
 				queryDealType.whereEqualTo("name", "Drinks");
 				try {
 					deal_type = queryDealType.getFirst();
@@ -144,8 +141,7 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 				queryDealSearch.whereEqualTo("deal_type", deal_type);
 			}
 			if (drinks == false) {
-				ParseQuery<ParseObject> queryDealType = ParseQuery
-						.getQuery("deal_type");
+				ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
 				queryDealType.whereEqualTo("name", "Food");
 				try {
 					deal_type = queryDealType.getFirst();
@@ -198,14 +194,14 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 		// Retrieve object "title" from Parse.com
 		// database
 		for (ParseObject deal : ob) {
-			DealRowItem item = new DealRowItem(deal.get("title").toString(),
-					deal.get("rating").toString());
+			DealRowItem item = new DealRowItem(deal.get("title").toString(), deal.get("rating")
+					.toString());
 			rowItems.add(item);
 		}
 
 		// Pass the results into an ArrayAdapter
-		DealListViewAdapter adapter = new DealListViewAdapter(
-				DealActivity.this, R.layout.listview_item_deal, rowItems);
+		DealListViewAdapter adapter = new DealListViewAdapter(DealActivity.this,
+				R.layout.listview_item_deal, rowItems);
 
 		// Binds the Adapter to the ListView
 		listview.setAdapter(adapter);
@@ -217,22 +213,17 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 		// Capture button clicks on ListView items
 		listview.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// Send single item click data to
 				// SingleItemView
 				// Class
-				Intent i = new Intent(DealActivity.this,
-						DealsDetailsActivity.class);
+				Intent i = new Intent(DealActivity.this, DealsDetailsActivity.class);
 				est = (ParseObject) ob.get(position).get("establishment");
 				// Pass data to next activity
 				i.putExtra("deal_id", ob.get(position).getObjectId().toString());
-				i.putExtra("deal_title", ob.get(position).getString("title")
-						.toString());
-				i.putExtra("deal_details", ob.get(position)
-						.getString("details").toString());
-				i.putExtra("deal_restrictions",
-						ob.get(position).getInt("description"));
+				i.putExtra("deal_title", ob.get(position).getString("title").toString());
+				i.putExtra("deal_details", ob.get(position).getString("details").toString());
+				i.putExtra("deal_restrictions", ob.get(position).getInt("description"));
 				i.putExtra("yelp_id", ob.get(position).getString("yelp_id"));
 				i.putExtra("establishment_id", est.getObjectId().toString());
 				// Open SingleItemView.java Activity
@@ -250,8 +241,7 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 		builder.setTitle("No Results");
 
 		// set dialog message
-		builder.setMessage(
-				"Sorry, nothing was found.  Try and widen your search.")
+		builder.setMessage("Sorry, nothing was found.  Try and widen your search.")
 				.setCancelable(false)
 				.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
