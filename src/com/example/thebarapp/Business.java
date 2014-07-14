@@ -5,6 +5,8 @@ import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Verb;
 
+import android.os.AsyncTask;
+
 public class Business {
 
 	String establishment_id, mobile_url, rating, rating_count, deal_count = "NA", name, yelp_id,
@@ -140,37 +142,50 @@ public class Business {
 		longitude = val;
 	}
 
-	public void setLatLng(String address, String city, String state, String zip) {
-		String searchString = address.replaceAll("\\s+", "+") + "+" + city.replaceAll("\\s+", "+")
-				+ "+" + state.replaceAll("\\s+", "+") + "+" + zip;
-		OAuthRequest request = new OAuthRequest(Verb.GET,
-				"http://maps.googleapis.com/maps/api/geocode/json?address=" + searchString
-						+ "&sensor=true");
-		Response response = request.send();
-		try {
-			Thread.sleep(101);
-		} catch (InterruptedException ex) {
-			Thread.currentThread().interrupt();
-		}
-		String sResult = response.getBody();
+	public void setLatLng(String addressIn, String cityIn, String stateIn, String zipIn) {
+		address = addressIn;
+		city = cityIn;
+		state = stateIn;
+		zip = zipIn;
+		
+		new YelpFetchTask().execute();
+	}
+	
+	private class YelpFetchTask extends AsyncTask<Void, Void, Void> {
+		@Override
+		protected Void doInBackground(Void... params) {
+			String searchString = address.replaceAll("\\s+", "+") + "+" + city.replaceAll("\\s+", "+")
+					+ "+" + state.replaceAll("\\s+", "+") + "+" + zip;
+			OAuthRequest request = new OAuthRequest(Verb.GET,
+					"http://maps.googleapis.com/maps/api/geocode/json?address=" + searchString
+							+ "&sensor=true");
+			Response response = request.send();
+			try {
+				Thread.sleep(101);
+			} catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			String sResult = response.getBody();
 
-		LocationParser lParser = new LocationParser();
-		lParser.setResponse(sResult);
-		try {
-			lParser.parseLocation();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			// Do whatever you want with the error, like throw a Toast error
-			// report
-		}
+			LocationParser lParser = new LocationParser();
+			lParser.setResponse(sResult);
+			try {
+				lParser.parseLocation();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				// Do whatever you want with the error, like throw a Toast error
+				// report
+			}
 
-		try {
-			latitude = lParser.getLat();
-			longitude = lParser.getLng();
-		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			try {
+				latitude = lParser.getLat();
+				longitude = lParser.getLng();
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			return null;
 		}
 	}
 
