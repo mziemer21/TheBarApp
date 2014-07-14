@@ -1,5 +1,7 @@
 package com.example.thebarapp;
 
+import java.util.concurrent.ExecutionException;
+
 import org.json.JSONException;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
@@ -148,7 +150,15 @@ public class Business {
 		state = stateIn;
 		zip = zipIn;
 		
-		new YelpFetchTask().execute();
+		try {
+			new YelpFetchTask().execute().get();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private class YelpFetchTask extends AsyncTask<Void, Void, Void> {

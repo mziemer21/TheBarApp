@@ -22,7 +22,6 @@ public class DealsDetailsActivity extends Activity {
 	String deal_id, deal_title, deal_details;
 	Integer rating, price, up_votes, down_votes;
 	Intent intent;
-	ParseObject est = null;
 	ToggleButton upVoteButton, downVoteButton;
 	ParseObject deal = null, dealVoteUser = null;
 	ProgressDialog upVoteProgressDialog, downVoteProgressDialog;
@@ -37,15 +36,6 @@ public class DealsDetailsActivity extends Activity {
 		deal_id = intent.getStringExtra("deal_id");
 		deal_title = intent.getStringExtra("deal_title");
 		deal_details = intent.getStringExtra("deal_details");
-
-		ParseQuery<ParseObject> queryDeal = ParseQuery.getQuery("Establishment");
-		queryDeal.whereEqualTo("objectId", intent.getStringExtra("establishment_id"));
-		try {
-			est = queryDeal.getFirst();
-		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 
 		setContentView(R.layout.activity_deal_details);
 
