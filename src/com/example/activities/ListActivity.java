@@ -200,7 +200,7 @@ public class ListActivity extends FragmentActivity implements LocationListener, 
 						if((query != "") && (tempBusiness.get(0).getName().toLowerCase().contains(query.toLowerCase()))){
 							tempBusiness.get(0).setDealCount(estabDealCount);
 							businesses.add(tempBusiness.get(0));
-						} else {
+						} else if (query == ""){
 							tempBusiness.get(0).setDealCount(estabDealCount);
 							businesses.add(tempBusiness.get(0));
 						}
