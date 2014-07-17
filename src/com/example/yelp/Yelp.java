@@ -1,15 +1,11 @@
 package com.example.yelp;
 
-import java.util.concurrent.ExecutionException;
-
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
-
-import android.os.AsyncTask;
 
 /**
  * Example for accessing the Yelp API.
@@ -18,9 +14,6 @@ public class Yelp {
 
 	OAuthService service;
 	Token accessToken;
-	String term, distance, result;
-	Double latitude, longitude;
-	Integer sort_mode;
 
 	/**
 	 * Setup the Yelp API OAuth credentials.
@@ -54,43 +47,24 @@ public class Yelp {
 	 *            Longitude
 	 * @return JSON string response
 	 */
-	public String search(String termIn, double latitudeIn, double longitudeIn, String distanceIn,
-			int sortModeIn) {
+	public String search(String term, double latitude, double longitude, String distance,
+			int sortMode) {
 		
-		term = termIn;
-		latitude = latitudeIn;
-		longitude = longitudeIn;
-		distance = distanceIn;
-		sort_mode = sortModeIn;
+				   OAuthRequest request = new OAuthRequest(Verb.GET, "http://api.yelp.com/v2/search");
+			  		request.addQuerystringParameter("category_filter", "bars");
+			  		request.addQuerystringParameter("term", term);
+			  		request.addQuerystringParameter("ll", latitude + "," + longitude);
+			  		request.addQuerystringParameter("limit", "15");
+			  		request.addQuerystringParameter("radius_filter", distance);
+			  		request.addQuerystringParameter("sort", String.valueOf(sortMode));
+
+			  		service.signRequest(accessToken, request);
+			  		Response response = request.send();
+			  		return response.getBody();
 		
-		try {
-			result = new YelpFetchTask().execute().get();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return result;
+
 				
 	}
-	
-	private class YelpFetchTask extends AsyncTask<Void, Void, String> {
-		@Override
-		protected String doInBackground(Void... params) {
 	          
-	    	OAuthRequest request = new OAuthRequest(Verb.GET, "http://api.yelp.com/v2/search");
-	  		request.addQuerystringParameter("category_filter", "bars");
-	  		request.addQuerystringParameter("term", term);
-	  		request.addQuerystringParameter("ll", latitude + "," + longitude);
-	  		request.addQuerystringParameter("limit", "15");
-	  		request.addQuerystringParameter("radius_filter", distance);
-	  		request.addQuerystringParameter("sort", String.valueOf(sort_mode));
-
-	  		service.signRequest(accessToken, request);
-	  		Response response = request.send();
-	  		return response.getBody();
-	      }
-	 }
+	    	
 }

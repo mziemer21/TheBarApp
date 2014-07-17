@@ -184,7 +184,7 @@ public class YelpParser {
 							getBusinessCity((JSONObject) loc), getBusinessState((JSONObject) loc),
 							getBusinessZipcode((JSONObject) loc));
 				} else {
-					b.setLat(lng);
+					b.setLat(lat);
 					b.setLng(lng);
 				}
 			} catch (JSONException e1) {

@@ -14,6 +14,7 @@
     <string name="sort_by">Sort results by</string>
     <string name="filter_by">Filter results by</string>
     <string name="only_deals">Only show bars with deals</string>
+    <string name="yelp_loading">Loading Yelp...</string>
     
     <!-- Content Description -->
     <string name="desc_list_item_icon">Item Icon</string>

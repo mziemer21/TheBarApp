@@ -105,6 +105,7 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 		// Set progressdialog message
 		dealProgressDialog.setMessage("Loading Yelp Data...");
 		dealProgressDialog.setIndeterminate(false);
+		dealProgressDialog.setCancelable(false);
 		// Show progressdialog
 		dealProgressDialog.show();
 

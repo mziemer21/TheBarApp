@@ -3,13 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/capitol_2" >
+    android:background="@color/green" >
     
     <ListView
         android:id="@+id/deal_tab_listview"
         android:layout_width="fill_parent"
-        android:textColor="#ffffff"
-        android:layout_height="fill_parent" />
+        android:layout_height="fill_parent"
+        android:divider="@color/gray"
+        android:textColor="#ffffff" />
 
     <Button
         android:id="@+id/add_deal"

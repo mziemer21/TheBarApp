@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.ToggleButton;
@@ -24,28 +25,29 @@ public class MapSearchActivity extends FragmentActivity{
 	String distance = "3";
 	Calendar calendar = Calendar.getInstance();
 	int today = calendar.get(Calendar.DAY_OF_WEEK), search_type;
-	Spinner day_of_week, search_type_spinner;
+	Spinner day_of_week;
 	ToggleButton food, drinks;
 	EditText query;
+	CheckBox only_deals;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Get the view from listview_main.xml
-        setContentView(R.layout.list_filter);
+        setContentView(R.layout.map_filter);
 
-        searchListButton = (Button) findViewById(R.id.list_filter_button);
-        oneMi = (ToggleButton) findViewById(R.id.list_filter_one_mile);
-        threeMi = (ToggleButton) findViewById(R.id.list_filter_three_miles);
-        fiveMi = (ToggleButton) findViewById(R.id.list_filter_five_miles);
-        tenMi = (ToggleButton) findViewById(R.id.list_filter_ten_miles);
-        twentyMi = (ToggleButton) findViewById(R.id.list_filter_twenty_miles);    	
-    	search_type_spinner = (Spinner)findViewById(R.id.list_filter_search_type);
-    	day_of_week = (Spinner)findViewById(R.id.list_filter_day_of_week);
-    	food = (ToggleButton)findViewById(R.id.list_filter_type_food);
-    	drinks = (ToggleButton)findViewById(R.id.list_filter_type_drinks);
-    	query = (EditText)findViewById(R.id.list_filter_keyword);
-        
+        searchListButton = (Button) findViewById(R.id.map_filter_button);
+        oneMi = (ToggleButton) findViewById(R.id.map_filter_one_mile);
+        threeMi = (ToggleButton) findViewById(R.id.map_filter_three_miles);
+        fiveMi = (ToggleButton) findViewById(R.id.map_filter_five_miles);
+        tenMi = (ToggleButton) findViewById(R.id.map_filter_ten_miles);
+        twentyMi = (ToggleButton) findViewById(R.id.map_filter_twenty_miles);    	
+    	day_of_week = (Spinner)findViewById(R.id.map_filter_day_of_week);
+    	food = (ToggleButton)findViewById(R.id.map_filter_type_food);
+    	drinks = (ToggleButton)findViewById(R.id.map_filter_type_drinks);
+    	query = (EditText)findViewById(R.id.map_filter_keyword);
+        only_deals = (CheckBox)findViewById(R.id.map_filter_check_box_only_deals);
+    	
         setDate(today);
         
         threeMi.setChecked(true);
@@ -54,14 +56,6 @@ public class MapSearchActivity extends FragmentActivity{
  
 			  @Override
 			  public void onClick(View arg0) {
-				  
-				  if(search_type_spinner.getSelectedItem().toString().compareTo("Best Matched") == 0){
-					  search_type = 0;
-				  } else if(search_type_spinner.getSelectedItem().toString().compareTo("Distance") == 0){
-					  search_type = 1;
-				  } else if(search_type_spinner.getSelectedItem().toString().compareTo("Highest Rated") == 0){
-					  search_type = 2;
-				  }
 					  
 					Intent mapActivity = new Intent(MapSearchActivity.this, MapActivity.class);
 					mapActivity.putExtra("search_type", search_type);
@@ -70,6 +64,7 @@ public class MapSearchActivity extends FragmentActivity{
 					mapActivity.putExtra("food", food.isChecked());
 					mapActivity.putExtra("drinks", drinks.isChecked());
 					mapActivity.putExtra("query", query.getText().toString());
+					mapActivity.putExtra("only_deals", only_deals.isChecked());
 					mapActivity.setFlags( Intent.FLAG_ACTIVITY_NO_HISTORY);
 					startActivity(mapActivity);
 				  }
@@ -181,7 +176,6 @@ public class MapSearchActivity extends FragmentActivity{
 			twentyMi.setChecked(false);
         	setDate(today);
         	query.setText("");
-        	search_type_spinner.setSelection(0);
         	food.setChecked(false);
         	drinks.setChecked(false);
             return true;

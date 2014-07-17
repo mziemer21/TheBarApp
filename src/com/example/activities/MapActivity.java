@@ -9,10 +9,12 @@ import java.util.Map;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -47,7 +49,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.parse.CountCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -65,7 +66,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
     Button redoMapButton, filterMapButton;
     Integer day;
     String weekday, query = "", distanceMiles = "3", establishment_id, lat = null, lng = null;
-    int obCount, sort_mode = 0, distanceMeters = 4828;
+    int obCount, distanceMeters = 4828;
     Boolean filter = false;
     YelpParser yParser;
     ArrayList<Business> businesses = new ArrayList<Business>();
@@ -117,7 +118,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 			  LatLng currentLatLng = myMap.getCameraPosition().target;
 			  currentLocation.setLatitude(currentLatLng.latitude);
 			  currentLocation.setLongitude(currentLatLng.longitude);
-			  dropPins();
+			  new RemoteDataTask(MapActivity.this).execute();
 				
 			  }
 	});
@@ -240,36 +241,48 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
      }
  }
  
- private void dropPins(){
-	// Create a progressdialog
-     if(mapProgressDialog != null){
-     	mapProgressDialog.dismiss();
-     	mapProgressDialog = null;
-     }
-     mapProgressDialog = new ProgressDialog(MapActivity.this);
-     // Set progressdialog message
-     mapProgressDialog.setMessage("Searching Yelp...");
-     mapProgressDialog.setIndeterminate(false);
-     // Show progressdialog
-     mapProgressDialog.show();
-     
-     businesses.clear();
-     
-     String day_of_week;
-		Boolean food, drinks;
-		final Boolean onlyDeals;
-		ParseObject deal_type = null;
+//RemoteDataTask AsyncTask
+	private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
+		Context context;
 
-		currentLocation = getLocation();
-		day_of_week = (intent.getStringExtra("day_of_week") == null) ? "" : intent.getStringExtra("day_of_week");
-		food = intent.getBooleanExtra("food", true);
-		drinks = intent.getBooleanExtra("drinks", true);
-		sort_mode = intent.getIntExtra("search_type", 1);
-		onlyDeals = intent.getBooleanExtra("only_deals", false);
+		public RemoteDataTask(Context context) {
+			this.context = context;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			// Create a progressdialog
+			if (mapProgressDialog != null) {
+				mapProgressDialog.dismiss();
+				mapProgressDialog = null;
+			}
+			mapProgressDialog = new ProgressDialog(context);
+			// Set progressdialog message
+			mapProgressDialog.setMessage("Searching Yelp...");
+			mapProgressDialog.setIndeterminate(false);
+			mapProgressDialog.setCancelable(false);
+			// Show progressdialog
+			mapProgressDialog.show();
+
+			businesses.clear();
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+
+			String day_of_week;
+			Boolean food, drinks, onlyDeals;
+			ParseObject deal_type = null;
+
+			currentLocation = getLocation();
+			day_of_week = (intent.getStringExtra("day_of_week") == null) ? "" : intent.getStringExtra("day_of_week");
+			food = intent.getBooleanExtra("food", true);
+			drinks = intent.getBooleanExtra("drinks", true);
+			onlyDeals = intent.getBooleanExtra("only_deals", false);
 
 			query = (intent.getStringExtra("query") == null) ? "" : intent.getStringExtra("query");
-			distanceMiles = (intent.getStringExtra("distance") == null) ? "3" : intent
-					.getStringExtra("distance");
+			distanceMiles = (intent.getStringExtra("distance") == null) ? "3" : intent.getStringExtra("distance");
 			distanceMeters = Integer.parseInt(distanceMiles) * 1609;
 			// Locate the class table named "establishment" in Parse.com
 			ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>("Deal");
@@ -279,9 +292,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 				queryDealSearch.whereContains("day", day_of_week);
 			}
 			if (distanceMiles != null) {
-				queryDealSearch.whereWithinMiles("location",
-						geoPointFromLocation(currentLocation),
-						Double.parseDouble(distanceMiles));
+				queryDealSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation), Double.parseDouble(distanceMiles));
 			}
 			if ((food == true) || (drinks == true)) {
 				if (food == false) {
@@ -307,105 +318,81 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 					queryDealSearch.whereEqualTo("deal_type", deal_type);
 				}
 			}
-			
-			final ParseQuery<ParseObject> queryListSearchCount = queryDealSearch;
-			
-			queryDealSearch.findInBackground(new FindCallback<ParseObject>() {
-				public void done(List<ParseObject> dealList, ParseException e) {
-					if (e == null) {
-						ob = dealList;
+			try {
+				obCount = queryDealSearch.count();
+				ob = queryDealSearch.find();
+			} catch (Exception e) {
+				Log.e("Error", e.getMessage());
+				e.printStackTrace();
+			}
 
-						queryListSearchCount.countInBackground(new CountCallback() {
-							public void done(int count, ParseException e) {
-								if (e == null) {
-									// if parse data found, get it's associatied yelp data
-									if (count > 0) {
-										for (int j = 0; count > j; j++) {
-											query = ob.get(j).get("yelp_id").toString();
-											tempBusiness = searchYelp(
-													false,
-													Double.toString(ob.get(j).getParseGeoPoint("location")
-															.getLatitude()),
-													Double.toString(ob.get(j).getParseGeoPoint("location")
-															.getLongitude()));
-											if ((tempBusiness.size() > 0)
-													&& (!businesses.contains(tempBusiness.get(0)))) {
-												ParseObject curDeal = ob.get(j);
-												ParseObject curEst = curDeal.getParseObject("establishment");
-												String estabDealCount = curEst.getString("deal_count");
-												tempBusiness.get(0).setDealCount(estabDealCount);
-												businesses.add(tempBusiness.get(0));
-											}
-										}
-										// if we don't ave enough parse data and only show deals isn't specified, get more results from yelp
-										if ((businesses.size() < 20) && (!onlyDeals)) {
-											if (intent.getStringExtra("query") != null) {
-												query = intent.getStringExtra("query");
-											} else {
-												query = "";
-											}
-
-											tempBusiness = searchYelp(true, "", "");
-											for (int m = 0; businesses.size() < tempBusiness.size() - 1; m++) {
-												checkBusiness = (Business) tempBusiness.get(m);
-												if (!businesses.contains(checkBusiness)) {
-													checkBusiness.setDealCount("0");
-													businesses.add(checkBusiness);
-												}
-											}
-										}
-										
-										if (sort_mode == 0) {
-											Collections.sort(businesses, new BusinessBestMatchComparator());
-										} else if (sort_mode == 1) {
-											Collections.sort(businesses, new BusinessDistanceComparator());
-										} else if (sort_mode == 2) {
-											Collections.sort(businesses, new BusinessRatingComparator());
-										}
-										
-										if(currentLocation!=null){
-							        		LatLng coordinate = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-							        		CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 15);
-							        		  myMap.animateCamera(yourLocation);
-							        }
-							    	 FragmentManager myFragmentManager = getSupportFragmentManager();
-							    	  SupportMapFragment mySupportMapFragment 
-							    	   = (SupportMapFragment)myFragmentManager.findFragmentById(R.id.map);
-							    	  myMap = mySupportMapFragment.getMap();
-							    	  
-							    	  myMap.setMyLocationEnabled(true);
-							    	  
-							    	  myMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-							    	  
-							    	  myMap.getUiSettings().setZoomControlsEnabled(false);
-							    	  myMap.getUiSettings().setCompassEnabled(true);
-							    	  myMap.getUiSettings().setMyLocationButtonEnabled(true);
-							    	  myMap.getUiSettings().setTiltGesturesEnabled(false);
-							    	  
-							    	  for (int i =0; businesses.size() > i; i++) {
-											
-											Marker marker = myMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(businesses.get(i).getLatitude()), Double.parseDouble(businesses.get(i).getLongitude()))).title(businesses.get(i).getName()));
-											theMap.put(marker, businesses.get(i));
-							    	  }
-							    	  if(mapProgressDialog != null){
-								    	  mapProgressDialog.dismiss();
-								    	  mapProgressDialog = null;
-							    	  }
-										
-									} else {
-										displayError();
-									}
-								} else {
-									// count error
-								}
-							}
-						});
-					} else {
-						// get deal error
+			if (obCount > 0) {
+				for (int j = 0; obCount > j; j++) {
+					query = ob.get(j).get("yelp_id").toString();
+					tempBusiness = searchYelp(false, Double.toString(ob.get(j).getParseGeoPoint("location").getLatitude()), Double.toString(ob.get(j).getParseGeoPoint("location").getLongitude()));
+					if ((tempBusiness.size() > 0) && (!businesses.contains(tempBusiness.get(0)))) {
+						ParseObject curDeal = ob.get(j);
+						ParseObject curEst = curDeal.getParseObject("establishment");
+						String estabDealCount = curEst.getString("deal_count");
+						tempBusiness.get(0).setDealCount(estabDealCount);
+						businesses.add(tempBusiness.get(0));
 					}
 				}
-			});
- }
+				if ((businesses.size() < 20) && (!onlyDeals)) {
+					if (intent.getStringExtra("query") != null) {
+						query = intent.getStringExtra("query");
+					} else {
+						query = "";
+					}
+
+					tempBusiness = searchYelp(true, "", "");
+					for (int m = 0; m < tempBusiness.size() - 1; m++) {
+						checkBusiness = (Business) tempBusiness.get(m);
+						if (!businesses.contains(checkBusiness)) {
+							checkBusiness.setDealCount("0");
+							businesses.add(checkBusiness);
+						}
+					}
+				}
+			}
+
+			
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			if(currentLocation!=null){
+	      		LatLng coordinate = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+	      		CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 15);
+	      		  myMap.animateCamera(yourLocation);
+	      }
+	  	 FragmentManager myFragmentManager = getSupportFragmentManager();
+	  	  SupportMapFragment mySupportMapFragment 
+	  	   = (SupportMapFragment)myFragmentManager.findFragmentById(R.id.map);
+	  	  myMap = mySupportMapFragment.getMap();
+	  	  
+	  	  myMap.setMyLocationEnabled(true);
+	  	  
+	  	  myMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+	  	  
+	  	  myMap.getUiSettings().setZoomControlsEnabled(true);
+	  	  myMap.getUiSettings().setCompassEnabled(true);
+	  	  myMap.getUiSettings().setMyLocationButtonEnabled(true);
+	  	  myMap.getUiSettings().setTiltGesturesEnabled(false);
+	  	  
+			for (int i =0; businesses.size() > i; i++) {
+
+				Marker marker = myMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(businesses.get(i).getLatitude()), Double.parseDouble(businesses.get(i).getLongitude()))).title(businesses.get(i).getName()));
+				theMap.put(marker, businesses.get(i));
+  	  }
+  	  if(mapProgressDialog != null){
+	    	  mapProgressDialog.dismiss();
+	    	  mapProgressDialog = null;
+  	  }
+		}
+	}
  
  @Override
  public void onLocationChanged(Location location) {
@@ -464,7 +451,7 @@ public void onConnected(Bundle connectionHint) {
 	// TODO Auto-generated method stub
 	locationClient.requestLocationUpdates(mLocationRequest, this);
 	currentLocation = getLocation();
-	dropPins();
+	new RemoteDataTask(MapActivity.this).execute();
 	
 }
 
@@ -535,7 +522,7 @@ private ArrayList<Business> searchYelp(boolean location, String lat, String lng)
 	Yelp yelp = new Yelp(api_keys.getYelpConsumerKey(), api_keys.getYelpConsumerSecret(),
 			api_keys.getYelpToken(), api_keys.getYelpTokenSecret());
 	String response = yelp.search(query, currentLocation.getLatitude(),
-			currentLocation.getLongitude(), String.valueOf(distanceMeters), sort_mode);
+			currentLocation.getLongitude(), String.valueOf(distanceMeters), 0);
 
 	yParser = new YelpParser();
 	return yParser.getBusinesses(response, location, lat, lng);

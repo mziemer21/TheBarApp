@@ -71,6 +71,7 @@ public class RandomActivity extends Activity implements LocationListener,
 		// Set progressdialog message
 		randomProgressDialog.setMessage("Loading Yelp Data...");
 		randomProgressDialog.setIndeterminate(false);
+		randomProgressDialog.setCancelable(false);
 		// Show progressdialog
 		randomProgressDialog.show();
 
