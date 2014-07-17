@@ -44,7 +44,7 @@ public class ListActivity extends FragmentActivity implements LocationListener, 
 	// Declare Variables
 	ListView listview;
 	List<ParseObject> ob;
-	String query = "", distanceMiles, establishment_id, obLat, obLng;
+	String query = "", distanceMiles, establishment_id, obLat, obLng, yelpQuery;
 	Object loc;
 	SearchView searchView;
 	private Location currentLocation = null;
@@ -191,14 +191,19 @@ public class ListActivity extends FragmentActivity implements LocationListener, 
 
 			if (obCount > 0) {
 				for (int j = 0; obCount > j; j++) {
-					query = ob.get(j).get("yelp_id").toString();
+					yelpQuery = ob.get(j).get("yelp_id").toString();
 					tempBusiness = searchYelp(false, Double.toString(ob.get(j).getParseGeoPoint("location").getLatitude()), Double.toString(ob.get(j).getParseGeoPoint("location").getLongitude()));
 					if ((tempBusiness.size() > 0) && (!businesses.contains(tempBusiness.get(0)))) {
 						ParseObject curDeal = ob.get(j);
 						ParseObject curEst = curDeal.getParseObject("establishment");
 						String estabDealCount = curEst.getString("deal_count");
-						tempBusiness.get(0).setDealCount(estabDealCount);
-						businesses.add(tempBusiness.get(0));
+						if((query != "") && (tempBusiness.get(0).getName().toLowerCase().contains(query.toLowerCase()))){
+							tempBusiness.get(0).setDealCount(estabDealCount);
+							businesses.add(tempBusiness.get(0));
+						} else {
+							tempBusiness.get(0).setDealCount(estabDealCount);
+							businesses.add(tempBusiness.get(0));
+						}
 					}
 				}
 				if ((businesses.size() < 20) && (!onlyDeals)) {

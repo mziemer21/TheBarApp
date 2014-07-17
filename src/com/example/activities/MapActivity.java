@@ -65,7 +65,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
     Map<Marker, Business> theMap = new HashMap<Marker, Business>();
     Button redoMapButton, filterMapButton;
     Integer day;
-    String weekday, query = "", distanceMiles = "3", establishment_id, lat = null, lng = null;
+    String weekday, query = "", distanceMiles = "3", establishment_id, lat = null, lng = null, yelpQuery;
     int obCount, distanceMeters = 4828;
     Boolean filter = false;
     YelpParser yParser;
@@ -328,14 +328,19 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 
 			if (obCount > 0) {
 				for (int j = 0; obCount > j; j++) {
-					query = ob.get(j).get("yelp_id").toString();
+					yelpQuery = ob.get(j).get("yelp_id").toString();
 					tempBusiness = searchYelp(false, Double.toString(ob.get(j).getParseGeoPoint("location").getLatitude()), Double.toString(ob.get(j).getParseGeoPoint("location").getLongitude()));
 					if ((tempBusiness.size() > 0) && (!businesses.contains(tempBusiness.get(0)))) {
 						ParseObject curDeal = ob.get(j);
 						ParseObject curEst = curDeal.getParseObject("establishment");
 						String estabDealCount = curEst.getString("deal_count");
-						tempBusiness.get(0).setDealCount(estabDealCount);
-						businesses.add(tempBusiness.get(0));
+						if((query != "") && (tempBusiness.get(0).getName().toLowerCase().contains(query.toLowerCase()))){
+							tempBusiness.get(0).setDealCount(estabDealCount);
+							businesses.add(tempBusiness.get(0));
+						} else {
+							tempBusiness.get(0).setDealCount(estabDealCount);
+							businesses.add(tempBusiness.get(0));
+						}
 					}
 				}
 				if ((businesses.size() < 20) && (!onlyDeals)) {
