@@ -1,6 +1,8 @@
 package com.example.activities;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -224,9 +226,30 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 				i.putExtra("deal_id", ob.get(position).getObjectId().toString());
 				i.putExtra("deal_title", ob.get(position).getString("title").toString());
 				i.putExtra("deal_details", ob.get(position).getString("details").toString());
-				i.putExtra("deal_restrictions", ob.get(position).getInt("description"));
+				i.putExtra("deal_restrictions", ob.get(position).getInt("restrictions"));
 				i.putExtra("yelp_id", ob.get(position).getString("yelp_id"));
 				i.putExtra("establishment_id", est.getObjectId().toString());
+				
+				Date dateStart = ob.get(position).getDate("time_start");
+				Date dateEnd = ob.get(position).getDate("time_end");
+			    SimpleDateFormat simpDate, simpDateNo;
+
+			    simpDateNo = new SimpleDateFormat("hh:mm");
+			    simpDate = new SimpleDateFormat("hh:mm a");	
+			    
+			    String start = simpDateNo.format(dateStart);
+			    String end = simpDate.format(dateEnd);
+			    
+			    if(start.charAt(0) == '0'){
+			    	start.substring(1);
+			    }
+			    
+			    if(simpDate.format(dateEnd).charAt(0) == '0'){
+			    	end.substring(1);
+			    }
+			    	
+				
+				i.putExtra("deal_time", start + " - " + end);
 				// Open SingleItemView.java Activity
 				startActivity(i);
 

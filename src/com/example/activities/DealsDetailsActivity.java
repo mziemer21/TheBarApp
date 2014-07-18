@@ -19,7 +19,7 @@ import com.parse.ParseUser;
 
 public class DealsDetailsActivity extends Activity {
 	// Declare Variables
-	String deal_id, deal_title, deal_details;
+	String deal_id, deal_title, deal_details, deal_restrictions, deal_time;
 	Integer rating, price, up_votes, down_votes;
 	Intent intent;
 	ToggleButton upVoteButton, downVoteButton;
@@ -36,7 +36,9 @@ public class DealsDetailsActivity extends Activity {
 		deal_id = intent.getStringExtra("deal_id");
 		deal_title = intent.getStringExtra("deal_title");
 		deal_details = intent.getStringExtra("deal_details");
-
+		deal_restrictions = intent.getStringExtra("deal_restrictions");
+		deal_time = intent.getStringExtra("deal_time");
+		
 		setContentView(R.layout.activity_deal_details);
 
 		TextView title = (TextView) findViewById(R.id.dealTitle);
@@ -44,6 +46,12 @@ public class DealsDetailsActivity extends Activity {
 
 		TextView details = (TextView) findViewById(R.id.dealDetails);
 		details.setText(deal_details);
+		
+		TextView restrictions = (TextView) findViewById(R.id.dealRestrictions);
+		restrictions.setText(deal_restrictions);
+		
+		TextView time = (TextView) findViewById(R.id.dealTime);
+		time.setText(deal_time);
 
 		upVoteButton = (ToggleButton) findViewById(R.id.deal_up_vote_button);
 		upVoteButton.setOnClickListener(new OnClickListener() {
