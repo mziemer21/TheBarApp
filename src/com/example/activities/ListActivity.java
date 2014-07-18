@@ -1,6 +1,7 @@
 package com.example.activities;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,6 +57,10 @@ public class ListActivity extends FragmentActivity implements LocationListener, 
 	ArrayList<Business> tempBusiness = new ArrayList<Business>();
 	Business checkBusiness;
 	ProgressDialog listProgressDialog;
+	Calendar calendar = Calendar.getInstance();
+	String day_of_week;
+	Boolean food, drinks;
+	ParseObject deal_type = null;
 
 	// Stores the current instantiation of the location client in this object
 	private LocationClient locationClient;
@@ -133,9 +138,7 @@ public class ListActivity extends FragmentActivity implements LocationListener, 
 		@Override
 		protected Void doInBackground(Void... params) {
 
-			String day_of_week;
-			Boolean food, drinks;
-			ParseObject deal_type = null;
+			
 
 			currentLocation = getLocation();
 			day_of_week = (intent.getStringExtra("day_of_week") == null) ? "" : intent.getStringExtra("day_of_week");
@@ -294,6 +297,7 @@ public class ListActivity extends FragmentActivity implements LocationListener, 
 					i.putExtra("display_phone", businesses.get(position).getDisplayPhone());
 					i.putExtra("distance", businesses.get(position).getDistance());
 					i.putExtra("mobile_url", businesses.get(position).getMobileURL());
+					i.putExtra("day_of_week", (day_of_week == "") ? String.valueOf(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
 
 					businesses.clear();
 					// Open SingleItemView.java Activity

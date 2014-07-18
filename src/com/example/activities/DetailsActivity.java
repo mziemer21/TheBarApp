@@ -14,6 +14,7 @@ import com.example.fragments.DealsTabFragment;
 import com.example.fragments.DetailsTabFragment;
 import com.example.navigation.NavDrawer;
 import com.example.thebarapp.R;
+import com.parse.ParseObject;
 
 /****
  * This shows the details of a establishment It has 4 tabs: main, deals,
@@ -110,7 +111,7 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 
 		// Declare Variables
 		String establishment_id, mobile_url, rating, name, yelp_id, address, city, state, zip,
-				display_phone, phone, distance;
+				display_phone, phone, distance, day_of_week;
 
 		public AppSectionsPagerAdapter(FragmentManager fm) {
 			super(fm);
@@ -133,6 +134,8 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 			mobile_url = intent.getStringExtra("mobile_url");
 			distance = intent.getStringExtra("distance");
 			yelp_id = intent.getStringExtra("yelp_id");
+			day_of_week = intent.getStringExtra("day_of_week");
+			
 
 			// Create a bundle, assign it arguments
 			Bundle bundle = new Bundle();
@@ -148,6 +151,7 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 			bundle.putString("display_phone", display_phone);
 			bundle.putString("distance", distance);
 			bundle.putString("mobile_url", mobile_url);
+			bundle.putString("day_of_week", day_of_week);
 
 			switch (i) {
 			case 0:

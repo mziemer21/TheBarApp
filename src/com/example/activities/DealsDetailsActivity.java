@@ -24,7 +24,6 @@ public class DealsDetailsActivity extends Activity {
 	Intent intent;
 	ToggleButton upVoteButton, downVoteButton;
 	ParseObject deal = null, dealVoteUser = null;
-	ProgressDialog upVoteProgressDialog, downVoteProgressDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -221,20 +220,11 @@ public class DealsDetailsActivity extends Activity {
 			}
 		}
 
-		if (deal.isDirty()) {
+		if ((deal != null) && (deal.isDirty())) {
 			deal.saveInBackground();
 		}
-		if (dealVoteUser.isDirty()) {
+		if ((dealVoteUser != null) && (dealVoteUser.isDirty())) {
 			dealVoteUser.saveInBackground();
-		}
-
-		if (downVoteProgressDialog != null) {
-			downVoteProgressDialog.dismiss();
-			downVoteProgressDialog = null;
-		}
-		if (upVoteProgressDialog != null) {
-			upVoteProgressDialog.dismiss();
-			upVoteProgressDialog = null;
 		}
 	}
 }

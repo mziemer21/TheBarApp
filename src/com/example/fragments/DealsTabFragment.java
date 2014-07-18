@@ -1,6 +1,8 @@
 package com.example.fragments;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -45,6 +47,7 @@ public class DealsTabFragment extends Fragment {
 	ListView dealListview;
 	List<ParseObject> obDeal;
 	ProgressDialog dealTabProgressDialog;
+	String day_of_week;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -135,6 +138,7 @@ public class DealsTabFragment extends Fragment {
 
 		@Override
 		protected Void doInBackground(Void... params) {
+			day_of_week = (extrasDeal.getString("day_of_week") == null) ? "" : extrasDeal.getString("day_of_week");
 			ParseObject est = null;
 			ParseQuery<ParseObject> queryEstablishment = ParseQuery.getQuery("Establishment");
 			queryEstablishment.whereEqualTo("objectId", extrasDeal.getString("establishment_id"));
@@ -147,6 +151,9 @@ public class DealsTabFragment extends Fragment {
 			// Locate the class table named "establishment" in Parse.com
 			ParseQuery<ParseObject> queryDeal = new ParseQuery<ParseObject>("Deal").whereEqualTo(
 					"establishment", est);
+			if (day_of_week != null) {
+				queryDeal.whereContains("day", day_of_week);
+			}
 			queryDeal.orderByDescending("rating");
 			try {
 				obDeal = queryDeal.find();
@@ -194,6 +201,27 @@ public class DealsTabFragment extends Fragment {
 					iDeal.putExtra("deal_details", obDeal.get(position).getString("details")
 							.toString());
 					iDeal.putExtra("deal_title", obDeal.get(position).getString("title").toString());
+					iDeal.putExtra("deal_restrictions", obDeal.get(position).getString("restrictions"));
+					Date dateStart = obDeal.get(position).getDate("time_start");
+					Date dateEnd = obDeal.get(position).getDate("time_end");
+				    SimpleDateFormat simpDate, simpDateNo;
+
+				    simpDateNo = new SimpleDateFormat("hh:mm");
+				    simpDate = new SimpleDateFormat("hh:mm a");	
+				    
+				    String start = simpDateNo.format(dateStart);
+				    String end = simpDate.format(dateEnd);
+				    
+				    if(start.charAt(0) == '0'){
+				    	start.substring(1);
+				    }
+				    
+				    if(simpDate.format(dateEnd).charAt(0) == '0'){
+				    	end.substring(1);
+				    }
+				    	
+					
+					iDeal.putExtra("deal_time", start + " - " + end);
 
 					// Open SingleItemView.java Activity
 					startActivity(iDeal);
