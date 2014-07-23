@@ -2,7 +2,7 @@ package com.example.activities;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +29,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.thebarapp.Business;
-import com.example.thebarapp.BusinessBestMatchComparator;
-import com.example.thebarapp.BusinessDistanceComparator;
-import com.example.thebarapp.BusinessRatingComparator;
 import com.example.thebarapp.R;
 import com.example.yelp.API_Static_Stuff;
 import com.example.yelp.Yelp;
@@ -60,12 +57,12 @@ GooglePlayServicesClient.ConnectionCallbacks,
 GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
 	private GoogleMap myMap;
-	List<ParseObject> ob;
+	List<ParseObject> ob, obSingle;
     ArrayAdapter<String> adapter;
     Map<Marker, Business> theMap = new HashMap<Marker, Business>();
     Button redoMapButton, filterMapButton;
     Integer day;
-    String weekday, query = "", distanceMiles = "3", establishment_id, lat = null, lng = null;
+    String weekday, query = "", distanceMiles = "3", establishment_id, lat = null, lng = null, yelpQuery = "", estId;
     int obCount, distanceMeters = 4828;
     Boolean filter = false;
     YelpParser yParser;
@@ -76,7 +73,12 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
     LocationRequest mLocationRequest;
     Intent intent;
     ProgressDialog mapProgressDialog;
-    Business checkBusiness;
+    Business checkBusiness, bus;
+    Calendar calendar = Calendar.getInstance();
+	String day_of_week;
+	Boolean food, drinks, onlyDeals;
+	ParseObject deal_type = null;
+	Intent i;
     
  // Milliseconds per second
     private static final int MILLISECONDS_PER_SECOND = 1000;
@@ -156,48 +158,48 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
           myMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
               @Override
               public void onInfoWindowClick(Marker marker) {
-            	  Intent i = new Intent(MapActivity.this,
+            	  i = new Intent(MapActivity.this,
                   		DetailsActivity.class);
                       // Pass data "name" followed by the position
-            	  Business bus = theMap.get(marker);
+            	  bus = theMap.get(marker);
             	  
-            	  String estId = null;
-            	  
-            	  ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(
+            	  ParseQuery<ParseObject> querySingle = new ParseQuery<ParseObject>(
   	                    "Establishment");
-  	            query.whereEqualTo("yelp_id", bus.getYelpId());
-  	            query.findInBackground(new FindCallback<ParseObject>() {
+  	            querySingle.whereEqualTo("yelp_id", bus.getYelpId().toString());
+  	            querySingle.findInBackground(new FindCallback<ParseObject>() {
   	                  public void done(List<ParseObject> estList, ParseException e) {
   	                    if (e == null) {
-  	                        ob = estList;
+  	                        obSingle = estList;
+  	                      if(obSingle.size() == 0){
+  	      	            	estId = "empty";
+  	      	            } else {
+  	      	            	estId = obSingle.get(0).getObjectId().toString();
+  	      	            }
+
+  	                	  i.putExtra("establishment_id", estId);
+  	                  	  i.putExtra("yelp_id", bus.getYelpId());
+  	                      i.putExtra("name", bus.getName());
+  	                      i.putExtra("rating", bus.getRating());
+  	                      i.putExtra("address", bus.getAddress());
+  	                      i.putExtra("city", bus.getCity());
+  	                      i.putExtra("state", bus.getState());
+  	                      i.putExtra("zip", bus.getZipcode());
+  	                      i.putExtra("phone", bus.getPhone());
+  	                      i.putExtra("display_phone", bus.getDisplayPhone());
+  	                      i.putExtra("distance", bus.getDistance());
+  	                      i.putExtra("mobile_url", bus.getMobileURL());
+  	                      i.putExtra("day_of_week", (day_of_week == "") ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
+  	                      
+  	                      businesses.clear();
+  	                          // Open SingleItemView.java Activity
+  	                          startActivity(i);
   	                    } else {
   	                        Log.d("score", "Error: " + e.getMessage());
   	                    }
   	                }
   	            });
   	            
-  	            if(ob.size() == 0){
-  	            	estId = "empty";
-  	            } else {
-  	            	estId = ob.get(0).getObjectId().toString();
-  	            }
-
-            	  i.putExtra("establishment_id", estId);
-              	  i.putExtra("yelp_id", bus.getYelpId());
-                  i.putExtra("name", bus.getName());
-                  i.putExtra("rating", bus.getRating());
-                  i.putExtra("address", bus.getAddress());
-                  i.putExtra("city", bus.getCity());
-                  i.putExtra("state", bus.getState());
-                  i.putExtra("zip", bus.getZipcode());
-                  i.putExtra("phone", bus.getPhone());
-                  i.putExtra("display_phone", bus.getDisplayPhone());
-                  i.putExtra("distance", bus.getDistance());
-                  i.putExtra("mobile_url", bus.getMobileURL());
-                  
-                  businesses.clear();
-                      // Open SingleItemView.java Activity
-                      startActivity(i);
+  	            
               }
           });
 
@@ -271,12 +273,8 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 		@Override
 		protected Void doInBackground(Void... params) {
 
-			String day_of_week;
-			Boolean food, drinks, onlyDeals;
-			ParseObject deal_type = null;
-
 			currentLocation = getLocation();
-			day_of_week = (intent.getStringExtra("day_of_week") == null) ? "" : intent.getStringExtra("day_of_week");
+			day_of_week = (intent.getStringExtra("day_of_week") == null) ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : intent.getStringExtra("day_of_week");
 			food = intent.getBooleanExtra("food", true);
 			drinks = intent.getBooleanExtra("drinks", true);
 			onlyDeals = intent.getBooleanExtra("only_deals", false);
@@ -289,7 +287,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 			queryDealSearch.include("establishment");
 			queryDealSearch.setLimit(20);
 			if (day_of_week != "") {
-				queryDealSearch.whereContains("day", day_of_week);
+				queryDealSearch.whereEqualTo("day", day_of_week);
 			}
 			if (distanceMiles != null) {
 				queryDealSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation), Double.parseDouble(distanceMiles));
@@ -323,11 +321,12 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 				ob = queryDealSearch.find();
 			} catch (Exception e) {
 				Log.e("Error", e.getMessage());
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 
 			if (obCount > 0) {
 				for (int j = 0; obCount > j; j++) {
+					yelpQuery = ob.get(j).getString("yelp_id").toString();
 					tempBusiness = searchYelp(false, Double.toString(ob.get(j).getParseGeoPoint("location").getLatitude()), Double.toString(ob.get(j).getParseGeoPoint("location").getLongitude()));
 					if ((tempBusiness.size() > 0) && (!businesses.contains(tempBusiness.get(0)))) {
 						ParseObject curDeal = ob.get(j);
@@ -342,20 +341,20 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 						}
 					}
 				}
-				if ((businesses.size() < 20) && (!onlyDeals)) {
-					if (intent.getStringExtra("query") != null) {
-						query = intent.getStringExtra("query");
-					} else {
-						query = "";
-					}
+			}
+			if ((businesses.size() < 20) && (!onlyDeals)) {
+				if (intent.getStringExtra("query") != null) {
+					query = intent.getStringExtra("query");
+				} else {
+					query = "";
+				}
 
-					tempBusiness = searchYelp(true, "", "");
-					for (int m = 0; m < tempBusiness.size() - 1; m++) {
-						checkBusiness = (Business) tempBusiness.get(m);
-						if (!businesses.contains(checkBusiness)) {
-							checkBusiness.setDealCount("0");
-							businesses.add(checkBusiness);
-						}
+				tempBusiness = searchYelp(true, "", "");
+				for (int m = 0; m < tempBusiness.size() - 1; m++) {
+					checkBusiness = (Business) tempBusiness.get(m);
+					if (!businesses.contains(checkBusiness)) {
+						checkBusiness.setDealCount("0");
+						businesses.add(checkBusiness);
 					}
 				}
 			}
@@ -525,11 +524,30 @@ private ArrayList<Business> searchYelp(boolean location, String lat, String lng)
 
 	Yelp yelp = new Yelp(api_keys.getYelpConsumerKey(), api_keys.getYelpConsumerSecret(),
 			api_keys.getYelpToken(), api_keys.getYelpTokenSecret());
-	String response = yelp.search(query, currentLocation.getLatitude(),
+	String response = yelp.search(yelpQuery, currentLocation.getLatitude(),
 			currentLocation.getLongitude(), String.valueOf(distanceMeters), 0);
 
 	yParser = new YelpParser();
 	return yParser.getBusinesses(response, location, lat, lng);
+}
+
+private String setDayOfWeek(int i) {
+	if (i == 1) {
+		day_of_week = "Sunday";
+	} else if (i == 2) {
+		day_of_week = "Monday";
+	} else if (i == 3) {
+		day_of_week = "Tuesday";
+	} else if (i == 4) {
+		day_of_week = "Wednesday";
+	} else if (i == 5) {
+		day_of_week = "Thursday";
+	} else if (i == 6) {
+		day_of_week = "Friday";
+	} else if (i == 7) {
+		day_of_week = "Saturday";
+	}
+	return day_of_week;
 }
 
 }

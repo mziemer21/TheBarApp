@@ -196,19 +196,19 @@ public class ListSearchActivity extends FragmentActivity {
 	}
 
 	private void setDate(Integer day) {
-		if (today == 1) {
+		if (day == 1) {
 			day_of_week.setSelection(0);
-		} else if (today == 2) {
+		} else if (day == 2) {
 			day_of_week.setSelection(1);
-		} else if (today == 3) {
+		} else if (day == 3) {
 			day_of_week.setSelection(2);
-		} else if (today == 4) {
+		} else if (day == 4) {
 			day_of_week.setSelection(3);
-		} else if (today == 5) {
+		} else if (day == 5) {
 			day_of_week.setSelection(4);
-		} else if (today == 6) {
+		} else if (day == 6) {
 			day_of_week.setSelection(5);
-		} else if (today == 7) {
+		} else if (day == 7) {
 			day_of_week.setSelection(6);
 		}
 	}

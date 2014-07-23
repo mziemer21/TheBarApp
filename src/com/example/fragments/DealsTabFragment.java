@@ -151,7 +151,7 @@ public class DealsTabFragment extends Fragment {
 			// Locate the class table named "establishment" in Parse.com
 			ParseQuery<ParseObject> queryDeal = new ParseQuery<ParseObject>("Deal").whereEqualTo(
 					"establishment", est);
-			if (day_of_week != null) {
+			if (day_of_week != "") {
 				queryDeal.whereContains("day", day_of_week);
 			}
 			queryDeal.orderByDescending("rating");
