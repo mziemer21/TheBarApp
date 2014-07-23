@@ -344,9 +344,9 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 			}
 			if ((businesses.size() < 20) && (!onlyDeals)) {
 				if (intent.getStringExtra("query") != null) {
-					query = intent.getStringExtra("query");
+					yelpQuery = intent.getStringExtra("query");
 				} else {
-					query = "";
+					yelpQuery = "";
 				}
 
 				tempBusiness = searchYelp(true, "", "");

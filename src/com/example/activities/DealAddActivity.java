@@ -121,8 +121,8 @@ public class DealAddActivity extends Activity {
 						if (establishment != null) {
 							Log.d("establishment", establishment.toString());
 							location = establishment.getParseGeoPoint("location");
-							deal_count = establishment.getInt("deal_count") + 1;
-							establishment.put("deal_count", deal_count);
+							deal_count = Integer.parseInt(establishment.getString("deal_count")) + 1;
+							establishment.put("deal_count", deal_count.toString());
 						} else {
 							searchString = intent.getStringExtra("address").replaceAll("\\s+", "+")
 									+ "+" + intent.getStringExtra("city").replaceAll("\\s+", "+")
@@ -160,7 +160,7 @@ public class DealAddActivity extends Activity {
 							ParseObject addEstablishment = new ParseObject("Establishment");
 							addEstablishment.put("location", newLocation);
 							addEstablishment.put("yelp_id", intent.getStringExtra("yelp_id"));
-							addEstablishment.put("deal_count", 1);
+							addEstablishment.put("deal_count", "1");
 							try {
 								addEstablishment.save();
 							} catch (ParseException e) {
