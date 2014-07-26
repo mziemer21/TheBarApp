@@ -1,6 +1,5 @@
 package yelp;
 
-
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -9,12 +8,11 @@ import org.json.JSONObject;
 
 import com.thebarapp.Business;
 
-
-
 public class YelpParser {
 
 	private String yelp_response;
 	JSONArray businesses;
+	JSONObject o1;
 
 	public void setResponse(String response) {
 		yelp_response = response;
@@ -24,13 +22,20 @@ public class YelpParser {
 		return yelp_response;
 	}
 
-	public void parseBusiness() throws JSONException {
-		JSONObject o1 = new JSONObject(yelp_response);
+	public void parseBusinesses() throws JSONException {
+		o1 = new JSONObject(yelp_response);
 		businesses = o1.getJSONArray("businesses");
 	}
 
 	public Integer getJSONSize() {
-		return businesses.length();
+		int size;
+		try {
+			size = businesses.length();
+		} catch (NullPointerException e1) {
+			size = 1;
+		}
+
+		return size;
 	}
 
 	public String getBusinessName(int i) throws JSONException {
@@ -62,8 +67,7 @@ public class YelpParser {
 	}
 
 	public String getBusinessDistance(int i) throws JSONException {
-		Double distance = Double
-				.parseDouble(businesses.getJSONObject(i).get("distance").toString()) * 0.00062137119;
+		Double distance = Double.parseDouble(businesses.getJSONObject(i).get("distance").toString()) * 0.00062137119;
 		return distance.toString().substring(0, 4);
 	}
 
@@ -72,8 +76,7 @@ public class YelpParser {
 	}
 
 	public String getBusinessAddress(JSONObject location) throws JSONException {
-		return location.get("address").toString().replaceAll("\\[", "").replaceAll("\\]", "")
-				.replace("\"", "");
+		return location.get("address").toString().replaceAll("\\[", "").replaceAll("\\]", "").replace("\"", "");
 	}
 
 	public String getBusinessCity(JSONObject location) throws JSONException {
@@ -88,114 +91,188 @@ public class YelpParser {
 		return location.get("state_code").toString();
 	}
 
-	public ArrayList<Business> getBusinesses(String json, boolean location, String lat, String lng) {
+	public ArrayList<Business> getBusinesses(String json, boolean location, String lat, String lng, Boolean searchBusiness) {
 		ArrayList<Business> BusinessList = new ArrayList<Business>();
 		Object loc = null;
 
 		setResponse(json);
+		
 		try {
-			parseBusiness();
+			parseBusinesses();
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		for (int i = 0; getJSONSize() > i; i++) {
+		if (searchBusiness) {
 			Business b = new Business();
-
 			try {
-				b.setMobileURL(getBusinessMobileURL(i));
-			} catch (JSONException e1) {
+				b.setMobileURL(o1.getString("mobile_url"));
+			} catch (JSONException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e.printStackTrace();
 			}
 			try {
-				b.setRating(getBusinessRating(i));
-			} catch (JSONException e1) {
+				b.setRating(o1.getString("rating"));
+			} catch (JSONException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e.printStackTrace();
 			}
 			try {
-				b.setRatingCount(getBusinessRatingCount(i));
-			} catch (JSONException e1) {
+				b.setRatingCount(o1.getString("review_count"));
+			} catch (JSONException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e.printStackTrace();
 			}
 			try {
-				b.setName(getBusinessName(i));
-			} catch (JSONException e1) {
+				b.setName(o1.getString("name"));
+			} catch (JSONException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e.printStackTrace();
 			}
 			try {
-				b.setYelpId(getBusinessId(i));
-			} catch (JSONException e1) {
+				b.setYelpId(o1.getString("id"));
+			} catch (JSONException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e.printStackTrace();
 			}
 			try {
-				b.setPhone(getBusinessPhone(i));
-			} catch (JSONException e1) {
+				b.setPhone(o1.getString("phone"));
+			} catch (JSONException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e.printStackTrace();
 			}
 			try {
-				b.setDisplayPhone(getBusinessDisplayPhone(i));
-			} catch (JSONException e1) {
+				b.setDisplayPhone(o1.getString("display_phone"));
+			} catch (JSONException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e.printStackTrace();
+			}
+			Double distance;
+			try {
+				distance = Double.parseDouble(o1.getString("distance")) * 0.00062137119;
+				b.setDistance(distance.toString().substring(0, 4));
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			try {
-				b.setDistance(getBusinessDistance(i));
-			} catch (JSONException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			try {
-				loc = getBusinessLocation(i);
-			} catch (JSONException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			try {
+				loc = (Object) o1.get("location");
 				b.setAddress(getBusinessAddress((JSONObject) loc));
-			} catch (JSONException e1) {
+				b.setLat(lat);
+				b.setLng(lng);
+				
+			} catch (JSONException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e.printStackTrace();
+			}	
+			try {
+				b.setCity(o1.getString("city"));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			try {
-				b.setCity(getBusinessCity((JSONObject) loc));
-			} catch (JSONException e1) {
+				b.setState(o1.getString("state_code"));
+			} catch (JSONException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e.printStackTrace();
 			}
 			try {
-				b.setState(getBusinessState((JSONObject) loc));
-			} catch (JSONException e1) {
+				b.setZipcode(o1.getString("postal_code"));
+			} catch (JSONException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e.printStackTrace();
 			}
-			try {
-				b.setZipcode(getBusinessZipcode((JSONObject) loc));
-			} catch (JSONException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			try {
-				if (location) {
-					b.setLatLng(getBusinessAddress((JSONObject) loc),
-							getBusinessCity((JSONObject) loc), getBusinessState((JSONObject) loc),
-							getBusinessZipcode((JSONObject) loc));
-				} else {
-					b.setLat(lat);
-					b.setLng(lng);
-				}
-			} catch (JSONException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
+			
 			BusinessList.add(b);
+		} else {
+			
+
+			for (int i = 0; i < getJSONSize(); i++) {
+				Business b = new Business();
+
+				try {
+					b.setMobileURL(getBusinessMobileURL(i));
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					b.setRating(getBusinessRating(i));
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					b.setRatingCount(getBusinessRatingCount(i));
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					b.setName(getBusinessName(i));
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					b.setYelpId(getBusinessId(i));
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					b.setPhone(getBusinessPhone(i));
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					b.setDisplayPhone(getBusinessDisplayPhone(i));
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					b.setDistance(getBusinessDistance(i));
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					loc = getBusinessLocation(i);
+					b.setAddress(getBusinessAddress((JSONObject) loc));
+					b.setLatLng(getBusinessAddress((JSONObject) loc), getBusinessCity((JSONObject) loc), getBusinessState((JSONObject) loc), getBusinessZipcode((JSONObject) loc));
+					
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					b.setCity(getBusinessCity((JSONObject) loc));
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					b.setState(getBusinessState((JSONObject) loc));
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					b.setZipcode(getBusinessZipcode((JSONObject) loc));
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				BusinessList.add(b);
+			}
 		}
 
 		return BusinessList;

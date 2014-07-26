@@ -1,6 +1,5 @@
 package activities;
 
-
 import java.util.Calendar;
 import java.util.Date;
 
@@ -9,12 +8,15 @@ import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Verb;
 
-
-import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,21 +24,35 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.thebarapp.R;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.thebarapp.LocationParser;
+import com.thebarapp.R;
 
-public class DealAddActivity extends Activity {
+public class DealAddActivity extends FragmentActivity {
 
-	private Button submitButton;
+	private Button submitButton, timeStartButton, timeEndButton;
 	Intent intent;
 	ProgressDialog dealAddProgressDialog;
+	EditText mEdit;
+	Switch switchType;
+	ParseObject establishment = null, deal_type = null;
+	ParseGeoPoint location = null;
+	String switchText, result, searchString, lat = null, lng = null;
+	Spinner spinner;
+	Calendar calendar = Calendar.getInstance();
+	Integer today = calendar.get(Calendar.DAY_OF_WEEK), deal_count = 0;
+	LocationParser lParser;
+	static TextView timeStartText, timeEndText;
+	static Date myDateStart, myDateEnd;
+
+	ParseObject deal = new ParseObject("Deal");
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +61,35 @@ public class DealAddActivity extends Activity {
 		intent = getIntent();
 
 		setContentView(R.layout.activity_add_deal);
+		
+		timeStartText = (TextView) findViewById(R.id.deal_time_start_text);
+		timeEndText = (TextView) findViewById(R.id.deal_time_end_text);
 
 		submitButton = (Button) this.findViewById(R.id.submitDealButton);
+		timeStartButton = (Button) findViewById(R.id.time_start_button);
+		timeEndButton = (Button) findViewById(R.id.time_end_button);
+		spinner = (Spinner) findViewById(R.id.deal_day_spinner);
+		
+		setDate(today);
+		
+		timeStartButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				DialogFragment newFragment = new TimePickerFragmentStart();
+			    newFragment.show(getSupportFragmentManager(), "timePicker");
+			}
+		});
+		
+		timeEndButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				DialogFragment newFragment = new TimePickerFragmentEnd();
+			    newFragment.show(getSupportFragmentManager(), "timePicker");
+			}
+		});
+	
 
 		submitButton.setOnClickListener(new OnClickListener() {
 
@@ -67,52 +110,24 @@ public class DealAddActivity extends Activity {
 				new AsyncTask<Void, Void, Void>() {
 					@Override
 					protected Void doInBackground(Void... params) {
-						EditText mEdit;
-						Switch switchType;
-						TimePicker tpResult;
-						ParseObject establishment = null, deal_type = null;
-						Calendar myCal = makeCalender();
-						Date myDate;
-						ParseGeoPoint location = null;
-						String switchText, result, searchString, lat = null, lng = null;
-						Spinner spinner;
-						Integer deal_count = 0;
-						LocationParser lParser;
-
-						ParseObject deal = new ParseObject("Deal");
+						
 						mEdit = (EditText) findViewById(R.id.edit_deal_title);
 						deal.put("title", mEdit.getText().toString());
 						mEdit = (EditText) findViewById(R.id.edit_deal_details);
 						deal.put("details", mEdit.getText().toString());
 						mEdit = (EditText) findViewById(R.id.edit_deal_restrictions);
 						deal.put("restrictions", mEdit.getText().toString());
-						tpResult = (TimePicker) findViewById(R.id.edit_deal_timePicker_start);
-						myCal.set(Calendar.HOUR_OF_DAY, tpResult.getCurrentHour());
-						myCal.set(Calendar.MINUTE, tpResult.getCurrentMinute());
-						myDate = myCal.getTime();
-						deal.put("time_start", myDate);
-						tpResult = (TimePicker) findViewById(R.id.edit_deal_timePicker_stop);
-						myCal = makeCalender();
-						myCal.set(Calendar.HOUR_OF_DAY, tpResult.getCurrentHour());
-						myCal.set(Calendar.MINUTE, tpResult.getCurrentMinute());
-						myDate = myCal.getTime();
-						deal.put("time_end", myDate);
+
+
 						deal.put("up_votes", 0);
 						deal.put("down_votes", 0);
-						// dpResult =
-						// (DatePicker)findViewById(R.id.edit_deal_timePicker_start);
-						deal.put("date_start", myDate);
-						// dpResult =
-						// (DatePicker)findViewById(R.id.edit_deal_timePicker_stop);
-						deal.put("date_end", myDate);
+
 						spinner = (Spinner) findViewById(R.id.deal_day_spinner);
 						deal.put("day", spinner.getSelectedItem().toString());
 						deal.put("yelp_id", intent.getStringExtra("yelp_id"));
 
-						ParseQuery<ParseObject> queryEstablishment = ParseQuery
-								.getQuery("Establishment");
-						queryEstablishment.whereEqualTo("objectId",
-								intent.getStringExtra("establishment_id"));
+						ParseQuery<ParseObject> queryEstablishment = ParseQuery.getQuery("Establishment");
+						queryEstablishment.whereEqualTo("objectId", intent.getStringExtra("establishment_id"));
 						try {
 							establishment = queryEstablishment.getFirst();
 						} catch (ParseException e) {
@@ -126,13 +141,9 @@ public class DealAddActivity extends Activity {
 							deal_count = Integer.parseInt(establishment.getString("deal_count")) + 1;
 							establishment.put("deal_count", deal_count.toString());
 						} else {
-							searchString = intent.getStringExtra("address").replaceAll("\\s+", "+")
-									+ "+" + intent.getStringExtra("city").replaceAll("\\s+", "+")
-									+ "+" + intent.getStringExtra("state").replaceAll("\\s+", "+")
-									+ "+" + intent.getStringExtra("zip");
-							OAuthRequest request = new OAuthRequest(Verb.GET,
-									"http://maps.googleapis.com/maps/api/geocode/json?address="
-											+ searchString + "&sensor=true");
+							searchString = intent.getStringExtra("address").replaceAll("\\s+", "+") + "+" + intent.getStringExtra("city").replaceAll("\\s+", "+") + "+"
+									+ intent.getStringExtra("state").replaceAll("\\s+", "+") + "+" + intent.getStringExtra("zip");
+							OAuthRequest request = new OAuthRequest(Verb.GET, "http://maps.googleapis.com/maps/api/geocode/json?address=" + searchString + "&sensor=true");
 							Response response = request.send();
 							result = response.getBody();
 
@@ -155,8 +166,7 @@ public class DealAddActivity extends Activity {
 								e1.printStackTrace();
 							}
 
-							ParseGeoPoint newLocation = new ParseGeoPoint(Double.parseDouble(lat),
-									Double.parseDouble(lng));
+							ParseGeoPoint newLocation = new ParseGeoPoint(Double.parseDouble(lat), Double.parseDouble(lng));
 
 							Log.d("establishment", "CREATING ESTABLISHMENT");
 							ParseObject addEstablishment = new ParseObject("Establishment");
@@ -197,6 +207,8 @@ public class DealAddActivity extends Activity {
 						deal.put("up_votes", 0);
 						deal.put("down_votes", 0);
 						deal.put("rating", 0);
+						deal.put("time_start", myDateStart);
+						deal.put("time_end", myDateEnd);
 						try {
 							deal.save();
 						} catch (ParseException e) {
@@ -219,18 +231,6 @@ public class DealAddActivity extends Activity {
 		});
 	}
 
-	private Calendar makeCalender() {
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.YEAR, 0000);
-		cal.set(Calendar.MONTH, 00);
-		cal.set(Calendar.DATE, 00);
-		cal.set(Calendar.HOUR_OF_DAY, 00);
-		cal.set(Calendar.MINUTE, 00);
-		cal.set(Calendar.SECOND, 0);
-		cal.set(Calendar.MILLISECOND, 0);
-		return cal;
-	}
-
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -240,4 +240,68 @@ public class DealAddActivity extends Activity {
 		}
 	}
 
+	public static class TimePickerFragmentStart extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
+
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			// Use the current time as the default values for the picker
+			final Calendar c = Calendar.getInstance();
+			int hour = c.get(Calendar.HOUR_OF_DAY);
+			int minute = c.get(Calendar.MINUTE);
+
+			// Create a new instance of TimePickerDialog and return it
+			return new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
+		}
+
+		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+			// Do something with the time chosen by the user
+			Calendar myCal = Calendar.getInstance();
+			
+			myCal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+			myCal.set(Calendar.MINUTE, minute);
+			myDateStart = myCal.getTime();
+			timeStartText.setText(hourOfDay + ":" + minute);
+		}
+	}
+	
+	public static class TimePickerFragmentEnd extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
+
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			// Use the current time as the default values for the picker
+			final Calendar c = Calendar.getInstance();
+			int hour = c.get(Calendar.HOUR_OF_DAY);
+			int minute = c.get(Calendar.MINUTE);
+
+			// Create a new instance of TimePickerDialog and return it
+			return new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
+		}
+
+		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+			// Do something with the time chosen by the user
+			Calendar myCal = Calendar.getInstance();
+			myCal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+			myCal.set(Calendar.MINUTE, minute);
+			myDateEnd = myCal.getTime();
+			timeEndText.setText(hourOfDay + ":" + minute);
+		}
+	}
+
+	private void setDate(Integer day) {
+		if (today == 1) {
+			spinner.setSelection(0);
+		} else if (today == 2) {
+			spinner.setSelection(1);
+		} else if (today == 3) {
+			spinner.setSelection(2);
+		} else if (today == 4) {
+			spinner.setSelection(3);
+		} else if (today == 5) {
+			spinner.setSelection(4);
+		} else if (today == 6) {
+			spinner.setSelection(5);
+		} else if (today == 7) {
+			spinner.setSelection(6);
+		}
+	}
 }

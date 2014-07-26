@@ -25,20 +25,13 @@
             android:layout_alignParentLeft="true"
             android:layout_alignRight="@+id/edit_deal_details"
             android:layout_below="@+id/deal_title"
-            android:ems="10"  />
+            android:ems="10"
+            android:inputType="text" />
+
         <!-- End Title -->
 
 
         <!-- Details -->
-
-        <TextView
-            android:id="@+id/deal_details"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/deal_until"
-            android:layout_marginTop="69dp"
-            android:text="@string/details"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
             android:id="@+id/edit_deal_details"
@@ -91,34 +84,10 @@
 
         <!-- Time stop -->
 
-        <TextView
-            android:id="@+id/deal_until"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/edit_deal_timePicker_start"
-            android:text="@string/until"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TimePicker
-            android:id="@+id/edit_deal_timePicker_stop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/edit_deal_timePicker_start"
-            android:layout_below="@+id/deal_until" />
         <!-- End Time stop -->
 
 
         <!-- Day of the week -->
-
-        <TextView
-            android:id="@+id/deal_day_of_week"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/edit_deal_timePicker_stop"
-            android:layout_marginTop="16dp"
-            android:text="@string/day_of_week"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Spinner
             android:id="@+id/deal_day_spinner"
@@ -178,12 +147,65 @@
             android:text="@string/submit" />
         <!-- End Submit button -->
 
-        <TimePicker
-            android:id="@+id/edit_deal_timePicker_start"
+        <TextView
+            android:id="@+id/deal_time_start_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/deal_time_start" />
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/deal_time_start"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/deal_until"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/deal_time_start_text"
+            android:layout_toRightOf="@+id/deal_title"
+            android:text="@string/until"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/deal_time_end_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/deal_until"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/deal_day_of_week"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/time_end_button"
+            android:text="@string/day_of_week"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <Button
+            android:id="@+id/time_start_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/edit_deal_restrictions"
+            android:layout_below="@+id/edit_deal_restrictions"
+            android:text="Pick Start Time" />
+
+        <Button
+            android:id="@+id/time_end_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/time_start_button"
+            android:layout_below="@+id/time_start_button"
+            android:text="Pick End Time" />
+
+        <TextView
+            android:id="@+id/deal_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/edit_deal_title"
+            android:layout_marginTop="15dp"
+            android:text="@string/details"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
     </RelativeLayout>
 

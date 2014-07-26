@@ -323,19 +323,20 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 				obCount = queryDealSearch.count();
 				ob = queryDealSearch.find();
 			} catch (Exception e) {
-				Log.e("Error", e.getMessage());
+				//Log.e("Error", e.getMessage());
 				//e.printStackTrace();
 			}
 
 			if (obCount > 0) {
 				for (int j = 0; obCount > j; j++) {
 					yelpQuery = ob.get(j).getString("yelp_id").toString();
-					tempBusiness = searchYelp(false, Double.toString(ob.get(j).getParseGeoPoint("location").getLatitude()), Double.toString(ob.get(j).getParseGeoPoint("location").getLongitude()));
+					tempBusiness = searchYelp(false, Double.toString(ob.get(j).getParseGeoPoint("location").getLatitude()), Double.toString(ob.get(j).getParseGeoPoint("location").getLongitude()), yelpQuery, true);
 					if ((tempBusiness.size() > 0) && (!businesses.contains(tempBusiness.get(0)))) {
 						ParseObject curDeal = ob.get(j);
 						ParseObject curEst = curDeal.getParseObject("establishment");
 						String estabDealCount = curEst.getString("deal_count");
-						if((query != "") && (tempBusiness.get(0).getName().toLowerCase().contains(query.toLowerCase()))){
+						Business b = tempBusiness.get(0);
+						if((query != "") && (b.getName().toLowerCase().contains(query.toLowerCase()))){
 							tempBusiness.get(0).setDealCount(estabDealCount);
 							businesses.add(tempBusiness.get(0));
 						} else if(query == ""){
@@ -353,7 +354,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 					yelpQuery = "";
 				}
 
-				tempBusiness = searchYelp(true, "", "");
+				tempBusiness = searchYelp(true, "", "", "", false);
 				for (int m = 0; m < tempBusiness.size() - 1; m++) {
 					checkBusiness = (Business) tempBusiness.get(m);
 					if (!businesses.contains(checkBusiness)) {
@@ -393,8 +394,8 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
 	  	  myMap.getUiSettings().setTiltGesturesEnabled(false);
 	  	  
 			for (int i =0; businesses.size() > i; i++) {
-
-				Marker marker = myMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(businesses.get(i).getLatitude()), Double.parseDouble(businesses.get(i).getLongitude()))).title(businesses.get(i).getName()));
+				Business b = businesses.get(i);
+				Marker marker = myMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(b.getLatitude()), Double.parseDouble(b.getLongitude()))).title(b.getName()));
 				theMap.put(marker, businesses.get(i));
   	  }
   	  if(mapProgressDialog != null){
@@ -530,16 +531,23 @@ public void displayError() {
 	alertDialog.show();
 }
 
-private ArrayList<Business> searchYelp(boolean location, String lat, String lng) {
+private ArrayList<Business> searchYelp(boolean location, String lat, String lng, String yelp_id, boolean businessSearch) {
+	String response;
+	ArrayList<Business> result = new ArrayList<Business>();
 	API_Static_Stuff api_keys = new API_Static_Stuff();
 
-	Yelp yelp = new Yelp(api_keys.getYelpConsumerKey(), api_keys.getYelpConsumerSecret(),
-			api_keys.getYelpToken(), api_keys.getYelpTokenSecret());
-	String response = yelp.search(yelpQuery, currentLocation.getLatitude(),
-			currentLocation.getLongitude(), String.valueOf(distanceMeters), 0);
-
+	Yelp yelp = new Yelp(api_keys.getYelpConsumerKey(), api_keys.getYelpConsumerSecret(), api_keys.getYelpToken(), api_keys.getYelpTokenSecret());
 	yParser = new YelpParser();
-	return yParser.getBusinesses(response, location, lat, lng);
+	if(businessSearch){
+		response = yelp.businessSearch(yelp_id);
+		result = yParser.getBusinesses(response, location, lat, lng, businessSearch);
+	}else {
+		response = yelp.search(yelp_id, currentLocation.getLatitude(), currentLocation.getLongitude(), String.valueOf(distanceMeters), 0);
+		result = yParser.getBusinesses(response, location, lat, lng, businessSearch);
+	}
+
+	
+	return result;
 }
 
 private String setDayOfWeek(int i) {

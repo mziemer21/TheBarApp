@@ -61,9 +61,13 @@ public class Yelp {
 			  		service.signRequest(accessToken, request);
 			  		Response response = request.send();
 			  		return response.getBody();
-		
-
-				
+	}
+	
+	public String businessSearch(String id){
+		OAuthRequest request = new OAuthRequest(Verb.GET, "http://api.yelp.com/v2/business/"+id);
+		service.signRequest(accessToken, request);
+  		Response response = request.send();
+  		return response.getBody();
 	}
 	          
 	    	

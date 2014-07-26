@@ -200,11 +200,14 @@ public class ListActivity extends FragmentActivity implements LocationListener, 
 			if (obCount > 0) {
 				for (int j = 0; obCount > j; j++) {
 					yelpQuery = ob.get(j).getString("yelp_id").toString();
-					tempBusiness = searchYelp(false, Double.toString(ob.get(j).getParseGeoPoint("location").getLatitude()), Double.toString(ob.get(j).getParseGeoPoint("location").getLongitude()));
+					ParseObject curDeal = ob.get(j);
+					ParseObject curEst = curDeal.getParseObject("establishment");
+					String estabDealCount = curEst.getString("deal_count");
+					
+					tempBusiness = searchYelp(false, Double.toString(curDeal.getParseGeoPoint("location").getLatitude()), Double.toString(curDeal.getParseGeoPoint("location").getLongitude()), yelpQuery, true);
 					if ((tempBusiness.size() > 0) && (!businesses.contains(tempBusiness.get(0)))) {
-						ParseObject curDeal = ob.get(j);
-						ParseObject curEst = curDeal.getParseObject("establishment");
-						String estabDealCount = curEst.getString("deal_count");
+						
+						
 						if((query != "") && (tempBusiness.get(0).getName().toLowerCase().contains(query.toLowerCase()))){
 							tempBusiness.get(0).setDealCount(estabDealCount);
 							businesses.add(tempBusiness.get(0));
@@ -212,7 +215,15 @@ public class ListActivity extends FragmentActivity implements LocationListener, 
 							tempBusiness.get(0).setDealCount(estabDealCount);
 							businesses.add(tempBusiness.get(0));
 						}
-					}
+					} /*else {
+						tempBusiness.get(0).setDealCount(curEst.getString("deal_count"));
+						tempBusiness.get(0).setAddress("");
+						tempBusiness.get(0).setCity("");
+						tempBusiness.get(0).setDisplayPhone("");
+						tempBusiness.get(0).setDistance("");
+						tempBusiness.get(0).setMobileURL("");
+						businesses.add(tempBusiness.get(0));
+					}*/
 				}
 			}
 			
@@ -223,7 +234,7 @@ public class ListActivity extends FragmentActivity implements LocationListener, 
 					yelpQuery = "";
 				}
 
-				tempBusiness = searchYelp(true, "", "");
+				tempBusiness = searchYelp(true, "", "", "", false);
 				for (int m = 0; m < tempBusiness.size() - 1; m++) {
 					checkBusiness = (Business) tempBusiness.get(m);
 					if (!businesses.contains(checkBusiness)) {
@@ -395,14 +406,23 @@ public class ListActivity extends FragmentActivity implements LocationListener, 
 		}
 	}
 
-	private ArrayList<Business> searchYelp(boolean location, String lat, String lng) {
+	private ArrayList<Business> searchYelp(boolean location, String lat, String lng, String yelp_id, boolean businessSearch) {
+		String response;
+		ArrayList<Business> result = new ArrayList<Business>();
 		API_Static_Stuff api_keys = new API_Static_Stuff();
 
 		Yelp yelp = new Yelp(api_keys.getYelpConsumerKey(), api_keys.getYelpConsumerSecret(), api_keys.getYelpToken(), api_keys.getYelpTokenSecret());
-		String response = yelp.search(yelpQuery, currentLocation.getLatitude(), currentLocation.getLongitude(), String.valueOf(distanceMeters), sort_mode);
-
 		yParser = new YelpParser();
-		return yParser.getBusinesses(response, location, lat, lng);
+		if(businessSearch){
+			response = yelp.businessSearch(yelp_id);
+			result = yParser.getBusinesses(response, location, lat, lng, businessSearch);
+		}else {
+			response = yelp.search(yelp_id, currentLocation.getLatitude(), currentLocation.getLongitude(), String.valueOf(distanceMeters), sort_mode);
+			result = yParser.getBusinesses(response, location, lat, lng, businessSearch);
+		}
+
+		
+		return result;
 	}
 	
 	private String setDayOfWeek(int i) {

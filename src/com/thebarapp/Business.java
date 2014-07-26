@@ -140,9 +140,9 @@ public class Business {
 		longitude = val;
 	}
 
-	public void setLatLng(String address, String cityIn, String stateIn, String zipIn) {
-		String searchString = address.replaceAll("\\s+", "+") + "+" + city.replaceAll("\\s+", "+")
-				+ "+" + state.replaceAll("\\s+", "+") + "+" + zip;
+	public void setLatLng(String addressIn, String cityIn, String stateIn, String zipIn) {
+		String searchString = addressIn.replaceAll("\\s+", "+") + "+" + cityIn.replaceAll("\\s+", "+")
+				+ "+" + stateIn.replaceAll("\\s+", "+") + "+" + zipIn;
 		OAuthRequest request = new OAuthRequest(Verb.GET,
 				"http://maps.googleapis.com/maps/api/geocode/json?address=" + searchString
 						+ "&sensor=true");
