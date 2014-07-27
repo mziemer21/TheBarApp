@@ -1,9 +1,10 @@
 package activities;
 
+import navigation.NavDrawer;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,7 +12,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.thebarapp.R;
 import com.facebook.FacebookRequestError;
 import com.facebook.Request;
 import com.facebook.Response;
@@ -20,8 +20,9 @@ import com.facebook.model.GraphUser;
 import com.facebook.widget.ProfilePictureView;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
+import com.thebarapp.R;
 
-public class LogoutActivity extends Activity {
+public class LogoutActivity extends NavDrawer {
 
 	private ProfilePictureView userProfilePictureView;
 	private TextView userNameView;
@@ -33,9 +34,8 @@ public class LogoutActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		setContentView(R.layout.activity_logout);
 		super.onCreate(savedInstanceState);
-
-		setContentView(R.layout.fragment_logout);
 
 		userProfilePictureView = (ProfilePictureView) findViewById(R.id.userProfilePicture);
 		userNameView = (TextView) findViewById(R.id.userName);

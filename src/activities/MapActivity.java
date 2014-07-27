@@ -8,11 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+import navigation.NavDrawer;
 import yelp.API_Static_Stuff;
 import yelp.Yelp;
 import yelp.YelpParser;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -22,7 +21,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.Menu;
@@ -34,7 +32,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.thebarapp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
@@ -54,8 +51,9 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.thebarapp.Business;
+import com.thebarapp.R;
 
-public class MapActivity extends FragmentActivity implements LocationListener,
+public class MapActivity extends NavDrawer implements LocationListener,
 GooglePlayServicesClient.ConnectionCallbacks,
 GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
@@ -99,8 +97,6 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
  @Override
  protected void onCreate(Bundle savedInstanceState) {
   super.onCreate(savedInstanceState);
-  setContentView(R.layout.activity_map);
-  
   intent = getIntent();
   
   locationClient = new LocationClient(this, this, this); 
@@ -475,10 +471,9 @@ public void onDisconnected() {
 
 @Override
 public void onStop() {
-  // After disconnect() is called, the client is considered "dead".
-  locationClient.disconnect();
-
-  super.onStop();
+	super.onStop();
+	// After disconnect() is called, the client is considered "dead".
+	locationClient.disconnect();
 }
 
 /*
@@ -486,10 +481,9 @@ public void onStop() {
  */
 @Override
 public void onStart() {
-  super.onStart();
-
-  // Connect to the location services client
-  locationClient.connect();
+	super.onStart();
+	// Connect to the location services client
+	locationClient.connect();
 }
 
 @Override
@@ -540,10 +534,10 @@ private ArrayList<Business> searchYelp(boolean location, String lat, String lng,
 	yParser = new YelpParser();
 	if(businessSearch){
 		response = yelp.businessSearch(yelp_id);
-		result = yParser.getBusinesses(response, location, lat, lng, businessSearch);
+		result = yParser.getBusinesses(response, location, lat, lng, businessSearch, currentLocation.getLatitude(), currentLocation.getLongitude());
 	}else {
 		response = yelp.search(yelp_id, currentLocation.getLatitude(), currentLocation.getLongitude(), String.valueOf(distanceMeters), 0);
-		result = yParser.getBusinesses(response, location, lat, lng, businessSearch);
+		result = yParser.getBusinesses(response, location, lat, lng, businessSearch, currentLocation.getLatitude(), currentLocation.getLongitude());
 	}
 
 	

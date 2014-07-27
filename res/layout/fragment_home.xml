@@ -57,7 +57,7 @@
 		</TableRow>
 		
         <TableRow
-        android:id="@+id/tr1"
+        android:id="@+id/tr2"
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="1" >

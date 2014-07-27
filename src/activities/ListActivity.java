@@ -6,11 +6,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
-
+import navigation.NavDrawer;
 import yelp.API_Static_Stuff;
 import yelp.Yelp;
 import yelp.YelpParser;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -20,7 +19,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,7 +29,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SearchView;
 
-import com.thebarapp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
@@ -45,8 +42,9 @@ import com.thebarapp.BusinessDistanceComparator;
 import com.thebarapp.BusinessRatingComparator;
 import com.thebarapp.EstablishmentListViewAdapter;
 import com.thebarapp.EstablishmentRowItem;
+import com.thebarapp.R;
 
-public class ListActivity extends FragmentActivity implements LocationListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
+public class ListActivity extends NavDrawer implements LocationListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 	// Declare Variables
 	ListView listview;
 	List<ParseObject> ob;
@@ -72,13 +70,16 @@ public class ListActivity extends FragmentActivity implements LocationListener, 
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		// Get the view from listview_main.xml
-		setContentView(R.layout.listview_main);
+				setContentView(R.layout.listview_main);
+		super.onCreate(savedInstanceState);
+		
 
 		intent = getIntent();
 
 		locationClient = new LocationClient(this, this, this);
+		
+		
 	}
 
 	@Override
@@ -215,15 +216,7 @@ public class ListActivity extends FragmentActivity implements LocationListener, 
 							tempBusiness.get(0).setDealCount(estabDealCount);
 							businesses.add(tempBusiness.get(0));
 						}
-					} /*else {
-						tempBusiness.get(0).setDealCount(curEst.getString("deal_count"));
-						tempBusiness.get(0).setAddress("");
-						tempBusiness.get(0).setCity("");
-						tempBusiness.get(0).setDisplayPhone("");
-						tempBusiness.get(0).setDistance("");
-						tempBusiness.get(0).setMobileURL("");
-						businesses.add(tempBusiness.get(0));
-					}*/
+					}
 				}
 			}
 			
@@ -380,10 +373,9 @@ public class ListActivity extends FragmentActivity implements LocationListener, 
 
 	@Override
 	public void onStop() {
+		super.onStop();
 		// After disconnect() is called, the client is considered "dead".
 		locationClient.disconnect();
-
-		super.onStop();
 	}
 
 	/*
@@ -392,7 +384,6 @@ public class ListActivity extends FragmentActivity implements LocationListener, 
 	@Override
 	public void onStart() {
 		super.onStart();
-
 		// Connect to the location services client
 		locationClient.connect();
 	}
@@ -415,10 +406,10 @@ public class ListActivity extends FragmentActivity implements LocationListener, 
 		yParser = new YelpParser();
 		if(businessSearch){
 			response = yelp.businessSearch(yelp_id);
-			result = yParser.getBusinesses(response, location, lat, lng, businessSearch);
+			result = yParser.getBusinesses(response, location, lat, lng, businessSearch, currentLocation.getLatitude(), currentLocation.getLongitude());
 		}else {
 			response = yelp.search(yelp_id, currentLocation.getLatitude(), currentLocation.getLongitude(), String.valueOf(distanceMeters), sort_mode);
-			result = yParser.getBusinesses(response, location, lat, lng, businessSearch);
+			result = yParser.getBusinesses(response, location, lat, lng, businessSearch, currentLocation.getLatitude(), currentLocation.getLongitude());
 		}
 
 		
@@ -469,4 +460,5 @@ public class ListActivity extends FragmentActivity implements LocationListener, 
 		// show it
 		alertDialog.show();
 	}
+	
 }

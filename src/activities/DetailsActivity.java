@@ -37,7 +37,7 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 	protected void onCreate(Bundle savedInstanceState) {
 
 		setContentView(R.layout.activity_details);
-
+		super.onCreate(savedInstanceState);
 		// Initilization
 		viewPager = (ViewPager) findViewById(R.id.pager);
 		actionBar = getActionBar();
@@ -75,7 +75,7 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
-		super.onCreate(savedInstanceState);
+		
 	}
 
 	@Override
@@ -182,5 +182,4 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 			return 2;
 		}
 	}
-
 }

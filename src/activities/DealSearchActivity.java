@@ -2,9 +2,9 @@ package activities;
 
 import java.util.Calendar;
 
+import navigation.NavDrawer;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,7 +17,7 @@ import android.widget.ToggleButton;
 
 import com.thebarapp.R;
 
-public class DealSearchActivity extends FragmentActivity {
+public class DealSearchActivity extends NavDrawer {
 
 	private Button searchDealButton;
 	private ToggleButton oneMi, threeMi, fiveMi, tenMi, twentyMi;
@@ -30,9 +30,9 @@ public class DealSearchActivity extends FragmentActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		// Get the view from listview_main.xml
-		setContentView(R.layout.deal_sort);
+		setContentView(R.layout.deal_search);
+		super.onCreate(savedInstanceState);
 
 		searchDealButton = (Button) findViewById(R.id.deal_filter_button);
 		oneMi = (ToggleButton) findViewById(R.id.deal_filter_one_mile);

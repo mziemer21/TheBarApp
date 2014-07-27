@@ -2,9 +2,9 @@ package activities;
 
 import java.util.Calendar;
 
+import navigation.NavDrawer;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,7 +17,7 @@ import android.widget.ToggleButton;
 
 import com.thebarapp.R;
 
-public class RandomSearchActivity extends FragmentActivity {
+public class RandomSearchActivity extends NavDrawer {
 
 	private Button randomDealButton;
 	private ToggleButton oneMi, threeMi, fiveMi, tenMi, twentyMi;
@@ -30,9 +30,10 @@ public class RandomSearchActivity extends FragmentActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		// Get the view from listview_main.xml
-		setContentView(R.layout.random_filter);
+				setContentView(R.layout.random_filter);
+		super.onCreate(savedInstanceState);
+		
 
 		randomDealButton = (Button) findViewById(R.id.random_filter_button);
 		oneMi = (ToggleButton) findViewById(R.id.random_filter_one_mile);
@@ -54,10 +55,8 @@ public class RandomSearchActivity extends FragmentActivity {
 			@Override
 			public void onClick(View arg0) {
 
-				Intent dealSearchActivity = new Intent(RandomSearchActivity.this,
-						RandomActivity.class);
-				dealSearchActivity
-						.putExtra("day_of_week", day_of_week.getSelectedItem().toString());
+				Intent dealSearchActivity = new Intent(RandomSearchActivity.this, RandomActivity.class);
+				dealSearchActivity.putExtra("day_of_week", day_of_week.getSelectedItem().toString());
 				dealSearchActivity.putExtra("distance", distance);
 				dealSearchActivity.putExtra("food", food.isChecked());
 				dealSearchActivity.putExtra("drinks", drinks.isChecked());

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import navigation.NavDrawer;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -13,7 +14,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,7 +24,6 @@ import android.widget.ListView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
-import com.thebarapp.R;
 import com.parse.CountCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -33,8 +32,9 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.thebarapp.DealListViewAdapter;
 import com.thebarapp.DealRowItem;
+import com.thebarapp.R;
 
-public class DealActivity extends FragmentActivity implements LocationListener,
+public class DealActivity extends NavDrawer implements LocationListener,
 		GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener {
 	// Declare Variables
@@ -56,9 +56,10 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		// Get the view from deal_listview.xml
 		setContentView(R.layout.deal_listview);
+		super.onCreate(savedInstanceState);
+		
 
 		intent = getIntent();
 		locationClient = new LocationClient(this, this, this);
@@ -221,7 +222,7 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 				// Send single item click data to
 				// SingleItemView
 				// Class
-				Intent i = new Intent(DealActivity.this, DealsDetailsActivity.class);
+				Intent i = new Intent(DealActivity.this, DealDetailsActivity.class);
 				est = (ParseObject) ob.get(position).get("establishment");
 				// Pass data to next activity
 				i.putExtra("deal_id", ob.get(position).getObjectId().toString());
@@ -288,10 +289,9 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 
 	@Override
 	public void onStop() {
+		super.onStop();
 		// After disconnect() is called, the client is considered "dead".
 		locationClient.disconnect();
-
-		super.onStop();
 	}
 
 	/*
@@ -300,7 +300,6 @@ public class DealActivity extends FragmentActivity implements LocationListener,
 	@Override
 	public void onStart() {
 		super.onStart();
-
 		// Connect to the location services client
 		locationClient.connect();
 	}

@@ -1,15 +1,22 @@
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout_map"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MapActivity" >
 
-    <fragment 
+   
+    <fragment
         android:id="@+id/map"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="vertical"  
-        class="com.google.android.gms.maps.SupportMapFragment"/>
+	    class="com.google.android.gms.maps.SupportMapFragment"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:scrollbars="vertical" />
 
     <Button
         android:id="@+id/redo_map_button"
@@ -20,3 +27,16 @@
         android:text="Redo Search Here" />
 
 </FrameLayout>
+
+<!-- Listview to display slider menu -->
+    <ListView
+        android:id="@+id/list_slidermenu_map"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:divider="@color/list_divider"
+        android:dividerHeight="1dp"        
+        android:listSelector="@drawable/list_selector"
+        android:background="@color/list_background"/>
+</android.support.v4.widget.DrawerLayout>

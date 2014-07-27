@@ -2,7 +2,7 @@ package navigation;
 
 import java.util.ArrayList;
 
-import activities.DetailsActivity;
+import activities.LoginActivity;
 import activities.LogoutActivity;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -24,8 +24,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.parse.ParseUser;
 import com.thebarapp.R;
 
+import fragments.AboutFragment;
 import fragments.ChangeLocationFragment;
 import fragments.FeedbackFragment;
 import fragments.HomeFragment;
@@ -53,10 +55,10 @@ public class NavDrawer extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		callingClass = this.getClass().getSimpleName();
-		if (callingClass.equalsIgnoreCase("MainActivity")) {
-			setContentView(R.layout.activity_main);
+		if(callingClass.equalsIgnoreCase("MapActivity")){
+			setContentView(R.layout.activity_map);
 		}
-
+	
 		mTitle = mDrawerTitle = getTitle();
 
 		// load slide menu items
@@ -71,10 +73,43 @@ public class NavDrawer extends FragmentActivity {
 		} else if (callingClass.equalsIgnoreCase("MainActivity")) {
 			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 			mDrawerList = (ListView) findViewById(R.id.list_slidermenu);
+		} else if (callingClass.equalsIgnoreCase("DealSearchActivity")) {
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_deal_search);
+			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_deal_search);
+		} else if (callingClass.equalsIgnoreCase("LoginActivity")) {
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_login);
+			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_login);
+		} else if (callingClass.equalsIgnoreCase("DealAddActivity")) {
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_deal_add);
+			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_deal_add);
+		} else if (callingClass.equalsIgnoreCase("DealDetailsActivity")) {
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_deal);
+			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_deal);
+		} else if (callingClass.equalsIgnoreCase("MapActivity")) {
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_map);
+			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_map);
+		} else if (callingClass.equalsIgnoreCase("DealActivity")) {
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_deal_list);
+			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_deal_list);
+		} else if (callingClass.equalsIgnoreCase("ListSearchActivity")) {
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_list_search);
+			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_list_search);
+		} else if (callingClass.equalsIgnoreCase("ListActivity")) {
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_list);
+			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_list);
+		} else if (callingClass.equalsIgnoreCase("LogoutActivity")) {
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_logout);
+			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_logout);
+		} else if (callingClass.equalsIgnoreCase("MapSearchActivity")) {
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_map_search);
+			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_map_search);
+		} else if (callingClass.equalsIgnoreCase("RandomSearchActivity")) {
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_random_search);
+			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_random_search);
 		}
 
 		navDrawerItems = new ArrayList<NavDrawerItem>();
-
+		
 		// adding nav drawer items to array
 		// Home
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
@@ -192,8 +227,13 @@ public class NavDrawer extends FragmentActivity {
 			fragment = new ChangeLocationFragment();
 			break;
 		case 2:
-			Intent userDetailsFragment = new Intent(this, LogoutActivity.class);
-			startActivity(userDetailsFragment);
+			if(ParseUser.getCurrentUser().getCreatedAt() == null){
+				Intent userDetailsFragment = new Intent(this, LoginActivity.class);
+				startActivity(userDetailsFragment);
+			} else {
+				Intent userDetailsFragment = new Intent(this, LogoutActivity.class);
+				startActivity(userDetailsFragment);
+			}
 			break;
 		case 3:
 			fragment = new ChangeLocationFragment();
@@ -202,8 +242,7 @@ public class NavDrawer extends FragmentActivity {
 			fragment = new FeedbackFragment();
 			break;
 		case 5:
-			Intent detailsFragment = new Intent(this, DetailsActivity.class);
-			startActivity(detailsFragment);
+			fragment = new AboutFragment();
 			break;
 
 		default:
@@ -277,5 +316,4 @@ public class NavDrawer extends FragmentActivity {
 		// TODO Auto-generated method stub
 
 	}
-
 }

@@ -3,6 +3,8 @@ package activities;
 import java.util.Calendar;
 import java.util.Date;
 
+import navigation.NavDrawer;
+
 import org.json.JSONException;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
@@ -15,7 +17,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -35,7 +36,7 @@ import com.parse.ParseUser;
 import com.thebarapp.LocationParser;
 import com.thebarapp.R;
 
-public class DealAddActivity extends FragmentActivity {
+public class DealAddActivity extends NavDrawer {
 
 	private Button submitButton, timeStartButton, timeEndButton;
 	Intent intent;
@@ -56,11 +57,10 @@ public class DealAddActivity extends FragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		setContentView(R.layout.activity_add_deal);
 		super.onCreate(savedInstanceState);
 
 		intent = getIntent();
-
-		setContentView(R.layout.activity_add_deal);
 		
 		timeStartText = (TextView) findViewById(R.id.deal_time_start_text);
 		timeEndText = (TextView) findViewById(R.id.deal_time_end_text);

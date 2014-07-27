@@ -13,6 +13,7 @@ public class YelpParser {
 	private String yelp_response;
 	JSONArray businesses;
 	JSONObject o1;
+	public static final int DISTANCE_IN_FEET = 20924640;
 
 	public void setResponse(String response) {
 		yelp_response = response;
@@ -76,7 +77,7 @@ public class YelpParser {
 	}
 
 	public String getBusinessAddress(JSONObject location) throws JSONException {
-		return location.get("address").toString().replaceAll("\\[", "").replaceAll("\\]", "").replace("\"", "");
+		return location.getString("address").toString().replaceAll("\\[", "").replaceAll("\\]", "").replace("\"", "");
 	}
 
 	public String getBusinessCity(JSONObject location) throws JSONException {
@@ -91,7 +92,7 @@ public class YelpParser {
 		return location.get("state_code").toString();
 	}
 
-	public ArrayList<Business> getBusinesses(String json, boolean location, String lat, String lng, Boolean searchBusiness) {
+	public ArrayList<Business> getBusinesses(String json, boolean location, String lat, String lng, Boolean searchBusiness, Double latCur, Double lngCur) {
 		ArrayList<Business> BusinessList = new ArrayList<Business>();
 		Object loc = null;
 
@@ -148,41 +149,31 @@ public class YelpParser {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			Double distance;
-			try {
-				distance = Double.parseDouble(o1.getString("distance")) * 0.00062137119;
-				b.setDistance(distance.toString().substring(0, 4));
-			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			try {
 				loc = (Object) o1.get("location");
 				b.setAddress(getBusinessAddress((JSONObject) loc));
 				b.setLat(lat);
 				b.setLng(lng);
+				b.setDistance(calculateDistance(Double.parseDouble(lat), Double.parseDouble(lng), latCur, lngCur));
 				
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}	
 			try {
-				b.setCity(o1.getString("city"));
+				b.setCity(getBusinessCity((JSONObject) loc));
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			try {
-				b.setState(o1.getString("state_code"));
+				b.setState(getBusinessState((JSONObject) loc));
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			try {
-				b.setZipcode(o1.getString("postal_code"));
+				b.setZipcode(getBusinessZipcode((JSONObject) loc));
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -192,7 +183,7 @@ public class YelpParser {
 		} else {
 			
 
-			for (int i = 0; i < getJSONSize(); i++) {
+			for (int i = 0; getJSONSize() > i; i++) {
 				Business b = new Business();
 
 				try {
@@ -276,6 +267,26 @@ public class YelpParser {
 		}
 
 		return BusinessList;
+	}
+	
+	public static String calculateDistance(double latitudeA, double longitudeA, double latitudeB, double longitudeB){
+
+	    Double distance;
+	    
+	    distance =  Math.acos(       
+
+	                               Math.cos(Math.toRadians(latitudeA)) * Math.cos(Math.toRadians(latitudeB)) 
+	                           *
+	                               Math.cos(Math.toRadians(longitudeB) - Math.toRadians(longitudeA))
+	                           +
+	                               Math.sin(Math.toRadians(latitudeA))
+	                           *
+	                               Math.sin(Math.toRadians(latitudeB))
+
+	                       );
+
+	    return distance.toString().substring(0, 4);
+
 	}
 
 }

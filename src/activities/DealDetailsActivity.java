@@ -1,6 +1,6 @@
 package activities;
 
-import android.app.Activity;
+import navigation.NavDrawer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,14 +9,14 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.thebarapp.R;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.thebarapp.R;
 
-public class DealsDetailsActivity extends Activity {
+public class DealDetailsActivity extends NavDrawer {
 	// Declare Variables
 	String deal_id, deal_title, deal_details, deal_restrictions, deal_time;
 	Integer rating, price, up_votes, down_votes;
@@ -26,6 +26,7 @@ public class DealsDetailsActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		setContentView(R.layout.activity_deal_details);
 		super.onCreate(savedInstanceState);
 
 		intent = getIntent();
@@ -37,7 +38,6 @@ public class DealsDetailsActivity extends Activity {
 		deal_restrictions = intent.getStringExtra("deal_restrictions");
 		deal_time = intent.getStringExtra("deal_time");
 		
-		setContentView(R.layout.activity_deal_details);
 
 		TextView title = (TextView) findViewById(R.id.dealTitle);
 		title.setText(deal_title);
@@ -135,6 +135,7 @@ public class DealsDetailsActivity extends Activity {
 			queryParse(false);
 
 			if (deal != null) {
+				down_votes = deal.getInt("down_votes");
 				if (dealVoteUser == null) {
 					// create new and assign vote to 1
 					dealVoteUser = new ParseObject("deal_vote_users");
@@ -142,22 +143,19 @@ public class DealsDetailsActivity extends Activity {
 					dealVoteUser.put("user", ParseUser.getCurrentUser());
 					dealVoteUser.put("vote", 1);
 					up_votes = deal.getInt("up_votes") + 1;
-					down_votes = deal.getInt("down_votes");
 				} else if (dealVoteUser.get("vote").toString().equals("0")) {
 					// change vote to 1
 					dealVoteUser.put("vote", 1);
 					up_votes = deal.getInt("up_votes") + 1;
-					down_votes = deal.getInt("down_votes") - 1;
+					down_votes--;
 				} else if (dealVoteUser.get("vote").toString().equals("1")) {
 					// already voted up
 					dealVoteUser.put("vote", 2);
 					up_votes = deal.getInt("up_votes") - 1;
-					down_votes = deal.getInt("down_votes");
 				} else if (dealVoteUser.get("vote").toString().equals("2")) {
 					// change vote to 1
 					dealVoteUser.put("vote", 1);
 					up_votes = deal.getInt("up_votes") + 1;
-					down_votes = deal.getInt("down_votes");
 				}
 
 				if ((up_votes + down_votes) != 0) {
@@ -181,6 +179,7 @@ public class DealsDetailsActivity extends Activity {
 			queryParse(false);
 
 			if (deal != null) {
+				up_votes = deal.getInt("up_votes");
 				if (dealVoteUser == null) {
 					// create new and assign vote to 1
 					dealVoteUser = new ParseObject("deal_vote_users");
@@ -188,7 +187,6 @@ public class DealsDetailsActivity extends Activity {
 					dealVoteUser.put("user", ParseUser.getCurrentUser());
 					dealVoteUser.put("vote", 0);
 					down_votes = deal.getInt("down_votes") + 1;
-					up_votes = deal.getInt("up_votes");
 				} else if (dealVoteUser.get("vote").toString().equals("0")) {
 					// already voted down
 					dealVoteUser.put("vote", 2);
@@ -196,11 +194,10 @@ public class DealsDetailsActivity extends Activity {
 				} else if (dealVoteUser.get("vote").toString().equals("1")) {
 					dealVoteUser.put("vote", 0);
 					down_votes = deal.getInt("down_votes") + 1;
-					up_votes = deal.getInt("up_votes") - 1;
+					up_votes--;
 				} else if (dealVoteUser.get("vote").toString().equals("2")) {
 					dealVoteUser.put("vote", 0);
 					down_votes = deal.getInt("down_votes") + 1;
-					up_votes = deal.getInt("up_votes");
 				}
 
 				if ((up_votes + down_votes) != 0) {

@@ -19,11 +19,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 
-import com.thebarapp.R;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
+import com.thebarapp.R;
 
 public class LoginActivity extends Activity {
 
@@ -31,17 +31,17 @@ public class LoginActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
 		// Check if there is a currently logged in user
-		// and they are linked to a Facebook account.
-		ParseUser currentUser = ParseUser.getCurrentUser();
-		if ((currentUser != null) && ParseFacebookUtils.isLinked(currentUser)) {
-			// Go to the user info activity
-			showNextActivity();
-		}
+				// and they are linked to a Facebook account.
+				ParseUser currentUser = ParseUser.getCurrentUser();
+				if ((currentUser != null) && ParseFacebookUtils.isLinked(currentUser)) {
+					// Go to the user info activity
+					showNextActivity();
+				}
+				
+				setContentView(R.layout.activity_login);
+		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.activity_login);
 		
 		// Add code to print out the key hash
 		try{ 

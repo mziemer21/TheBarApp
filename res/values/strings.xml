@@ -59,7 +59,7 @@
     <string-array name="nav_drawer_items">
         <item >Home</item>
         <item >Notifications</item>
-        <item >Logout</item>
+        <item >Login/Logout</item>
         <item >Change Location</item>
         <item >Feedback</item>
         <item >About</item>

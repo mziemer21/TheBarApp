@@ -140,7 +140,7 @@ public class RandomActivity extends Activity implements LocationListener,
 									Random random = new Random();
 									position = random.nextInt(count);
 									Intent i = new Intent(RandomActivity.this,
-											DealsDetailsActivity.class);
+											DealDetailsActivity.class);
 									ParseObject establishment = (ParseObject) ob.get(position).get(
 											"establishment");
 									// Pass data "name" followed by the
@@ -206,10 +206,9 @@ public class RandomActivity extends Activity implements LocationListener,
 
 	@Override
 	public void onStop() {
+		super.onStop();
 		// After disconnect() is called, the client is considered "dead".
 		locationClient.disconnect();
-
-		super.onStop();
 	}
 
 	/*
@@ -218,7 +217,6 @@ public class RandomActivity extends Activity implements LocationListener,
 	@Override
 	public void onStart() {
 		super.onStart();
-
 		// Connect to the location services client
 		locationClient.connect();
 	}

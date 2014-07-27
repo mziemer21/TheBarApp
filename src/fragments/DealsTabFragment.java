@@ -8,7 +8,7 @@ import java.util.List;
 
 
 import activities.DealAddActivity;
-import activities.DealsDetailsActivity;
+import activities.DealDetailsActivity;
 import activities.LoginActivity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -199,7 +199,7 @@ public class DealsTabFragment extends Fragment {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					// Send single item click data to SingleItemView Class
-					Intent iDeal = new Intent(getActivity(), DealsDetailsActivity.class);
+					Intent iDeal = new Intent(getActivity(), DealDetailsActivity.class);
 					// Pass data "name" followed by the position
 					iDeal.putExtra("establishment_id", extrasDeal.getString("establishment_id")
 							.toString());
