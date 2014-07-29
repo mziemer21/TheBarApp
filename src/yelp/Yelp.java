@@ -48,15 +48,18 @@ public class Yelp {
 	 * @return JSON string response
 	 */
 	public String search(String term, double latitude, double longitude, String distance,
-			int sortMode) {
+			int sortMode, Integer loadMore) {
 		
 				   OAuthRequest request = new OAuthRequest(Verb.GET, "http://api.yelp.com/v2/search");
 			  		request.addQuerystringParameter("category_filter", "bars");
 			  		request.addQuerystringParameter("term", term);
 			  		request.addQuerystringParameter("ll", latitude + "," + longitude);
-			  		request.addQuerystringParameter("limit", "15");
+			  		request.addQuerystringParameter("limit", "20");
 			  		request.addQuerystringParameter("radius_filter", distance);
 			  		request.addQuerystringParameter("sort", String.valueOf(sortMode));
+			  		if(loadMore > 0){
+			  			request.addQuerystringParameter("offset", String.valueOf(loadMore));
+			  		}
 
 			  		service.signRequest(accessToken, request);
 			  		Response response = request.send();

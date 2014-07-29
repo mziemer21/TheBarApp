@@ -543,7 +543,7 @@ private ArrayList<Business> searchYelp(boolean location, String lat, String lng,
 		response = yelp.businessSearch(yelp_id);
 		result = yParser.getBusinesses(response, location, lat, lng, businessSearch, currentLocation.getLatitude(), currentLocation.getLongitude());
 	}else {
-		response = yelp.search(yelp_id, currentLocation.getLatitude(), currentLocation.getLongitude(), String.valueOf(distanceMeters), 0);
+		response = yelp.search(yelp_id, currentLocation.getLatitude(), currentLocation.getLongitude(), String.valueOf(distanceMeters), 0, 0);
 		result = yParser.getBusinesses(response, location, lat, lng, businessSearch, currentLocation.getLatitude(), currentLocation.getLongitude());
 	}
 

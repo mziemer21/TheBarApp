@@ -1,6 +1,5 @@
 package activities;
 
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -10,6 +9,7 @@ import navigation.NavDrawer;
 import yelp.API_Static_Stuff;
 import yelp.Yelp;
 import yelp.YelpParser;
+import activities.DealAddActivity.TimePickerFragmentEnd;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -19,13 +19,16 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 
@@ -47,22 +50,20 @@ import com.thebarapp.R;
 public class ListActivity extends NavDrawer implements LocationListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 	// Declare Variables
 	ListView listview;
-	List<ParseObject> ob;
-	String query = "", distanceMiles, establishment_id, obLat, obLng, yelpQuery = "";
+	List<ParseObject> ob = new ArrayList<ParseObject>();
+	String query = "", distanceMiles, establishment_id, obLat, obLng, yelpQuery = "", day_of_week;
 	Object loc;
 	SearchView searchView;
 	private Location currentLocation = null;
 	Intent intent;
-	Integer obCount, sort_mode, distanceMeters;
+	Integer countPrev = 0, sort_mode, distanceMeters, loadOffset = 0;
 	Boolean filter = false, onlyDeals;
 	YelpParser yParser;
-	ArrayList<Business> businesses = new ArrayList<Business>();
-	ArrayList<Business> tempBusiness = new ArrayList<Business>();
+	ArrayList<Business> businesses = new ArrayList<Business>(), tempBusiness = new ArrayList<Business>();
 	Business checkBusiness;
 	ProgressDialog listProgressDialog;
 	Calendar calendar = Calendar.getInstance();
-	String day_of_week;
-	Boolean food, drinks;
+	Boolean food, drinks, resumed = false;
 	ParseObject deal_type = null;
 
 	// Stores the current instantiation of the location client in this object
@@ -71,15 +72,12 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// Get the view from listview_main.xml
-				setContentView(R.layout.listview_main);
+		setContentView(R.layout.listview_main);
 		super.onCreate(savedInstanceState);
-		
 
 		intent = getIntent();
 
 		locationClient = new LocationClient(this, this, this);
-		
-		
 	}
 
 	@Override
@@ -98,12 +96,14 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 		// Take appropriate action for each action item click
 		switch (item.getItemId()) {
 		case R.id.action_filter:
+			loadOffset = 0;
 			Intent i = new Intent(ListActivity.this, ListSearchActivity.class);
 			finish();
 			i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
 			startActivity(i);
 			return true;
 		case R.id.action_clear_search:
+			loadOffset = 0;
 			Intent j = new Intent(ListActivity.this, ListActivity.class);
 			finish();
 			j.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -138,13 +138,13 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 			// Show progressdialog
 			listProgressDialog.show();
 
-			businesses.clear();
+			if (loadOffset == 0) {
+				businesses.clear();
+			}
 		}
 
 		@Override
 		protected Void doInBackground(Void... params) {
-
-			
 
 			currentLocation = getLocation();
 			day_of_week = (intent.getStringExtra("day_of_week") == null) ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : intent.getStringExtra("day_of_week");
@@ -152,14 +152,17 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 			drinks = intent.getBooleanExtra("drinks", true);
 			sort_mode = intent.getIntExtra("search_type", 1);
 			onlyDeals = intent.getBooleanExtra("only_deals", false);
-
 			query = (intent.getStringExtra("query") == null) ? "" : intent.getStringExtra("query");
 			distanceMiles = (intent.getStringExtra("distance") == null) ? "3" : intent.getStringExtra("distance");
 			distanceMeters = Integer.parseInt(distanceMiles) * 1609;
+
 			// Locate the class table named "establishment" in Parse.com
 			ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>("Deal");
 			queryDealSearch.include("establishment");
 			queryDealSearch.setLimit(20);
+			if(ob.size() > 0){
+				queryDealSearch.setSkip(ob.size());
+			}
 			if (day_of_week != "") {
 				queryDealSearch.whereEqualTo("day", day_of_week);
 			}
@@ -191,36 +194,35 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 				}
 			}
 			try {
-				obCount = queryDealSearch.count();
 				ob = queryDealSearch.find();
 			} catch (Exception e) {
-				//Log.e("Error", e.getMessage());
-				//e.printStackTrace();
+				// Log.e("Error", e.getMessage());
+				// e.printStackTrace();
 			}
 
-			if (obCount > 0) {
-				for (int j = 0; obCount > j; j++) {
+			if (ob.size() > 0) {
+				for (int j = 0; ob.size() > j; j++) {
 					yelpQuery = ob.get(j).getString("yelp_id").toString();
 					ParseObject curDeal = ob.get(j);
 					ParseObject curEst = curDeal.getParseObject("establishment");
 					String estabDealCount = curEst.getString("deal_count");
-					
-					tempBusiness = searchYelp(false, Double.toString(curDeal.getParseGeoPoint("location").getLatitude()), Double.toString(curDeal.getParseGeoPoint("location").getLongitude()), yelpQuery, true);
+
+					tempBusiness = searchYelp(false, Double.toString(curDeal.getParseGeoPoint("location").getLatitude()), Double.toString(curDeal.getParseGeoPoint("location").getLongitude()),
+							yelpQuery, true);
 					if ((tempBusiness.size() > 0) && (!businesses.contains(tempBusiness.get(0)))) {
-						
-						
-						if((query != "") && (tempBusiness.get(0).getName().toLowerCase().contains(query.toLowerCase()))){
+
+						if ((query != "") && (tempBusiness.get(0).getName().toLowerCase().contains(query.toLowerCase()))) {
 							tempBusiness.get(0).setDealCount(estabDealCount);
 							businesses.add(tempBusiness.get(0));
-						} else if (query == ""){
+						} else if (query == "") {
 							tempBusiness.get(0).setDealCount(estabDealCount);
 							businesses.add(tempBusiness.get(0));
 						}
 					}
 				}
 			}
-			
-			if ((businesses.size() < 20) && (!onlyDeals)) {
+
+			if ((ob.size() < 20) && (!onlyDeals)) {
 				if (intent.getStringExtra("query") != null) {
 					yelpQuery = intent.getStringExtra("query");
 				} else {
@@ -250,82 +252,113 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 
 		@Override
 		protected void onPostExecute(Void result) {
-			  if(businesses.size() < 1){
-					displayError();
-				} else {
-			// Locate the listview in listview_main.xml
-			listview = (ListView) findViewById(R.id.listview);
-			// Pass the results into an ArrayAdapter
-			List<EstablishmentRowItem> rowItems = new ArrayList<EstablishmentRowItem>();
-
-			// Retrieve object "title" from Parse.com database
-			for (int k = 0; businesses.size() > k; k++) {
-				// String title, Integer rating, String address, String
-				// distance, String dealCount, String ratingCount
-				EstablishmentRowItem item = new EstablishmentRowItem(businesses.get(k).getName(), Double.parseDouble(businesses.get(k).getRating()), businesses.get(k).getAddress(), businesses.get(k)
-						.getDistance(), businesses.get(k).getDealCount(), businesses.get(k).getRatingCount());
-				rowItems.add(item);
-			}
-
-			// Pass the results into an ArrayAdapter
-			EstablishmentListViewAdapter establishmentAdapter = new EstablishmentListViewAdapter(ListActivity.this, R.layout.listview_item_establishment, rowItems);
-			// Binds the Adapter to the ListView
-			listview.setAdapter(establishmentAdapter);
-			if (listProgressDialog != null) {
-				// Close the progressdialog
-				listProgressDialog.dismiss();
-			}
-			// Capture button clicks on ListView items
-			listview.setOnItemClickListener(new OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-					ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Establishment");
-					query.whereEqualTo("yelp_id", businesses.get(position).getYelpId());
-					try {
-						ob = query.find();
-					} catch (Exception e) {
-						Log.e("Error", e.getMessage());
-						e.printStackTrace();
-					}
-
-					if (ob.size() == 0) {
-						establishment_id = "empty";
-					} else {
-						establishment_id = ob.get(0).getObjectId().toString();
-					}
-
-					currentLocation = getLocation();
-					// Send single item click data to SingleItemView Class
-					Intent i = new Intent(ListActivity.this, DetailsActivity.class);
-					// Pass data "name" followed by the position
-					i.putExtra("establishment_id", establishment_id);
-					i.putExtra("est_name", businesses.get(position).getName());
-					i.putExtra("yelp_id", businesses.get(position).getYelpId());
-					i.putExtra("name", businesses.get(position).getName());
-					i.putExtra("rating", businesses.get(position).getRating());
-					i.putExtra("rating_count", businesses.get(position).getRatingCount());
-					i.putExtra("address", businesses.get(position).getAddress());
-					i.putExtra("city", businesses.get(position).getCity());
-					i.putExtra("state", businesses.get(position).getState());
-					i.putExtra("zip", businesses.get(position).getZipcode());
-					i.putExtra("phone", businesses.get(position).getPhone());
-					i.putExtra("display_phone", businesses.get(position).getDisplayPhone());
-					i.putExtra("distance", businesses.get(position).getDistance());
-					i.putExtra("mobile_url", businesses.get(position).getMobileURL());
-					i.putExtra("day_of_week", (day_of_week == "") ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
-					i.putExtra("est_lat", businesses.get(position).getLatitude());
-					i.putExtra("est_lng", businesses.get(position).getLongitude());
-					i.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
-					i.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));
-					i.putExtra("mob_url", businesses.get(position).getMobileURL());
-
-					businesses.clear();
-					// Open SingleItemView.java Activity
-					startActivity(i);
+			resumed = true;
+			if ((businesses.size() - countPrev) < 1) {
+				displayErrorStay();
+				if (listProgressDialog != null) {
+					// Close the progressdialog
+					listProgressDialog.dismiss();
 				}
-			});
+			} else if (businesses.size() < 1) {
+				displayError();
+				if (listProgressDialog != null) {
+					// Close the progressdialog
+					listProgressDialog.dismiss();
 				}
+			} else {
+				countPrev = businesses.size();
+				// Locate the listview in listview_main.xml
+				listview = (ListView) findViewById(R.id.listview);
+				// Pass the results into an ArrayAdapter
+				List<EstablishmentRowItem> rowItems = new ArrayList<EstablishmentRowItem>();
+
+				// Retrieve object "title" from Parse.com database
+				for (int k = 0; businesses.size() > k; k++) {
+					EstablishmentRowItem item = new EstablishmentRowItem(businesses.get(k).getName(), Double.parseDouble(businesses.get(k).getRating()), businesses.get(k).getAddress(), businesses
+							.get(k).getDistance(), businesses.get(k).getDealCount(), businesses.get(k).getRatingCount());
+					rowItems.add(item);
+				}
+
+				if ((loadOffset == 0) && ((!onlyDeals) || ((onlyDeals) && (ob.size() >= 20)))) {
+
+					// Getting listview from xml
+					ListView lv = (ListView) findViewById(R.id.listview);
+
+					// Creating a button - Load More
+					Button loadMoreButton = new Button(ListActivity.this);
+					loadMoreButton.setText("Load More");
+
+					// Adding button to listview at footer
+					lv.addFooterView(loadMoreButton);
+					
+					loadMoreButton.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View arg0) {
+							loadOffset += 20;
+							new RemoteDataTask(ListActivity.this).execute();
+						}
+					});
+				}
+
+				// Pass the results into an ArrayAdapter
+				EstablishmentListViewAdapter establishmentAdapter = new EstablishmentListViewAdapter(ListActivity.this, R.layout.listview_item_establishment, rowItems);
+				// Binds the Adapter to the ListView
+				listview.setAdapter(establishmentAdapter);
+				if (listProgressDialog != null) {
+					// Close the progressdialog
+					listProgressDialog.dismiss();
+				}
+				// Capture button clicks on ListView items
+				listview.setOnItemClickListener(new OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+						ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Establishment");
+						query.whereEqualTo("yelp_id", businesses.get(position).getYelpId());
+						try {
+							ob = query.find();
+						} catch (Exception e) {
+							Log.e("Error", e.getMessage());
+							e.printStackTrace();
+						}
+
+						if (ob.size() == 0) {
+							establishment_id = "empty";
+						} else {
+							establishment_id = ob.get(0).getObjectId().toString();
+						}
+
+						currentLocation = getLocation();
+						// Send single item click data to SingleItemView Class
+						Intent i = new Intent(ListActivity.this, DetailsActivity.class);
+						// Pass data "name" followed by the position
+						i.putExtra("establishment_id", establishment_id);
+						i.putExtra("est_name", businesses.get(position).getName());
+						i.putExtra("yelp_id", businesses.get(position).getYelpId());
+						i.putExtra("name", businesses.get(position).getName());
+						i.putExtra("rating", businesses.get(position).getRating());
+						i.putExtra("rating_count", businesses.get(position).getRatingCount());
+						i.putExtra("address", businesses.get(position).getAddress());
+						i.putExtra("city", businesses.get(position).getCity());
+						i.putExtra("state", businesses.get(position).getState());
+						i.putExtra("zip", businesses.get(position).getZipcode());
+						i.putExtra("phone", businesses.get(position).getPhone());
+						i.putExtra("display_phone", businesses.get(position).getDisplayPhone());
+						i.putExtra("distance", businesses.get(position).getDistance());
+						i.putExtra("mobile_url", businesses.get(position).getMobileURL());
+						i.putExtra("day_of_week", (day_of_week == "") ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
+						i.putExtra("est_lat", businesses.get(position).getLatitude());
+						i.putExtra("est_lng", businesses.get(position).getLongitude());
+						i.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
+						i.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));
+						i.putExtra("mob_url", businesses.get(position).getMobileURL());
+						
+						// Open SingleItemView.java Activity
+						startActivity(i);
+					}
+				});
+			}
 		}
 	}
 
@@ -342,7 +375,9 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		// TODO Auto-generated method stub
-		new RemoteDataTask(ListActivity.this).execute();
+		if(!resumed){
+			new RemoteDataTask(ListActivity.this).execute();
+		}
 	}
 
 	@Override
@@ -412,18 +447,17 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 
 		Yelp yelp = new Yelp(api_keys.getYelpConsumerKey(), api_keys.getYelpConsumerSecret(), api_keys.getYelpToken(), api_keys.getYelpTokenSecret());
 		yParser = new YelpParser();
-		if(businessSearch){
+		if (businessSearch) {
 			response = yelp.businessSearch(yelp_id);
 			result = yParser.getBusinesses(response, location, lat, lng, businessSearch, currentLocation.getLatitude(), currentLocation.getLongitude());
-		}else {
-			response = yelp.search(yelp_id, currentLocation.getLatitude(), currentLocation.getLongitude(), String.valueOf(distanceMeters), sort_mode);
+		} else {
+			response = yelp.search(yelp_id, currentLocation.getLatitude(), currentLocation.getLongitude(), String.valueOf(distanceMeters), sort_mode, loadOffset);
 			result = yParser.getBusinesses(response, location, lat, lng, businessSearch, currentLocation.getLatitude(), currentLocation.getLongitude());
 		}
 
-		
 		return result;
 	}
-	
+
 	private String setDayOfWeek(int i) {
 		if (i == 1) {
 			day_of_week = "Sunday";
@@ -442,7 +476,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 		}
 		return day_of_week;
 	}
-	
+
 	public void displayError() {
 		// no deals found so display a popup and return to search options
 		AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
@@ -451,17 +485,15 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 		builder.setTitle("No Results");
 
 		// set dialog message
-		builder.setMessage("Sorry, nothing was found.  Try and widen your search.")
-				.setCancelable(false)
-				.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-						Intent i = new Intent(ListActivity.this, ListSearchActivity.class);
-						finish();
-						i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
-						startActivity(i);
-					}
-				});
+		builder.setMessage("Sorry, nothing was found.  Try and widen your search.").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+				Intent i = new Intent(ListActivity.this, ListSearchActivity.class);
+				finish();
+				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
+				startActivity(i);
+			}
+		});
 		// create alert dialog
 		AlertDialog alertDialog = builder.create();
 
@@ -469,4 +501,24 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 		alertDialog.show();
 	}
 	
+	public void displayErrorStay() {
+		// no deals found so display a popup and return to search options
+		AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
+
+		// set title
+		builder.setTitle("No Results");
+
+		// set dialog message
+		builder.setMessage("Sorry, nothing was found.  Try and widen your search.").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+			}
+		});
+		// create alert dialog
+		AlertDialog alertDialog = builder.create();
+
+		// show it
+		alertDialog.show();
+	}
+
 }
