@@ -98,6 +98,24 @@
         android:layout_below="@+id/dealRestrictions"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <TextView
+        android:id="@+id/dealEstLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/dealRestrictionsLabel"
+        android:layout_below="@+id/dealTimeLabel"
+        android:text="At: "
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <TextView
+        android:id="@+id/dealEst"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/dealTime"
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>
 <!-- Listview to display slider menu -->

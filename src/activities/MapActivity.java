@@ -176,9 +176,11 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
   	      	            }
 
   	                	  i.putExtra("establishment_id", estId);
+  	                	  i.putExtra("est_name", bus.getName());
   	                  	  i.putExtra("yelp_id", bus.getYelpId());
   	                      i.putExtra("name", bus.getName());
   	                      i.putExtra("rating", bus.getRating());
+  	                      i.putExtra("rating_count", bus.getRatingCount());
   	                      i.putExtra("address", bus.getAddress());
   	                      i.putExtra("city", bus.getCity());
   	                      i.putExtra("state", bus.getState());
@@ -188,6 +190,11 @@ GooglePlayServicesClient.OnConnectionFailedListener, com.google.android.gms.loca
   	                      i.putExtra("distance", bus.getDistance());
   	                      i.putExtra("mobile_url", bus.getMobileURL());
   	                      i.putExtra("day_of_week", (day_of_week == "") ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
+  	                      i.putExtra("est_lat", bus.getLatitude());
+  						  i.putExtra("est_lng", bus.getLongitude());
+  						  i.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
+  						  i.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));
+  						  i.putExtra("mob_url", bus.getMobileURL());
   	                      
   	                      businesses.clear();
   	                          // Open SingleItemView.java Activity

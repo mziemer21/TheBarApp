@@ -203,6 +203,7 @@ public class DealsTabFragment extends Fragment {
 					// Pass data "name" followed by the position
 					iDeal.putExtra("establishment_id", extrasDeal.getString("establishment_id")
 							.toString());
+					iDeal.putExtra("est_name", extrasDeal.getString("est_name"));
 					iDeal.putExtra("deal_id", obDeal.get(position).getObjectId().toString());
 					iDeal.putExtra("deal_details", obDeal.get(position).getString("details")
 							.toString());

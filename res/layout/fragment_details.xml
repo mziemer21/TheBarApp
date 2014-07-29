@@ -2,97 +2,82 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" 
-    android:background="@color/red" >"
- 
-    <TextView
-        android:id="@+id/namelabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/name"
-        android:textColor="#ffffff"
-        android:textSize="25sp" />
- 
+    android:layout_height="fill_parent"
+    android:background="@color/blue" >
+
     <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/namelabel"
         android:textColor="#ffffff"
         android:textSize="25sp" />
-    
-    <TextView
-        android:id="@+id/descriptionlabel"
-        android:layout_width="wrap_content"
+
+    <RelativeLayout
+        android:id="@+id/rating_box"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/name"
-        android:text="@string/description"
-        android:textColor="#ffffff"
-        android:textSize="25sp" />
-    
-    <TextView
-        android:id="@+id/description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/name"
-        android:layout_toRightOf="@+id/descriptionlabel"
-        android:textColor="#ffffff"
-        android:textSize="25sp" />
-    
-    <TextView
-        android:id="@+id/ratinglabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/description"
-        android:textColor="#ffffff"
-        android:text="@string/rating"
-        android:textSize="25sp" />
-    
-    <TextView
-        android:id="@+id/rating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/description"
-        android:layout_toRightOf="@+id/ratinglabel"
-        android:textColor="#ffffff"
-        android:textSize="25sp" />
-    
-    <TextView
-        android:id="@+id/pricelabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/rating"
-        android:textColor="#ffffff"
-        android:text="@string/price"
-        android:textSize="25sp" />
-    
-    <TextView
-        android:id="@+id/price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/rating"
-        android:layout_toRightOf="@+id/pricelabel"
-        android:textColor="#ffffff"
-        android:textSize="25sp" />
-    
-    <TextView
-        android:id="@+id/addresslabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/price"
-        android:textColor="#ffffff"
-        android:text="@string/address"
-        android:textSize="25sp" />
-    
+        android:background="@color/blue" >
+
+        <ImageView
+            android:id="@+id/rating_imageview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="17dp"
+            android:src="@drawable/zero_stars_lg" />
+
+        <TextView
+            android:id="@+id/review_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:layout_toRightOf="@+id/rating_imageview"
+            android:textColor="#ffffff"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/review_button"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="Add Review" />
+    </RelativeLayout>
+
     <TextView
         android:id="@+id/address"
         android:layout_width="wrap_content"
-        android:textColor="#ffffff"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/price"
-        android:layout_toRightOf="@+id/addresslabel"
+        android:layout_below="@+id/rating_box"
+        android:textColor="#ffffff"
         android:textSize="25sp" />
-    
-    
- 
+
+    <Button
+        android:id="@+id/phone_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/address"
+        android:text="Call" />
+
+    <Button
+        android:id="@+id/directions_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/phone_button"
+        android:text="Directions" />
+
+    <Button
+        android:id="@+id/info_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/directions_button"
+        android:text="More Info" />
+
 </RelativeLayout>

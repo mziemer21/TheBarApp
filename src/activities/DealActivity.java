@@ -1,6 +1,5 @@
 package activities;
 
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,9 +33,7 @@ import com.thebarapp.DealListViewAdapter;
 import com.thebarapp.DealRowItem;
 import com.thebarapp.R;
 
-public class DealActivity extends NavDrawer implements LocationListener,
-		GooglePlayServicesClient.ConnectionCallbacks,
-		GooglePlayServicesClient.OnConnectionFailedListener {
+public class DealActivity extends NavDrawer implements LocationListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 	// Declare Variables
 	ListView listview;
 	List<ParseObject> ob;
@@ -59,7 +56,6 @@ public class DealActivity extends NavDrawer implements LocationListener,
 		// Get the view from deal_listview.xml
 		setContentView(R.layout.deal_listview);
 		super.onCreate(savedInstanceState);
-		
 
 		intent = getIntent();
 		locationClient = new LocationClient(this, this, this);
@@ -124,6 +120,7 @@ public class DealActivity extends NavDrawer implements LocationListener,
 		// Locate the class table named "establishment" in Parse.com
 		ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>("Deal");
 		queryDealSearch.setLimit(10);
+		queryDealSearch.include("establishment");
 		if (query != "") {
 			queryDealSearch.whereContains("title", query);
 		}
@@ -131,8 +128,7 @@ public class DealActivity extends NavDrawer implements LocationListener,
 			queryDealSearch.whereContains("day", day_of_week);
 		}
 		if (distance != null) {
-			queryDealSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation),
-					Double.parseDouble(distance));
+			queryDealSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation), Double.parseDouble(distance));
 		}
 		if ((food == true) || (drinks == true)) {
 			if (food == false) {
@@ -199,14 +195,12 @@ public class DealActivity extends NavDrawer implements LocationListener,
 		// Retrieve object "title" from Parse.com
 		// database
 		for (ParseObject deal : ob) {
-			DealRowItem item = new DealRowItem(deal.get("title").toString(), deal.get("rating")
-					.toString());
+			DealRowItem item = new DealRowItem(deal.get("title").toString(), deal.get("rating").toString());
 			rowItems.add(item);
 		}
 
 		// Pass the results into an ArrayAdapter
-		DealListViewAdapter adapter = new DealListViewAdapter(DealActivity.this,
-				R.layout.listview_item_deal, rowItems);
+		DealListViewAdapter adapter = new DealListViewAdapter(DealActivity.this, R.layout.listview_item_deal, rowItems);
 
 		// Binds the Adapter to the ListView
 		listview.setAdapter(adapter);
@@ -224,6 +218,8 @@ public class DealActivity extends NavDrawer implements LocationListener,
 				// Class
 				Intent i = new Intent(DealActivity.this, DealDetailsActivity.class);
 				est = (ParseObject) ob.get(position).get("establishment");
+				ParseObject curEst = ob.get(position).getParseObject("establishment");
+				String est_name = curEst.getString("name");
 				// Pass data to next activity
 				i.putExtra("deal_id", ob.get(position).getObjectId().toString());
 				i.putExtra("deal_title", ob.get(position).getString("title").toString());
@@ -231,26 +227,26 @@ public class DealActivity extends NavDrawer implements LocationListener,
 				i.putExtra("deal_restrictions", ob.get(position).getInt("restrictions"));
 				i.putExtra("yelp_id", ob.get(position).getString("yelp_id"));
 				i.putExtra("establishment_id", est.getObjectId().toString());
-				
+				i.putExtra("est_name", est_name);
+
 				Date dateStart = ob.get(position).getDate("time_start");
 				Date dateEnd = ob.get(position).getDate("time_end");
-			    SimpleDateFormat simpDate, simpDateNo;
+				SimpleDateFormat simpDate, simpDateNo;
 
-			    simpDateNo = new SimpleDateFormat("hh:mm");
-			    simpDate = new SimpleDateFormat("hh:mm a");	
-			    
-			    String start = simpDateNo.format(dateStart);
-			    String end = simpDate.format(dateEnd);
-			    
-			    if(start.charAt(0) == '0'){
-			    	start.substring(1);
-			    }
-			    
-			    if(simpDate.format(dateEnd).charAt(0) == '0'){
-			    	end.substring(1);
-			    }
-			    	
-				
+				simpDateNo = new SimpleDateFormat("hh:mm");
+				simpDate = new SimpleDateFormat("hh:mm a");
+
+				String start = simpDateNo.format(dateStart);
+				String end = simpDate.format(dateEnd);
+
+				if (start.charAt(0) == '0') {
+					start.substring(1);
+				}
+
+				if (simpDate.format(dateEnd).charAt(0) == '0') {
+					end.substring(1);
+				}
+
 				i.putExtra("deal_time", start + " - " + end);
 				// Open SingleItemView.java Activity
 				startActivity(i);
@@ -267,14 +263,12 @@ public class DealActivity extends NavDrawer implements LocationListener,
 		builder.setTitle("No Results");
 
 		// set dialog message
-		builder.setMessage("Sorry, nothing was found.  Try and widen your search.")
-				.setCancelable(false)
-				.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-						finish();
-					}
-				});
+		builder.setMessage("Sorry, nothing was found.  Try and widen your search.").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+				finish();
+			}
+		});
 		// create alert dialog
 		AlertDialog alertDialog = builder.create();
 

@@ -33,7 +33,7 @@ public class MapSearchActivity extends NavDrawer{
 	@Override
     public void onCreate(Bundle savedInstanceState) {
 		// Get the view from listview_main.xml
-        setContentView(R.layout.map_filter);
+        setContentView(R.layout.map_search);
         super.onCreate(savedInstanceState);
         
 

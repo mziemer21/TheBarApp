@@ -194,8 +194,8 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 				obCount = queryDealSearch.count();
 				ob = queryDealSearch.find();
 			} catch (Exception e) {
-				Log.e("Error", e.getMessage());
-				e.printStackTrace();
+				//Log.e("Error", e.getMessage());
+				//e.printStackTrace();
 			}
 
 			if (obCount > 0) {
@@ -295,13 +295,16 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 						establishment_id = ob.get(0).getObjectId().toString();
 					}
 
+					currentLocation = getLocation();
 					// Send single item click data to SingleItemView Class
 					Intent i = new Intent(ListActivity.this, DetailsActivity.class);
 					// Pass data "name" followed by the position
 					i.putExtra("establishment_id", establishment_id);
+					i.putExtra("est_name", businesses.get(position).getName());
 					i.putExtra("yelp_id", businesses.get(position).getYelpId());
 					i.putExtra("name", businesses.get(position).getName());
 					i.putExtra("rating", businesses.get(position).getRating());
+					i.putExtra("rating_count", businesses.get(position).getRatingCount());
 					i.putExtra("address", businesses.get(position).getAddress());
 					i.putExtra("city", businesses.get(position).getCity());
 					i.putExtra("state", businesses.get(position).getState());
@@ -311,6 +314,11 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 					i.putExtra("distance", businesses.get(position).getDistance());
 					i.putExtra("mobile_url", businesses.get(position).getMobileURL());
 					i.putExtra("day_of_week", (day_of_week == "") ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
+					i.putExtra("est_lat", businesses.get(position).getLatitude());
+					i.putExtra("est_lng", businesses.get(position).getLongitude());
+					i.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
+					i.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));
+					i.putExtra("mob_url", businesses.get(position).getMobileURL());
 
 					businesses.clear();
 					// Open SingleItemView.java Activity

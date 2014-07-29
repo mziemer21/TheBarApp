@@ -18,7 +18,7 @@ import com.thebarapp.R;
 
 public class DealDetailsActivity extends NavDrawer {
 	// Declare Variables
-	String deal_id, deal_title, deal_details, deal_restrictions, deal_time;
+	String deal_id, deal_title, deal_details, deal_restrictions, deal_time, est_name;
 	Integer rating, price, up_votes, down_votes;
 	Intent intent;
 	ToggleButton upVoteButton, downVoteButton;
@@ -37,6 +37,7 @@ public class DealDetailsActivity extends NavDrawer {
 		deal_details = intent.getStringExtra("deal_details");
 		deal_restrictions = intent.getStringExtra("deal_restrictions");
 		deal_time = intent.getStringExtra("deal_time");
+		est_name = intent.getStringExtra("est_name");
 		
 
 		TextView title = (TextView) findViewById(R.id.dealTitle);
@@ -50,6 +51,9 @@ public class DealDetailsActivity extends NavDrawer {
 		
 		TextView time = (TextView) findViewById(R.id.dealTime);
 		time.setText(deal_time);
+		
+		TextView est = (TextView) findViewById(R.id.dealEst);
+		est.setText(est_name);
 
 		upVoteButton = (ToggleButton) findViewById(R.id.deal_up_vote_button);
 		upVoteButton.setOnClickListener(new OnClickListener() {

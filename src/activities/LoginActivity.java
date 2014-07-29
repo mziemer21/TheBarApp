@@ -39,9 +39,9 @@ public class LoginActivity extends Activity {
 					showNextActivity();
 				}
 				
-				setContentView(R.layout.activity_login);
+				
 		super.onCreate(savedInstanceState);
-		
+		setContentView(R.layout.activity_login);
 		
 		// Add code to print out the key hash
 		try{ 

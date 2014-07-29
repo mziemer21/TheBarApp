@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import activities.LoginActivity;
 import activities.LogoutActivity;
+import activities.MainActivity;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.content.Intent;
@@ -50,6 +51,7 @@ public class NavDrawer extends FragmentActivity {
 	private ArrayList<NavDrawerItem> navDrawerItems;
 	private NavDrawerListAdapter adapter;
 	private String callingClass;
+	static Boolean fragmentLaunch = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -164,7 +166,7 @@ public class NavDrawer extends FragmentActivity {
 
 		if (savedInstanceState == null) {
 			// on first time display view for first nav item
-			if (callingClass.equalsIgnoreCase("MainActivity")) {
+			if ((callingClass.equalsIgnoreCase("MainActivity") && (!fragmentLaunch))) {
 				displayView(0);
 			}
 		}
@@ -219,6 +221,7 @@ public class NavDrawer extends FragmentActivity {
 	private void displayView(int position) {
 		// update the main content by replacing fragments
 		Fragment fragment = null;
+		fragmentLaunch = true;
 		switch (position) {
 		case 0:
 			fragment = new HomeFragment();
@@ -261,7 +264,8 @@ public class NavDrawer extends FragmentActivity {
 				}
 				fragmentManager.beginTransaction().replace(R.id.frame_container_tabs, fragment)
 						.addToBackStack(fragment.getTag()).commit();
-			} else if (callingClass.equalsIgnoreCase("MainActivity")) {
+			} else {
+				setContentView(R.layout.activity_main);
 				fragmentManager.beginTransaction().replace(R.id.frame_container, fragment)
 						.addToBackStack(fragment.getTag()).commit();
 			}
@@ -270,7 +274,7 @@ public class NavDrawer extends FragmentActivity {
 			mDrawerList.setItemChecked(position, true);
 			mDrawerList.setSelection(position);
 			setTitle(navMenuTitles[position]);
-			mDrawerLayout.closeDrawer(mDrawerList);
+			//mDrawerLayout.closeDrawer(mDrawerList);
 		} else {
 			// error in creating fragment
 			Log.e("MainActivity", "Error in creating fragment");
@@ -315,5 +319,13 @@ public class NavDrawer extends FragmentActivity {
 	public void onTabReselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	@Override
+	public void onBackPressed() {
+		if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+			getSupportFragmentManager().popBackStack();
+		}
+		super.onBackPressed();
 	}
 }
