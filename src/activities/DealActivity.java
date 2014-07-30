@@ -195,7 +195,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 		// Retrieve object "title" from Parse.com
 		// database
 		for (ParseObject deal : ob) {
-			DealRowItem item = new DealRowItem(deal.get("title").toString(), deal.get("rating").toString());
+			DealRowItem item = new DealRowItem(deal.get("title").toString(), deal.get("rating").toString(), formatTime(deal.getDate("time_start"), deal.getDate("time_end")));
 			rowItems.add(item);
 		}
 
@@ -228,26 +228,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 				i.putExtra("yelp_id", ob.get(position).getString("yelp_id"));
 				i.putExtra("establishment_id", est.getObjectId().toString());
 				i.putExtra("est_name", est_name);
-
-				Date dateStart = ob.get(position).getDate("time_start");
-				Date dateEnd = ob.get(position).getDate("time_end");
-				SimpleDateFormat simpDate, simpDateNo;
-
-				simpDateNo = new SimpleDateFormat("hh:mm a");
-				simpDate = new SimpleDateFormat("hh:mm a");
-
-				String start = simpDateNo.format(dateStart);
-				String end = simpDate.format(dateEnd);
-
-				if (start.charAt(0) == '0') {
-					start.substring(1);
-				}
-
-				if (simpDate.format(dateEnd).charAt(0) == '0') {
-					end.substring(1);
-				}
-
-				i.putExtra("deal_time", start + " - " + end);
+				i.putExtra("deal_time", formatTime(ob.get(position).getDate("time_start"), ob.get(position).getDate("time_end")));
 				// Open SingleItemView.java Activity
 				startActivity(i);
 
@@ -305,5 +286,27 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 			dealProgressDialog.dismiss();
 			dealProgressDialog = null;
 		}
+	}
+	
+	private String formatTime(Date start, Date end){
+		Date dateStart = start;
+		Date dateEnd = end;
+		SimpleDateFormat simpDate, simpDateNo;
+
+		simpDateNo = new SimpleDateFormat("hh:mm a");
+		simpDate = new SimpleDateFormat("hh:mm a");
+
+		String startTime = simpDateNo.format(dateStart);
+		String endTime = simpDate.format(dateEnd);
+
+		if (startTime.charAt(0) == '0') {
+			startTime.substring(1);
+		}
+
+		if (endTime.charAt(0) == '0') {
+			endTime.substring(1);
+		}
+		
+		return startTime + " - " + endTime;
 	}
 }

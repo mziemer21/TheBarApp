@@ -23,8 +23,7 @@ public class DealListViewAdapter extends ArrayAdapter<DealRowItem> {
 
 	/* private view holder class */
 	private class ViewHolder {
-		TextView txtTitle;
-		TextView rating;
+		TextView txtTitle, rating, time;
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -38,12 +37,14 @@ public class DealListViewAdapter extends ArrayAdapter<DealRowItem> {
 			holder = new ViewHolder();
 			holder.rating = (TextView) convertView.findViewById(R.id.deal_list_rating);
 			holder.txtTitle = (TextView) convertView.findViewById(R.id.deal_list_title);
+			holder.time = (TextView) convertView.findViewById(R.id.deal_list_time);
 			convertView.setTag(holder);
 		} else
 			holder = (ViewHolder) convertView.getTag();
 
 		holder.rating.setText(rowItem.getRating() + "%");
 		holder.txtTitle.setText(rowItem.getTitle());
+		holder.time.setText(rowItem.getTime());
 
 		return convertView;
 	}

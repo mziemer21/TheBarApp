@@ -3,10 +3,12 @@ package com.thebarapp;
 public class DealRowItem {
 	private String title;
 	private String rating;
+	private String time;
 
-	public DealRowItem(String title, String rating) {
+	public DealRowItem(String title, String rating, String time) {
 		this.title = title;
 		this.rating = rating;
+		this.time = time;
 	}
 
 	public String getRating() {
@@ -23,6 +25,14 @@ public class DealRowItem {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+	
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
 	}
 
 	@Override
