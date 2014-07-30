@@ -47,6 +47,7 @@ public class DealAddActivity extends NavDrawer {
 	ParseObject establishment = null, deal_type = null;
 	ParseGeoPoint location = null;
 	String switchText, result, searchString, lat = null, lng = null;
+	static String timeOfDay;
 	Spinner spinner;
 	Calendar calendar = Calendar.getInstance();
 	Integer today = calendar.get(Calendar.DAY_OF_WEEK), deal_count = 0;
@@ -262,7 +263,12 @@ public class DealAddActivity extends NavDrawer {
 			myCal.set(Calendar.HOUR_OF_DAY, hourOfDay);
 			myCal.set(Calendar.MINUTE, minute);
 			myDateStart = myCal.getTime();
-			timeStartText.setText(hourOfDay + ":" + minute);
+			if(hourOfDay < 12){
+				timeOfDay = "am";
+			} else {
+				timeOfDay = "pm";
+			}
+			timeStartText.setText(hourOfDay%12 + ":" + minute + " " + timeOfDay);
 		}
 	}
 	
@@ -285,7 +291,12 @@ public class DealAddActivity extends NavDrawer {
 			myCal.set(Calendar.HOUR_OF_DAY, hourOfDay);
 			myCal.set(Calendar.MINUTE, minute);
 			myDateEnd = myCal.getTime();
-			timeEndText.setText(hourOfDay + ":" + minute);
+			if(hourOfDay < 12){
+				timeOfDay = "am";
+			} else {
+				timeOfDay = "pm";
+			}
+			timeEndText.setText(hourOfDay%12 + ":" + minute + " " + timeOfDay);
 		}
 	}
 
