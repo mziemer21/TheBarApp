@@ -26,7 +26,7 @@ public class AboutActivity extends NavDrawer {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		setContentView(R.layout.fragment_about);
+		setContentView(R.layout.activity_about);
 		super.onCreate(savedInstanceState);
 		GoogleAnalytics.getInstance(this).getLogger().setLogLevel(LogLevel.VERBOSE);
 		 // Get tracker.

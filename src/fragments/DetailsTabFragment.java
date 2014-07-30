@@ -25,7 +25,7 @@ import com.thebarapp.R;
 public class DetailsTabFragment extends Fragment {
 
 	// Declare Variables
-	String name, address, review_count, phoneDisplay, phoneCall, estLat, estLng, curLat, curLng, mobUrl;
+	String name, address, city, state, review_count, phoneDisplay, phoneCall, estLat, estLng, curLat, curLng, mobUrl;
 	TextView txtName, txtAddress, txtReviewCount;
 	Double rating;
 	ImageView ratingImg;
@@ -41,6 +41,8 @@ public class DetailsTabFragment extends Fragment {
 		Bundle extraDetails = getArguments();
 		name = extraDetails.getString("name");
 		address = extraDetails.getString("address");
+		city = extraDetails.getString("city");
+		state = extraDetails.getString("state");
 		rating = Double.parseDouble(extraDetails.getString("rating"));
 		review_count = extraDetails.getString("rating_count");
 		phoneDisplay = extraDetails.getString("display_phone");
@@ -64,7 +66,7 @@ public class DetailsTabFragment extends Fragment {
 
 		// Load the text into the TextView
 		txtName.setText(name);
-		txtAddress.setText(address);
+		txtAddress.setText(address + " " + city + " " + state);
 		txtReviewCount.setText(review_count + " reviews");
 		
 		launch_phone.setOnClickListener(new OnClickListener() {

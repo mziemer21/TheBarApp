@@ -26,7 +26,7 @@ public class ChangeLocationActivity extends NavDrawer {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		setContentView(R.layout.fragment_change_location);
+		setContentView(R.layout.activity_change_location);
 		super.onCreate(savedInstanceState);
 		GoogleAnalytics.getInstance(this).getLogger().setLogLevel(LogLevel.VERBOSE);
 		 // Get tracker.
