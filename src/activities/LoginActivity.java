@@ -97,7 +97,7 @@ public class LoginActivity extends Activity {
 		loginProgressDialog = ProgressDialog.show(
 				LoginActivity.this, "", "Logging in...", true);
 		List<String> permissions = Arrays.asList("public_profile", "user_about_me",
-				"user_relationships", "user_birthday", "user_location");
+				"user_relationships", "user_birthday", "user_location", "email");
 		ParseFacebookUtils.logIn(permissions, this, new LogInCallback() {
 			@Override
 			public void done(ParseUser user, ParseException err) {
@@ -127,10 +127,8 @@ public class LoginActivity extends Activity {
 		{
 		Intent i = new Intent(getApplicationContext(), MainActivity.class);
     	startActivity(i);
-		} else 
-		{
-			finish();
 		}
+		finish();
 	}
 	
 	@Override

@@ -58,7 +58,6 @@
     <!-- Nav Drawer Menu Items -->
     <string-array name="nav_drawer_items">
         <item >Home</item>
-        <item >Notifications</item>
         <item >Login/Logout</item>
         <item >Change Location</item>
         <item >Feedback</item>
@@ -70,11 +69,10 @@
     <!-- Keep them in order as the titles are in -->
     <array name="nav_drawer_icons">
         <item>@drawable/ic_home</item>
-        <item>@drawable/ic_notifications</item>
         <item>@drawable/ic_logout</item>
         <item>@drawable/ic_change_location</item>
         <item>@drawable/ic_feedback</item>
-        <item>@drawable/ic_about</item>
+        <item>@drawable/ic_notifications</item>
     </array>
     <!-- End Nav Drawer List Item Icons -->
     

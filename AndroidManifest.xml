@@ -89,6 +89,15 @@
                   android:label="@string/app_name" 
                   android:launchMode="singleTop"/>
         
+        <activity android:name="activities.AboutActivity"
+                  android:label="@string/app_name" />
+        
+        <activity android:name="activities.FeedbackActivity"
+                  android:label="@string/app_name" />
+        
+        <activity android:name="activities.ChangeLocationActivity"
+                  android:label="@string/app_name" />
+        
         <meta-data android:name="com.facebook.sdk.ApplicationId" 
             android:value="1403369603273131"/>
         

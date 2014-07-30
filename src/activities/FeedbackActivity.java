@@ -22,11 +22,11 @@ import com.thebarapp.R;
  * @author zieme_000
  * 
  */
-public class MainActivity extends NavDrawer {
+public class FeedbackActivity extends NavDrawer {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.fragment_feedback);
 		super.onCreate(savedInstanceState);
 		GoogleAnalytics.getInstance(this).getLogger().setLogLevel(LogLevel.VERBOSE);
 		 // Get tracker.
@@ -34,54 +34,12 @@ public class MainActivity extends NavDrawer {
 
         // Set screen name.
         // Where path is a String representing the screen name.
-        t.setScreenName("Main Activity");
+        t.setScreenName("Feedback Activity");
 
         // Send a screen view.
         t.send(new HitBuilders.AppViewBuilder().build());
         GoogleAnalytics.getInstance(getBaseContext()).dispatchLocalHits();
         
-        Button bars, random, map, deals;
-
-		bars = (Button) findViewById(R.id.buttonList);
-		random = (Button) findViewById(R.id.buttonRandom);
-		map = (Button) findViewById(R.id.buttonMap);
-		deals = (Button) findViewById(R.id.buttonDeals);
-
-		bars.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				Intent ListActivity = new Intent(MainActivity.this, ListActivity.class);
-				startActivity(ListActivity);
-			}
-		});
-
-		random.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				Intent RandomActivity = new Intent(MainActivity.this, RandomSearchActivity.class);
-				startActivity(RandomActivity);
-			}
-		});
-
-		map.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				Intent MapActivity = new Intent(MainActivity.this, MapActivity.class);
-				startActivity(MapActivity);
-			}
-		});
-
-		deals.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				Intent DealActivity = new Intent(MainActivity.this, DealSearchActivity.class);
-				startActivity(DealActivity);
-			}
-		});
 	}
 
 	/*@Override

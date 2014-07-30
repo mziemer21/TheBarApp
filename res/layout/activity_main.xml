@@ -4,11 +4,103 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Framelayout to display Fragments -->
-    <FrameLayout
-        android:id="@+id/frame_container"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <ImageView
+        android:id="@+id/imgView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:scaleType="center" android:src="@drawable/capitol_night"/>
+    
+    <TableLayout
+        android:id="@+id/buttonBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:stretchColumns="*" >
+        
+        <TableRow
+        android:id="@+id/tr1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dip"
+        android:layout_weight="1" >
+
+		    <Button
+		        android:id="@+id/buttonList"
+				android:layout_width="0dip"
+            	android:layout_height="match_parent"
+            	android:layout_weight="0.5"
+		        android:background="@drawable/selector_fragment_home"
+		        android:shadowColor="#A8A8A8"
+		        android:shadowDx="0"
+		        android:shadowDy="0"
+		        android:shadowRadius="5"
+		        android:text="Bars"
+		        android:textColor="#FFFFFF"
+		        android:textSize="30sp"
+		        android:layout_margin="15dip" />
+	
+		    <Button
+		        android:id="@+id/buttonRandom"
+		        android:layout_width="0dip"
+            	android:layout_height="match_parent"
+            	android:layout_weight="0.5"
+		        android:background="@drawable/selector_fragment_home"
+		        android:shadowColor="#A8A8A8"
+		        android:shadowDx="0"
+		        android:shadowDy="0"
+		        android:shadowRadius="5"
+		        android:text="Random"
+		        android:textColor="#FFFFFF"
+		        android:textSize="30sp"
+		        android:layout_margin="15dip" />
+		</TableRow>
+		
+        <TableRow
+        android:id="@+id/tr2"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1" >
+		
+		    <Button
+		        android:id="@+id/buttonMap"
+		        android:layout_width="0dip"
+            	android:layout_height="match_parent"
+            	android:layout_weight="0.5"
+		        android:background="@drawable/selector_fragment_home"
+		        android:shadowColor="#A8A8A8"
+		        android:shadowDx="0"
+		        android:shadowDy="0"
+		        android:shadowRadius="5"
+		        android:text="Map"
+		        android:textColor="#FFFFFF"
+		        android:textSize="30sp"
+		        android:layout_margin="15dip" />
+		    
+		    <Button
+		        android:id="@+id/buttonDeals"
+		        android:layout_width="0dip"
+            	android:layout_height="match_parent"
+            	android:layout_weight="0.5"
+		        android:background="@drawable/selector_fragment_home"
+		        android:shadowColor="#A8A8A8"
+		        android:shadowDx="0"
+		        android:shadowDy="0"
+		        android:shadowRadius="5"
+		        android:text="Deals"
+		        android:textColor="#FFFFFF"
+		        android:textSize="30sp"
+		        android:layout_margin="15dip" />
+		    
+		</TableRow>
+	</TableLayout>
+    
+</RelativeLayout>
 
     <!-- Listview to display slider menu -->
     <ListView

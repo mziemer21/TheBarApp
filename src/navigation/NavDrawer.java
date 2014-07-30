@@ -2,6 +2,9 @@ package navigation;
 
 import java.util.ArrayList;
 
+import activities.AboutActivity;
+import activities.ChangeLocationActivity;
+import activities.FeedbackActivity;
 import activities.LoginActivity;
 import activities.LogoutActivity;
 import activities.MainActivity;
@@ -19,6 +22,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,11 +31,6 @@ import android.widget.ListView;
 
 import com.parse.ParseUser;
 import com.thebarapp.R;
-
-import fragments.AboutFragment;
-import fragments.ChangeLocationFragment;
-import fragments.FeedbackFragment;
-import fragments.HomeFragment;
 
 public class NavDrawer extends FragmentActivity {
 	private DrawerLayout mDrawerLayout;
@@ -51,16 +50,15 @@ public class NavDrawer extends FragmentActivity {
 	private ArrayList<NavDrawerItem> navDrawerItems;
 	private NavDrawerListAdapter adapter;
 	private String callingClass;
-	static Boolean fragmentLaunch = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		callingClass = this.getClass().getSimpleName();
-		if(callingClass.equalsIgnoreCase("MapActivity")){
+		if (callingClass.equalsIgnoreCase("MapActivity")) {
 			setContentView(R.layout.activity_map);
 		}
-	
+
 		mTitle = mDrawerTitle = getTitle();
 
 		// load slide menu items
@@ -108,10 +106,19 @@ public class NavDrawer extends FragmentActivity {
 		} else if (callingClass.equalsIgnoreCase("RandomSearchActivity")) {
 			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_random_search);
 			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_random_search);
+		} else if (callingClass.equalsIgnoreCase("FeedbackActivity")) {
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_feedback);
+			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_feedback);
+		} else if (callingClass.equalsIgnoreCase("AboutActivity")) {
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_about);
+			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_about);
+		} else if (callingClass.equalsIgnoreCase("ChangeLocationActivity")) {
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_change_location);
+			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_change_location);
 		}
 
 		navDrawerItems = new ArrayList<NavDrawerItem>();
-		
+
 		// adding nav drawer items to array
 		// Home
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
@@ -120,13 +127,9 @@ public class NavDrawer extends FragmentActivity {
 		// Photos
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
 		// Communities, Will add a counter here
-		navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1),
-				true, "22"));
+		navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1), true, "22"));
 		// Pages
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
-		// What's hot, We will add a counter here
-		navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1),
-				true, "50+"));
 
 		// Recycle the typed array
 		navMenuIcons.recycle();
@@ -163,13 +166,6 @@ public class NavDrawer extends FragmentActivity {
 			}
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-		if (savedInstanceState == null) {
-			// on first time display view for first nav item
-			if ((callingClass.equalsIgnoreCase("MainActivity") && (!fragmentLaunch))) {
-				displayView(0);
-			}
-		}
 	}
 
 	/**
@@ -220,64 +216,64 @@ public class NavDrawer extends FragmentActivity {
 	 * */
 	private void displayView(int position) {
 		// update the main content by replacing fragments
-		Fragment fragment = null;
-		fragmentLaunch = true;
 		switch (position) {
 		case 0:
-			fragment = new HomeFragment();
-			break;
-		case 1:
-			fragment = new ChangeLocationFragment();
-			break;
-		case 2:
-			if(ParseUser.getCurrentUser().getCreatedAt() == null){
-				Intent userDetailsFragment = new Intent(this, LoginActivity.class);
-				startActivity(userDetailsFragment);
+			if (callingClass.equalsIgnoreCase("MainActivity")) {
+				mDrawerLayout.closeDrawer(Gravity.LEFT);
+				break;
 			} else {
-				Intent userDetailsFragment = new Intent(this, LogoutActivity.class);
-				startActivity(userDetailsFragment);
+				Intent home = new Intent(this, MainActivity.class);
+				startActivity(home);
+				mDrawerLayout.closeDrawer(Gravity.LEFT);
+				break;
 			}
-			break;
+		case 1:
+			if (callingClass.equalsIgnoreCase("LogoutActivity")) {
+				mDrawerLayout.closeDrawer(Gravity.LEFT);
+				break;
+			} else {
+				if (ParseUser.getCurrentUser().getCreatedAt() == null) {
+					Intent userLogin = new Intent(this, LoginActivity.class);
+					startActivity(userLogin);
+				} else {
+					Intent userLogout = new Intent(this, LogoutActivity.class);
+					startActivity(userLogout);
+				}
+				mDrawerLayout.closeDrawer(Gravity.LEFT);
+				break;
+			}
+		case 2:
+			if (callingClass.equalsIgnoreCase("ChangeLocationActivity")) {
+				mDrawerLayout.closeDrawer(Gravity.LEFT);
+				break;
+			} else {
+				Intent changeLocation = new Intent(this, ChangeLocationActivity.class);
+				startActivity(changeLocation);
+				mDrawerLayout.closeDrawer(Gravity.LEFT);
+				break;
+			}
 		case 3:
-			fragment = new ChangeLocationFragment();
-			break;
+			if (callingClass.equalsIgnoreCase("FeedbackActivity")) {
+				mDrawerLayout.closeDrawer(Gravity.LEFT);
+				break;
+			} else {
+				Intent feedback = new Intent(this, FeedbackActivity.class);
+				startActivity(feedback);
+				mDrawerLayout.closeDrawer(Gravity.LEFT);
+				break;
+			}
 		case 4:
-			fragment = new FeedbackFragment();
-			break;
-		case 5:
-			fragment = new AboutFragment();
-			break;
-
+			if (callingClass.equalsIgnoreCase("AboutActivity")) {
+				mDrawerLayout.closeDrawer(Gravity.LEFT);
+				break;
+			} else {
+				Intent about = new Intent(this, AboutActivity.class);
+				startActivity(about);
+				mDrawerLayout.closeDrawer(Gravity.LEFT);
+				break;
+			}
 		default:
 			break;
-		}
-
-		if (fragment != null) {
-			FragmentManager fragmentManager = getSupportFragmentManager();
-
-			if (callingClass.equalsIgnoreCase("DetailsActivity")) {
-				ActionBar actionBar = getActionBar();
-				actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-				ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-				if (viewPager.getVisibility() == 0) {
-					viewPager.setVisibility(8);
-				}
-				fragmentManager.beginTransaction().replace(R.id.frame_container_tabs, fragment)
-						.addToBackStack(fragment.getTag()).commit();
-			} else {
-				setContentView(R.layout.activity_main);
-				fragmentManager.beginTransaction().replace(R.id.frame_container, fragment)
-						.addToBackStack(fragment.getTag()).commit();
-			}
-
-			// update selected item and title, then close the drawer
-			mDrawerList.setItemChecked(position, true);
-			mDrawerList.setSelection(position);
-			setTitle(navMenuTitles[position]);
-			//mDrawerLayout.closeDrawer(mDrawerList);
-		} else {
-			// error in creating fragment
-			Log.e("MainActivity", "Error in creating fragment");
 		}
 	}
 
@@ -320,7 +316,7 @@ public class NavDrawer extends FragmentActivity {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 		if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
