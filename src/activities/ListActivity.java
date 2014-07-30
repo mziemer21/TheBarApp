@@ -9,7 +9,6 @@ import navigation.NavDrawer;
 import yelp.API_Static_Stuff;
 import yelp.Yelp;
 import yelp.YelpParser;
-import activities.DealAddActivity.TimePickerFragmentEnd;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -19,7 +18,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -295,9 +293,10 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 
 						@Override
 						public void onClick(View arg0) {
+							resumed = false;
 							loadOffset += 20;
+							locationClient.disconnect();
 							locationClient.connect();
-							new RemoteDataTask(ListActivity.this).execute();
 						}
 					});
 				}
