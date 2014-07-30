@@ -296,6 +296,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 						@Override
 						public void onClick(View arg0) {
 							loadOffset += 20;
+							locationClient.connect();
 							new RemoteDataTask(ListActivity.this).execute();
 						}
 					});

@@ -6,8 +6,8 @@ android:radius="14dp"
 <gradient
 android:angle="45"
 android:centerX="35%"
-android:centerColor="#198CFF"
-android:startColor="#449DEF"
+android:centerColor="@color/red"
+android:startColor="@color/red"
 android:endColor="#2F6699"
 android:type="linear"
 />

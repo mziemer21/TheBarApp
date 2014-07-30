@@ -27,6 +27,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -225,6 +226,7 @@ public class DealAddActivity extends NavDrawer {
 							dealAddProgressDialog = null;
 						}
 						DealAddActivity.this.finish();
+						Toast.makeText(getApplicationContext(), "Deal Added!", Toast.LENGTH_LONG).show();
 					}
 				}.execute();
 			}
