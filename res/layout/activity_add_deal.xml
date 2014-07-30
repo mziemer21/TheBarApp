@@ -31,7 +31,8 @@
             android:layout_alignRight="@+id/edit_deal_details"
             android:layout_below="@+id/deal_title"
             android:ems="10"
-            android:inputType="text" />
+            android:maxLength="25"
+            android:inputType="textCapWords" />
 
         <!-- End Title -->
 

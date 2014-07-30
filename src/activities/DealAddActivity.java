@@ -10,9 +10,11 @@ import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Verb;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -63,7 +65,7 @@ public class DealAddActivity extends NavDrawer {
 		super.onCreate(savedInstanceState);
 
 		intent = getIntent();
-		
+
 		timeStartText = (TextView) findViewById(R.id.deal_time_start_text);
 		timeEndText = (TextView) findViewById(R.id.deal_time_end_text);
 
@@ -71,165 +73,173 @@ public class DealAddActivity extends NavDrawer {
 		timeStartButton = (Button) findViewById(R.id.time_start_button);
 		timeEndButton = (Button) findViewById(R.id.time_end_button);
 		spinner = (Spinner) findViewById(R.id.deal_day_spinner);
-		
+
 		setDate(today);
-		
+
 		timeStartButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
 				DialogFragment newFragment = new TimePickerFragmentStart();
-			    newFragment.show(getSupportFragmentManager(), "timePicker");
+				newFragment.show(getSupportFragmentManager(), "timePicker");
 			}
 		});
-		
+
 		timeEndButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
 				DialogFragment newFragment = new TimePickerFragmentEnd();
-			    newFragment.show(getSupportFragmentManager(), "timePicker");
+				newFragment.show(getSupportFragmentManager(), "timePicker");
 			}
 		});
-	
 
 		submitButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
-				if (dealAddProgressDialog != null) {
-					dealAddProgressDialog.dismiss();
-					dealAddProgressDialog = null;
-				}
-				// Create a progressdialog
-				dealAddProgressDialog = new ProgressDialog(DealAddActivity.this);
-				// Set progressdialog message
-				dealAddProgressDialog.setMessage("Saving...");
-				dealAddProgressDialog.setIndeterminate(false);
-				// Show progressdialog
-				dealAddProgressDialog.show();
 
-				new AsyncTask<Void, Void, Void>() {
-					@Override
-					protected Void doInBackground(Void... params) {
-						
-						mEdit = (EditText) findViewById(R.id.edit_deal_title);
-						deal.put("title", mEdit.getText().toString());
-						mEdit = (EditText) findViewById(R.id.edit_deal_details);
-						deal.put("details", mEdit.getText().toString());
-						mEdit = (EditText) findViewById(R.id.edit_deal_restrictions);
-						deal.put("restrictions", mEdit.getText().toString());
+				mEdit = (EditText) findViewById(R.id.edit_deal_title);
+				if (mEdit.getText().toString().matches("")) {
+					displayError("Please enter a title.");
+				} else if (myDateStart == null) {
+					displayError("Please select a start time.");
+				} else if (myDateEnd == null) {
+					displayError("Please select a end time.");
+				} else {
 
+					if (dealAddProgressDialog != null) {
+						dealAddProgressDialog.dismiss();
+						dealAddProgressDialog = null;
+					}
+					// Create a progressdialog
+					dealAddProgressDialog = new ProgressDialog(DealAddActivity.this);
+					// Set progressdialog message
+					dealAddProgressDialog.setMessage("Saving...");
+					dealAddProgressDialog.setIndeterminate(false);
+					// Show progressdialog
+					dealAddProgressDialog.show();
 
-						deal.put("up_votes", 0);
-						deal.put("down_votes", 0);
+					new AsyncTask<Void, Void, Void>() {
+						@Override
+						protected Void doInBackground(Void... params) {
 
-						spinner = (Spinner) findViewById(R.id.deal_day_spinner);
-						deal.put("day", spinner.getSelectedItem().toString());
-						deal.put("yelp_id", intent.getStringExtra("yelp_id"));
+							deal.put("title", mEdit.getText().toString());
+							mEdit = (EditText) findViewById(R.id.edit_deal_details);
+							deal.put("details", mEdit.getText().toString());
+							mEdit = (EditText) findViewById(R.id.edit_deal_restrictions);
+							deal.put("restrictions", mEdit.getText().toString());
 
-						ParseQuery<ParseObject> queryEstablishment = ParseQuery.getQuery("Establishment");
-						queryEstablishment.whereEqualTo("objectId", intent.getStringExtra("establishment_id"));
-						try {
-							establishment = queryEstablishment.getFirst();
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+							deal.put("up_votes", 0);
+							deal.put("down_votes", 0);
 
-						if (establishment != null) {
-							Log.d("establishment", establishment.toString());
-							location = establishment.getParseGeoPoint("location");
-							deal_count = Integer.parseInt(establishment.getString("deal_count")) + 1;
-							establishment.put("deal_count", deal_count.toString());
-						} else {
-							searchString = intent.getStringExtra("address").replaceAll("\\s+", "+") + "+" + intent.getStringExtra("city").replaceAll("\\s+", "+") + "+"
-									+ intent.getStringExtra("state").replaceAll("\\s+", "+") + "+" + intent.getStringExtra("zip");
-							OAuthRequest request = new OAuthRequest(Verb.GET, "http://maps.googleapis.com/maps/api/geocode/json?address=" + searchString + "&sensor=true");
-							Response response = request.send();
-							result = response.getBody();
+							spinner = (Spinner) findViewById(R.id.deal_day_spinner);
+							deal.put("day", spinner.getSelectedItem().toString());
+							deal.put("yelp_id", intent.getStringExtra("yelp_id"));
 
-							lParser = new LocationParser();
-							lParser.setResponse(result);
+							ParseQuery<ParseObject> queryEstablishment = ParseQuery.getQuery("Establishment");
+							queryEstablishment.whereEqualTo("objectId", intent.getStringExtra("establishment_id"));
 							try {
-								lParser.parseLocation();
-							} catch (JSONException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-								// Do whatever you want with the error, like
-								// throw a Toast error report
-							}
-
-							try {
-								lat = lParser.getLat();
-								lng = lParser.getLng();
-							} catch (JSONException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-
-							ParseGeoPoint newLocation = new ParseGeoPoint(Double.parseDouble(lat), Double.parseDouble(lng));
-
-							Log.d("establishment", "CREATING ESTABLISHMENT");
-							ParseObject addEstablishment = new ParseObject("Establishment");
-							addEstablishment.put("location", newLocation);
-							addEstablishment.put("yelp_id", intent.getStringExtra("yelp_id"));
-							addEstablishment.put("deal_count", "1");
-							try {
-								addEstablishment.save();
+								establishment = queryEstablishment.getFirst();
 							} catch (ParseException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
-							establishment = addEstablishment;
-							location = newLocation;
+
+							if (establishment != null) {
+								Log.d("establishment", establishment.toString());
+								location = establishment.getParseGeoPoint("location");
+								deal_count = Integer.parseInt(establishment.getString("deal_count")) + 1;
+								establishment.put("deal_count", deal_count.toString());
+							} else {
+								searchString = intent.getStringExtra("address").replaceAll("\\s+", "+") + "+" + intent.getStringExtra("city").replaceAll("\\s+", "+") + "+"
+										+ intent.getStringExtra("state").replaceAll("\\s+", "+") + "+" + intent.getStringExtra("zip");
+								OAuthRequest request = new OAuthRequest(Verb.GET, "http://maps.googleapis.com/maps/api/geocode/json?address=" + searchString + "&sensor=true");
+								Response response = request.send();
+								result = response.getBody();
+
+								lParser = new LocationParser();
+								lParser.setResponse(result);
+								try {
+									lParser.parseLocation();
+								} catch (JSONException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+									// Do whatever you want with the error, like
+									// throw a Toast error report
+								}
+
+								try {
+									lat = lParser.getLat();
+									lng = lParser.getLng();
+								} catch (JSONException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+
+								ParseGeoPoint newLocation = new ParseGeoPoint(Double.parseDouble(lat), Double.parseDouble(lng));
+
+								Log.d("establishment", "CREATING ESTABLISHMENT");
+								ParseObject addEstablishment = new ParseObject("Establishment");
+								addEstablishment.put("location", newLocation);
+								addEstablishment.put("yelp_id", intent.getStringExtra("yelp_id"));
+								addEstablishment.put("deal_count", "1");
+								try {
+									addEstablishment.save();
+								} catch (ParseException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								establishment = addEstablishment;
+								location = newLocation;
+							}
+
+							switchType = (Switch) findViewById(R.id.deal_type_switch);
+							if (switchType.isChecked()) {
+								switchText = "Food";
+							} else {
+								switchText = "Drinks";
+							}
+							Log.d("deal_type", switchText);
+							ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
+							queryDealType.whereEqualTo("name", switchText);
+							try {
+								deal_type = queryDealType.getFirst();
+								Log.d("deal_type", deal_type.toString());
+							} catch (ParseException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+							deal.put("establishment", establishment);
+							deal.put("deal_type", deal_type);
+							deal.put("user", ParseUser.getCurrentUser());
+							deal.put("location", location);
+							deal.put("up_votes", 0);
+							deal.put("down_votes", 0);
+							deal.put("rating", 0);
+							deal.put("time_start", myDateStart);
+							deal.put("time_end", myDateEnd);
+							try {
+								deal.save();
+							} catch (ParseException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							return null;
 						}
 
-						switchType = (Switch) findViewById(R.id.deal_type_switch);
-						if (switchType.isChecked()) {
-							switchText = "Food";
-						} else {
-							switchText = "Drinks";
+						@Override
+						protected void onPostExecute(Void result) {
+							if (dealAddProgressDialog != null) {
+								dealAddProgressDialog.dismiss();
+								dealAddProgressDialog = null;
+							}
+							DealAddActivity.this.finish();
+							Toast.makeText(getApplicationContext(), "Deal Added!", Toast.LENGTH_LONG).show();
 						}
-						Log.d("deal_type", switchText);
-						ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
-						queryDealType.whereEqualTo("name", switchText);
-						try {
-							deal_type = queryDealType.getFirst();
-							Log.d("deal_type", deal_type.toString());
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-
-						deal.put("establishment", establishment);
-						deal.put("deal_type", deal_type);
-						deal.put("user", ParseUser.getCurrentUser());
-						deal.put("location", location);
-						deal.put("up_votes", 0);
-						deal.put("down_votes", 0);
-						deal.put("rating", 0);
-						deal.put("time_start", myDateStart);
-						deal.put("time_end", myDateEnd);
-						try {
-							deal.save();
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						return null;
-					}
-
-					@Override
-					protected void onPostExecute(Void result) {
-						if (dealAddProgressDialog != null) {
-							dealAddProgressDialog.dismiss();
-							dealAddProgressDialog = null;
-						}
-						DealAddActivity.this.finish();
-						Toast.makeText(getApplicationContext(), "Deal Added!", Toast.LENGTH_LONG).show();
-					}
-				}.execute();
+					}.execute();
+				}
 			}
 		});
 	}
@@ -259,19 +269,19 @@ public class DealAddActivity extends NavDrawer {
 		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 			// Do something with the time chosen by the user
 			Calendar myCal = Calendar.getInstance();
-			
+
 			myCal.set(Calendar.HOUR_OF_DAY, hourOfDay);
 			myCal.set(Calendar.MINUTE, minute);
 			myDateStart = myCal.getTime();
-			if(hourOfDay < 12){
+			if (hourOfDay < 12) {
 				timeOfDay = "am";
 			} else {
 				timeOfDay = "pm";
 			}
-			timeStartText.setText(hourOfDay%12 + ":" + minute + " " + timeOfDay);
+			timeStartText.setText(hourOfDay % 12 + ":" + minute + " " + timeOfDay);
 		}
 	}
-	
+
 	public static class TimePickerFragmentEnd extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
 
 		@Override
@@ -291,12 +301,12 @@ public class DealAddActivity extends NavDrawer {
 			myCal.set(Calendar.HOUR_OF_DAY, hourOfDay);
 			myCal.set(Calendar.MINUTE, minute);
 			myDateEnd = myCal.getTime();
-			if(hourOfDay < 12){
+			if (hourOfDay < 12) {
 				timeOfDay = "am";
 			} else {
 				timeOfDay = "pm";
 			}
-			timeEndText.setText(hourOfDay%12 + ":" + minute + " " + timeOfDay);
+			timeEndText.setText(hourOfDay % 12 + ":" + minute + " " + timeOfDay);
 		}
 	}
 
@@ -316,5 +326,25 @@ public class DealAddActivity extends NavDrawer {
 		} else if (today == 7) {
 			spinner.setSelection(6);
 		}
+	}
+
+	public void displayError(String message) {
+		// no deals found so display a popup and return to search options
+		AlertDialog.Builder builder = new AlertDialog.Builder(DealAddActivity.this);
+
+		// set title
+		builder.setTitle("No Results");
+
+		// set dialog message
+		builder.setMessage(message).setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+			}
+		});
+		// create alert dialog
+		AlertDialog alertDialog = builder.create();
+
+		// show it
+		alertDialog.show();
 	}
 }
