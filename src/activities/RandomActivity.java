@@ -1,5 +1,7 @@
 package activities;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -88,7 +90,8 @@ public class RandomActivity extends Activity implements LocationListener,
 
 		// Locate the class table named "establishment" in Parse.com
 		ParseQuery<ParseObject> queryRandomSearch = new ParseQuery<ParseObject>("Deal");
-		queryRandomSearch.setLimit(10);
+		queryRandomSearch.include("establishment");
+		queryRandomSearch.setLimit(15);
 		if (query != "") {
 			queryRandomSearch.whereContains("title", query);
 		}
@@ -141,19 +144,36 @@ public class RandomActivity extends Activity implements LocationListener,
 									position = random.nextInt(count);
 									Intent i = new Intent(RandomActivity.this,
 											DealDetailsActivity.class);
-									ParseObject establishment = (ParseObject) ob.get(position).get(
-											"establishment");
-									// Pass data "name" followed by the
-									// position
+									ParseObject curEst = ob.get(position).getParseObject("establishment");
+									String est_name = curEst.getString("name");
+									// Pass data to next activity
 									i.putExtra("deal_id", ob.get(position).getObjectId().toString());
-									i.putExtra("deal_details", ob.get(position)
-											.getString("details").toString());
-									i.putExtra("deal_title", ob.get(position).getString("title")
-											.toString());
-									i.putExtra("establishment_id", establishment.getObjectId());
-									i.putExtra("deal_restrictions",
-											ob.get(position).getInt("description"));
+									i.putExtra("deal_title", ob.get(position).getString("title").toString());
+									i.putExtra("deal_details", ob.get(position).getString("details").toString());
+									i.putExtra("deal_restrictions", ob.get(position).getInt("restrictions"));
 									i.putExtra("yelp_id", ob.get(position).getString("yelp_id"));
+									i.putExtra("establishment_id", curEst.getObjectId().toString());
+									i.putExtra("est_name", est_name);
+
+									Date dateStart = ob.get(position).getDate("time_start");
+									Date dateEnd = ob.get(position).getDate("time_end");
+									SimpleDateFormat simpDate, simpDateNo;
+
+									simpDateNo = new SimpleDateFormat("hh:mm a");
+									simpDate = new SimpleDateFormat("hh:mm a");
+
+									String start = simpDateNo.format(dateStart);
+									String end = simpDate.format(dateEnd);
+
+									if (start.charAt(0) == '0') {
+										start.substring(1);
+									}
+
+									if (simpDate.format(dateEnd).charAt(0) == '0') {
+										end.substring(1);
+									}
+
+									i.putExtra("deal_time", start + " - " + end);
 									// Open SingleItemView.java Activity
 									ob = null;
 									startActivity(i);

@@ -119,7 +119,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 
 		// Locate the class table named "establishment" in Parse.com
 		ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>("Deal");
-		queryDealSearch.setLimit(10);
+		queryDealSearch.setLimit(15);
 		queryDealSearch.include("establishment");
 		if (query != "") {
 			queryDealSearch.whereContains("title", query);
@@ -233,7 +233,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 				Date dateEnd = ob.get(position).getDate("time_end");
 				SimpleDateFormat simpDate, simpDateNo;
 
-				simpDateNo = new SimpleDateFormat("hh:mm");
+				simpDateNo = new SimpleDateFormat("hh:mm a");
 				simpDate = new SimpleDateFormat("hh:mm a");
 
 				String start = simpDateNo.format(dateStart);
