@@ -3,14 +3,40 @@
     android:layout_height="fill_parent" >
 
     <TextView
-        android:id="@+id/markerName"
+        android:id="@+id/est_map_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="5dp"
+        android:text="title"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ImageView
+        android:id="@+id/est_map_rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/est_map_title"
+        android:src="@drawable/zero_stars" />
+
+    <TextView
+        android:id="@+id/est_map_rating_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/est_map_title"
+        android:layout_marginLeft="14dp"
+        android:layout_toRightOf="@+id/est_map_rating"
+        android:text="rating cnt"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/est_map_deal_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="38dp"
+        android:layout_below="@+id/est_map_title"
+        android:layout_toRightOf="@+id/est_map_rating_count"
+        android:text="deal cnt"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>

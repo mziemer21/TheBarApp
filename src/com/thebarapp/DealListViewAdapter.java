@@ -2,8 +2,6 @@ package com.thebarapp;
 
 import java.util.List;
 
-import com.thebarapp.R;
-
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
