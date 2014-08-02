@@ -9,10 +9,8 @@ import navigation.NavDrawer;
 import yelp.API_Static_Stuff;
 import yelp.Yelp;
 import yelp.YelpParser;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
@@ -42,6 +40,7 @@ import com.thebarapp.BusinessDistanceComparator;
 import com.thebarapp.BusinessRatingComparator;
 import com.thebarapp.EstablishmentListViewAdapter;
 import com.thebarapp.EstablishmentRowItem;
+import com.thebarapp.Helper;
 import com.thebarapp.R;
 
 public class ListActivity extends NavDrawer implements LocationListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
@@ -56,7 +55,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 	private Business checkBusiness;
 	private ProgressDialog ProgressDialog;
 	private Calendar calendar = Calendar.getInstance();
-	private Boolean food, drinks, resumed = false, onlyDeals;
+	private Boolean food, drinks, resumed = false, onlyDeals, moreButton = false;
 	private ParseObject deal_type = null;
 
 	// Stores the current instantiation of the location client in this object
@@ -246,14 +245,15 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 		@Override
 		protected void onPostExecute(Void result) {
 			resumed = true;
-			if ((businesses.size() - countPrev) < 1) {
-				displayErrorStay();
+			if (((businesses.size() - countPrev) < 1) && (moreButton)) {
+				Helper.displayErrorStay("Sorry, nothing was found.  Could not connect to the internet.", ListActivity.this);
+				moreButton = false;
 				if (ProgressDialog != null) {
 					// Close the progressdialog
 					ProgressDialog.dismiss();
 				}
 			} else if (businesses.size() < 1) {
-				displayError();
+				Helper.displayError("Sorry, nothing was found.  Try and widen your search.", ListSearchActivity.class, ListActivity.this);
 				if (ProgressDialog != null) {
 					// Close the progressdialog
 					ProgressDialog.dismiss();
@@ -292,6 +292,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 							loadOffset += 20;
 							locationClient.disconnect();
 							locationClient.connect();
+							moreButton = true;
 						}
 					});
 				}
@@ -309,48 +310,54 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 					@Override
 					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-						ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Establishment");
-						query.whereEqualTo("yelp_id", businesses.get(position).getYelpId());
-						try {
-							ob = query.find();
-						} catch (Exception e) {
-							Log.e("Error", e.getMessage());
-							e.printStackTrace();
-						}
+						if (Helper.isConnectedToInternet(ListActivity.this)) {
 
-						if (ob.size() == 0) {
-							establishment_id = "empty";
+							ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Establishment");
+							query.whereEqualTo("yelp_id", businesses.get(position).getYelpId());
+							try {
+								ob = query.find();
+							} catch (Exception e) {
+								Log.e("Error", e.getMessage());
+								e.printStackTrace();
+							}
+
+							if (ob.size() == 0) {
+								establishment_id = "empty";
+							} else {
+								establishment_id = ob.get(0).getObjectId().toString();
+							}
+
+							currentLocation = getLocation();
+							// Send single item click data to SingleItemView
+							// Class
+							Intent i = new Intent(ListActivity.this, DetailsActivity.class);
+							// Pass data "name" followed by the position
+							i.putExtra("establishment_id", establishment_id);
+							i.putExtra("est_name", businesses.get(position).getName());
+							i.putExtra("yelp_id", businesses.get(position).getYelpId());
+							i.putExtra("name", businesses.get(position).getName());
+							i.putExtra("rating", businesses.get(position).getRating());
+							i.putExtra("rating_count", businesses.get(position).getRatingCount());
+							i.putExtra("address", businesses.get(position).getAddress());
+							i.putExtra("city", businesses.get(position).getCity());
+							i.putExtra("state", businesses.get(position).getState());
+							i.putExtra("zip", businesses.get(position).getZipcode());
+							i.putExtra("phone", businesses.get(position).getPhone());
+							i.putExtra("display_phone", businesses.get(position).getDisplayPhone());
+							i.putExtra("distance", businesses.get(position).getDistance());
+							i.putExtra("mobile_url", businesses.get(position).getMobileURL());
+							i.putExtra("day_of_week", (day_of_week == "") ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
+							i.putExtra("est_lat", businesses.get(position).getLatitude());
+							i.putExtra("est_lng", businesses.get(position).getLongitude());
+							i.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
+							i.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));
+							i.putExtra("mob_url", businesses.get(position).getMobileURL());
+
+							// Open SingleItemView.java Activity
+							startActivity(i);
 						} else {
-							establishment_id = ob.get(0).getObjectId().toString();
+							Helper.displayErrorStay("Sorry, nothing was found.  Could not connect to the internet.", ListActivity.this);
 						}
-
-						currentLocation = getLocation();
-						// Send single item click data to SingleItemView Class
-						Intent i = new Intent(ListActivity.this, DetailsActivity.class);
-						// Pass data "name" followed by the position
-						i.putExtra("establishment_id", establishment_id);
-						i.putExtra("est_name", businesses.get(position).getName());
-						i.putExtra("yelp_id", businesses.get(position).getYelpId());
-						i.putExtra("name", businesses.get(position).getName());
-						i.putExtra("rating", businesses.get(position).getRating());
-						i.putExtra("rating_count", businesses.get(position).getRatingCount());
-						i.putExtra("address", businesses.get(position).getAddress());
-						i.putExtra("city", businesses.get(position).getCity());
-						i.putExtra("state", businesses.get(position).getState());
-						i.putExtra("zip", businesses.get(position).getZipcode());
-						i.putExtra("phone", businesses.get(position).getPhone());
-						i.putExtra("display_phone", businesses.get(position).getDisplayPhone());
-						i.putExtra("distance", businesses.get(position).getDistance());
-						i.putExtra("mobile_url", businesses.get(position).getMobileURL());
-						i.putExtra("day_of_week", (day_of_week == "") ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
-						i.putExtra("est_lat", businesses.get(position).getLatitude());
-						i.putExtra("est_lng", businesses.get(position).getLongitude());
-						i.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
-						i.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));
-						i.putExtra("mob_url", businesses.get(position).getMobileURL());
-
-						// Open SingleItemView.java Activity
-						startActivity(i);
 					}
 				});
 			}
@@ -370,8 +377,10 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		// TODO Auto-generated method stub
-		if (!resumed) {
+		if ((!resumed) && (Helper.isConnectedToInternet(ListActivity.this))) {
 			new RemoteDataTask(ListActivity.this).execute();
+		} else if (!Helper.isConnectedToInternet(ListActivity.this)) {
+			Helper.displayError("Sorry, nothing was found.  Could not connect to the internet.", MainActivity.class, ListActivity.this);
 		}
 	}
 
@@ -470,50 +479,6 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 			day_of_week = "Saturday";
 		}
 		return day_of_week;
-	}
-
-	private void displayError() {
-		// no deals found so display a popup and return to search options
-		AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
-
-		// set title
-		builder.setTitle("No Results");
-
-		// set dialog message
-		builder.setMessage("Sorry, nothing was found.  Try and widen your search.").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int id) {
-				dialog.cancel();
-				Intent i = new Intent(ListActivity.this, ListSearchActivity.class);
-				finish();
-				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
-				startActivity(i);
-			}
-		});
-		// create alert dialog
-		AlertDialog alertDialog = builder.create();
-
-		// show it
-		alertDialog.show();
-	}
-
-	private void displayErrorStay() {
-		// no deals found so display a popup and return to search options
-		AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
-
-		// set title
-		builder.setTitle("No Results");
-
-		// set dialog message
-		builder.setMessage("Sorry, nothing was found.  Try and widen your search.").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int id) {
-				dialog.cancel();
-			}
-		});
-		// create alert dialog
-		AlertDialog alertDialog = builder.create();
-
-		// show it
-		alertDialog.show();
 	}
 
 }

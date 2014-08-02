@@ -14,6 +14,7 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.thebarapp.Helper;
 import com.thebarapp.R;
 
 public class DealDetailsActivity extends NavDrawer {
@@ -97,37 +98,39 @@ public class DealDetailsActivity extends NavDrawer {
 	}
 
 	private void queryParse(final boolean setButtons) {
-		ParseQuery<ParseObject> queryDeal = ParseQuery.getQuery("Deal");
-		queryDeal.whereEqualTo("objectId", deal_id);
+		if (Helper.isConnectedToInternet(DealDetailsActivity.this)) {
+			ParseQuery<ParseObject> queryDeal = ParseQuery.getQuery("Deal");
+			queryDeal.whereEqualTo("objectId", deal_id);
 
-		queryDeal.getFirstInBackground(new GetCallback<ParseObject>() {
-			public void done(ParseObject dealObject, ParseException e) {
-				if (dealObject == null) {
-					Log.d("get deal", e.toString());
-				} else {
-					deal = dealObject;
-				}
+			queryDeal.getFirstInBackground(new GetCallback<ParseObject>() {
+				public void done(ParseObject dealObject, ParseException e) {
+					if (dealObject == null) {
+						Log.d("get deal", e.toString());
+					} else {
+						deal = dealObject;
+					}
 
-				ParseQuery<ParseObject> queryDealVoteUser = ParseQuery.getQuery("deal_vote_users");
-				ParseUser user = ParseUser.getCurrentUser();
-				queryDealVoteUser.whereEqualTo("deal", deal);
-				queryDealVoteUser.whereEqualTo("user", user);
+					ParseQuery<ParseObject> queryDealVoteUser = ParseQuery.getQuery("deal_vote_users");
+					ParseUser user = ParseUser.getCurrentUser();
+					queryDealVoteUser.whereEqualTo("deal", deal);
+					queryDealVoteUser.whereEqualTo("user", user);
 
-				queryDealVoteUser.getFirstInBackground(new GetCallback<ParseObject>() {
-					public void done(ParseObject dealUserObject, ParseException e) {
-						if (dealUserObject == null) {
-							Log.d("get deal user", e.toString());
-						} else {
-							dealVoteUser = dealUserObject;
+					queryDealVoteUser.getFirstInBackground(new GetCallback<ParseObject>() {
+						public void done(ParseObject dealUserObject, ParseException e) {
+							if (dealUserObject == null) {
+								Log.d("get deal user", e.toString());
+							} else {
+								dealVoteUser = dealUserObject;
 
-							if (setButtons) {
-								setButtons();
+								if (setButtons) {
+									setButtons();
+								}
 							}
 						}
-					}
-				});
-			}
-		});
+					});
+				}
+			});
+		}
 	}
 
 	@Override

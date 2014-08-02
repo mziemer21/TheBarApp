@@ -10,10 +10,8 @@ import navigation.NavDrawer;
 import yelp.API_Static_Stuff;
 import yelp.Yelp;
 import yelp.YelpParser;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
@@ -48,6 +46,7 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.thebarapp.Business;
+import com.thebarapp.Helper;
 import com.thebarapp.MyMarker;
 import com.thebarapp.R;
 
@@ -55,7 +54,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 		com.google.android.gms.location.LocationListener {
 
 	private GoogleMap myMap;
-	private List<ParseObject> ob, obSingle;
+	private List<ParseObject> ob = new ArrayList<ParseObject>(), obSingle;
 	private Map<Marker, Business> theMap = new HashMap<Marker, Business>();
 	private HashMap<Marker, MyMarker> mMarkersHashMap;
 	private Button redoMapButton;
@@ -282,7 +281,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 		@Override
 		protected void onPostExecute(Void result) {
 			if (businesses.size() < 1) {
-				displayError();
+				Helper.displayError("Sorry, nothing was found.  Try and widen your search.", MapSearchActivity.class, MapActivity.this);
 			} else {
 				if (currentLocation != null) {
 					LatLng coordinate = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
@@ -378,7 +377,11 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 		// TODO Auto-generated method stub
 		locationClient.requestLocationUpdates(mLocationRequest, this);
 		currentLocation = getLocation();
-		new RemoteDataTask(MapActivity.this).execute();
+		if (Helper.isConnectedToInternet(MapActivity.this)) {
+			new RemoteDataTask(MapActivity.this).execute();
+		} else {
+			Helper.displayError("Sorry, nothing was found.  Could not connect to the internet.", MainActivity.class, MapActivity.this);
+		}
 
 	}
 
@@ -418,37 +421,13 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 		return new ParseGeoPoint(loc.getLatitude(), loc.getLongitude());
 	}
 
-	public void displayError() {
-		// no deals found so display a popup and return to search options
-		AlertDialog.Builder builder = new AlertDialog.Builder(MapActivity.this);
-
-		// set title
-		builder.setTitle("No Results");
-
-		// set dialog message
-		builder.setMessage("Sorry, nothing was found.  Try and widen your search.").setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int id) {
-				dialog.cancel();
-				Intent i = new Intent(MapActivity.this, MapSearchActivity.class);
-				finish();
-				newIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
-				startActivity(i);
-			}
-		});
-		// create alert dialog
-		AlertDialog alertDialog = builder.create();
-
-		// show it
-		alertDialog.show();
-	}
-
 	private ArrayList<Business> searchYelp(boolean location, String lat, String lng, String yelp_id, boolean businessSearch) {
 		String response;
 		ArrayList<Business> result = new ArrayList<Business>();
 		API_Static_Stuff api_keys = new API_Static_Stuff();
 
 		Yelp yelp = new Yelp(api_keys.getYelpConsumerKey(), api_keys.getYelpConsumerSecret(), api_keys.getYelpToken(), api_keys.getYelpTokenSecret());
-		yParser = new YelpParser();
+		YelpParser yParser = new YelpParser();
 		if (businessSearch) {
 			response = yelp.businessSearch(yelp_id);
 			result = yParser.getBusinesses(response, location, lat, lng, businessSearch, currentLocation.getLatitude(), currentLocation.getLongitude());
@@ -573,56 +552,61 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 			myMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 				@Override
 				public void onInfoWindowClick(Marker marker) {
-					newIntent = new Intent(MapActivity.this, DetailsActivity.class);
-					// Pass data "name" followed by the position
-					bus = theMap.get(marker);
+					if (Helper.isConnectedToInternet(MapActivity.this)) {
+						newIntent = new Intent(MapActivity.this, DetailsActivity.class);
+						// Pass data "name" followed by the position
+						bus = theMap.get(marker);
 
-					ParseQuery<ParseObject> querySingle = new ParseQuery<ParseObject>("Establishment");
-					querySingle.whereEqualTo("yelp_id", bus.getYelpId().toString());
-					querySingle.findInBackground(new FindCallback<ParseObject>() {
-						public void done(List<ParseObject> estList, ParseException e) {
-							if (e == null) {
-								obSingle = estList;
-								if (obSingle.size() == 0) {
-									estId = "empty";
+						ParseQuery<ParseObject> querySingle = new ParseQuery<ParseObject>("Establishment");
+						querySingle.whereEqualTo("yelp_id", bus.getYelpId().toString());
+						querySingle.findInBackground(new FindCallback<ParseObject>() {
+							public void done(List<ParseObject> estList, ParseException e) {
+								if (e == null) {
+									obSingle = estList;
+									if (obSingle.size() == 0) {
+										estId = "empty";
+									} else {
+										estId = obSingle.get(0).getObjectId().toString();
+									}
+
+									newIntent.putExtra("establishment_id", estId);
+									newIntent.putExtra("est_name", bus.getName());
+									newIntent.putExtra("yelp_id", bus.getYelpId());
+									newIntent.putExtra("name", bus.getName());
+									newIntent.putExtra("rating", bus.getRating());
+									newIntent.putExtra("rating_count", bus.getRatingCount());
+									newIntent.putExtra("address", bus.getAddress());
+									newIntent.putExtra("city", bus.getCity());
+									newIntent.putExtra("state", bus.getState());
+									newIntent.putExtra("zip", bus.getZipcode());
+									newIntent.putExtra("phone", bus.getPhone());
+									newIntent.putExtra("display_phone", bus.getDisplayPhone());
+									newIntent.putExtra("distance", bus.getDistance());
+									newIntent.putExtra("mobile_url", bus.getMobileURL());
+									newIntent.putExtra("day_of_week", (day_of_week == "") ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
+									newIntent.putExtra("est_lat", bus.getLatitude());
+									newIntent.putExtra("est_lng", bus.getLongitude());
+									newIntent.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
+									newIntent.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));
+									newIntent.putExtra("mob_url", bus.getMobileURL());
+
+									businesses.clear();
+									// Open SingleItemView.java Activity
+									startActivity(newIntent);
 								} else {
-									estId = obSingle.get(0).getObjectId().toString();
+									Log.d("score", "Error: " + e.getMessage());
 								}
-
-								newIntent.putExtra("establishment_id", estId);
-								newIntent.putExtra("est_name", bus.getName());
-								newIntent.putExtra("yelp_id", bus.getYelpId());
-								newIntent.putExtra("name", bus.getName());
-								newIntent.putExtra("rating", bus.getRating());
-								newIntent.putExtra("rating_count", bus.getRatingCount());
-								newIntent.putExtra("address", bus.getAddress());
-								newIntent.putExtra("city", bus.getCity());
-								newIntent.putExtra("state", bus.getState());
-								newIntent.putExtra("zip", bus.getZipcode());
-								newIntent.putExtra("phone", bus.getPhone());
-								newIntent.putExtra("display_phone", bus.getDisplayPhone());
-								newIntent.putExtra("distance", bus.getDistance());
-								newIntent.putExtra("mobile_url", bus.getMobileURL());
-								newIntent.putExtra("day_of_week", (day_of_week == "") ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
-								newIntent.putExtra("est_lat", bus.getLatitude());
-								newIntent.putExtra("est_lng", bus.getLongitude());
-								newIntent.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
-								newIntent.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));
-								newIntent.putExtra("mob_url", bus.getMobileURL());
-
-								businesses.clear();
-								// Open SingleItemView.java Activity
-								startActivity(newIntent);
-							} else {
-								Log.d("score", "Error: " + e.getMessage());
 							}
-						}
-					});
+						});
+					} else {
+						Helper.displayErrorStay("Sorry, nothing was found.  Could not connect to the internet.", MapActivity.this);
+					}
 				}
 			});
 
 			return v;
 		}
+
 	}
 
 }

@@ -25,6 +25,7 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.thebarapp.Helper;
 
 public class RandomActivity extends Activity implements LocationListener,
 		GooglePlayServicesClient.ConnectionCallbacks,
@@ -63,6 +64,7 @@ public class RandomActivity extends Activity implements LocationListener,
 
 	@Override
 	public void onConnected(Bundle connectionHint) {
+		if(Helper.isConnectedToInternet(RandomActivity.this)){
 		// Create a progressdialog
 		if (randomProgressDialog != null) {
 			randomProgressDialog.dismiss();
@@ -178,7 +180,7 @@ public class RandomActivity extends Activity implements LocationListener,
 									startActivity(i);
 									RandomActivity.this.finish();
 								} else {
-									displayError();
+									Helper.displayError("Sorry, nothing was found.  Try and widen your search.", RandomSearchActivity.class, RandomActivity.this);
 								}
 							} else {
 								Log.d("Deal Count Error", e.toString());
@@ -189,8 +191,10 @@ public class RandomActivity extends Activity implements LocationListener,
 					Log.d("Deal Search Error", e.toString());
 				}
 			}
-		});
-
+		}); 
+		} else {
+			Helper.displayError("Sorry, nothing was found.  Could not connect to the internet.", RandomSearchActivity.class, RandomActivity.this);
+		}
 	}
 
 	@Override
@@ -247,28 +251,5 @@ public class RandomActivity extends Activity implements LocationListener,
 			randomProgressDialog.dismiss();
 			randomProgressDialog = null;
 		}
-	}
-
-	private void displayError() {
-		// no deals found so display a popup and return to search options
-		AlertDialog.Builder builder = new AlertDialog.Builder(RandomActivity.this);
-
-		// set title
-		builder.setTitle("No Results");
-
-		// set dialog message
-		builder.setMessage("Sorry, nothing was found.  Try and widen your search.")
-				.setCancelable(false)
-				.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-						finish();
-					}
-				});
-		// create alert dialog
-		AlertDialog alertDialog = builder.create();
-
-		// show it
-		alertDialog.show();
 	}
 }

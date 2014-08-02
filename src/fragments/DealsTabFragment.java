@@ -3,9 +3,11 @@ package fragments;
 import java.util.ArrayList;
 import java.util.List;
 
+import activities.DealActivity;
 import activities.DealAddActivity;
 import activities.DealDetailsActivity;
 import activities.LoginActivity;
+import activities.MapActivity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -188,6 +190,7 @@ public class DealsTabFragment extends Fragment {
 				dealListview.setOnItemClickListener(new OnItemClickListener() {
 					@Override
 					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+						if (Helper.isConnectedToInternet(getActivity())) {
 						// Send single item click data to SingleItemView Class
 						Intent iDeal = new Intent(getActivity(), DealDetailsActivity.class);
 						// Pass data "name" followed by the position
@@ -201,6 +204,9 @@ public class DealsTabFragment extends Fragment {
 
 						// Open SingleItemView.java Activity
 						startActivity(iDeal);
+						} else {
+							Helper.displayErrorStay("Sorry, nothing was found.  Could not connect to the internet.", getActivity());
+						}
 					}
 				});
 			} else {
