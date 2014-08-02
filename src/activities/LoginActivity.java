@@ -32,48 +32,47 @@ public class LoginActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// Check if there is a currently logged in user
-				// and they are linked to a Facebook account.
-				ParseUser currentUser = ParseUser.getCurrentUser();
-				if ((currentUser != null) && ParseFacebookUtils.isLinked(currentUser)) {
-					// Go to the user info activity
-					showNextActivity();
-				}
-				
-				
+		// and they are linked to a Facebook account.
+		ParseUser currentUser = ParseUser.getCurrentUser();
+		if ((currentUser != null) && ParseFacebookUtils.isLinked(currentUser)) {
+			// Go to the user info activity
+			showNextActivity();
+		}
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
-		
+
 		// Add code to print out the key hash
-		try{ 
+		try {
 			Log.d("Hash start", "Checking signs");
-		    PackageInfo info = getPackageManager().getPackageInfo(this.getPackageName(), PackageManager.GET_SIGNATURES);
-		    for (Signature signature : info.signatures) {
-		        MessageDigest md = MessageDigest.getInstance("SHA");
-		        md.update(signature.toByteArray());
-		        Log.d("Hash reslut", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-		    }
+			PackageInfo info = getPackageManager().getPackageInfo(this.getPackageName(), PackageManager.GET_SIGNATURES);
+			for (Signature signature : info.signatures) {
+				MessageDigest md = MessageDigest.getInstance("SHA");
+				md.update(signature.toByteArray());
+				Log.d("Hash reslut", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+			}
 		} catch (NameNotFoundException e) {
-		    e.printStackTrace();
-		    Log.d("Hash error", e.getMessage());
+			e.printStackTrace();
+			Log.d("Hash error", e.getMessage());
 		} catch (NoSuchAlgorithmException e) {
-		    e.printStackTrace();
-		    Log.d("Hash error", e.getMessage());
+			e.printStackTrace();
+			Log.d("Hash error", e.getMessage());
 		}
 	}
-	
-	public void onButtonClick(View v){
 
-        switch (v.getId()){
+	public void onButtonClick(View v) {
 
-            case R.id.btnLogin:
-            	onLoginButtonClicked();
-            	break;
-            	
-            case R.id.btnSkip:
-            	Intent i = new Intent(getApplicationContext(), MainActivity.class);
-            	startActivity(i);   	
-        } 
-    }
+		switch (v.getId()) {
+
+		case R.id.btnLogin:
+			onLoginButtonClicked();
+			break;
+
+		case R.id.btnSkip:
+			Intent i = new Intent(getApplicationContext(), MainActivity.class);
+			startActivity(i);
+		}
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,33 +88,28 @@ public class LoginActivity extends Activity {
 	}
 
 	private void onLoginButtonClicked() {
-		if(loginProgressDialog != null){
+		if (loginProgressDialog != null) {
 			loginProgressDialog.dismiss();
 			loginProgressDialog = null;
 		}
-		
-		loginProgressDialog = ProgressDialog.show(
-				LoginActivity.this, "", "Logging in...", true);
-		List<String> permissions = Arrays.asList("public_profile", "user_about_me",
-				"user_relationships", "user_birthday", "user_location", "email");
+
+		loginProgressDialog = ProgressDialog.show(LoginActivity.this, "", "Logging in...", true);
+		List<String> permissions = Arrays.asList("public_profile", "user_about_me", "user_relationships", "user_birthday", "user_location", "email");
 		ParseFacebookUtils.logIn(permissions, this, new LogInCallback() {
 			@Override
 			public void done(ParseUser user, ParseException err) {
-				if(loginProgressDialog != null){
+				if (loginProgressDialog != null) {
 					loginProgressDialog.dismiss();
 					loginProgressDialog = null;
 				}
-				
+
 				if (user == null) {
-					Log.d("The Bar App",
-							"Uh oh. The user cancelled the Facebook login.");
+					Log.d("The Bar App", "Uh oh. The user cancelled the Facebook login.");
 				} else if (user.isNew()) {
-					Log.d("The Bar App",
-							"User signed up and logged in through Facebook!");
+					Log.d("The Bar App", "User signed up and logged in through Facebook!");
 					showNextActivity();
 				} else {
-					Log.d("The Bar App",
-							"User logged in through Facebook!");
+					Log.d("The Bar App", "User logged in through Facebook!");
 					showNextActivity();
 				}
 			}
@@ -123,18 +117,17 @@ public class LoginActivity extends Activity {
 	}
 
 	private void showNextActivity() {
-		if(isTaskRoot())
-		{
-		Intent i = new Intent(getApplicationContext(), MainActivity.class);
-    	startActivity(i);
+		if (isTaskRoot()) {
+			Intent i = new Intent(getApplicationContext(), MainActivity.class);
+			startActivity(i);
 		}
 		finish();
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();
-		if(loginProgressDialog != null){
+		if (loginProgressDialog != null) {
 			loginProgressDialog.dismiss();
 			loginProgressDialog = null;
 		}

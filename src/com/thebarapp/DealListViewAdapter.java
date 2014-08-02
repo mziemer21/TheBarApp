@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 public class DealListViewAdapter extends ArrayAdapter<DealRowItem> {
 
-	Context context;
+	private Context context;
 
 	public DealListViewAdapter(Context context, int resourceId, List<DealRowItem> items) {
 		super(context, resourceId, items);
@@ -28,8 +28,7 @@ public class DealListViewAdapter extends ArrayAdapter<DealRowItem> {
 		ViewHolder holder = null;
 		DealRowItem rowItem = getItem(position);
 
-		LayoutInflater mInflater = (LayoutInflater) context
-				.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 		if (convertView == null) {
 			convertView = mInflater.inflate(R.layout.listview_item_deal, null);
 			holder = new ViewHolder();

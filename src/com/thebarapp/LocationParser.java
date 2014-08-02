@@ -7,8 +7,8 @@ import org.json.JSONObject;
 public class LocationParser {
 
 	private String location_response;
-	JSONArray locations;
-	JSONObject geometry;
+	private JSONArray locations;
+	private JSONObject geometry;
 
 	/**
 	 * Sets Yelp's response for this class

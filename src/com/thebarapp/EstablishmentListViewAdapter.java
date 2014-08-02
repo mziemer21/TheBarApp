@@ -15,18 +15,17 @@ import android.widget.TextView;
 
 public class EstablishmentListViewAdapter extends ArrayAdapter<EstablishmentRowItem> {
 
-	Context context;
+	private Context context;
 
-	public EstablishmentListViewAdapter(Context context, int resourceId,
-			List<EstablishmentRowItem> items) {
+	public EstablishmentListViewAdapter(Context context, int resourceId, List<EstablishmentRowItem> items) {
 		super(context, resourceId, items);
 		this.context = context;
 	}
 
 	/* private view holder class */
 	private class ViewHolder {
-		TextView txtTitle, txtAddress, txtDistance, txtDealCount, txtRatingCount, ratingWord;
-		ImageView rating;
+		private TextView txtTitle, txtAddress, txtDistance, txtDealCount, txtRatingCount, ratingWord;
+		private ImageView rating;
 
 	}
 
@@ -34,8 +33,7 @@ public class EstablishmentListViewAdapter extends ArrayAdapter<EstablishmentRowI
 		ViewHolder holder = null;
 		EstablishmentRowItem rowItem = getItem(position);
 
-		LayoutInflater mInflater = (LayoutInflater) context
-				.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 		if (convertView == null) {
 			convertView = mInflater.inflate(R.layout.listview_item_establishment, null);
 			holder = new ViewHolder();
@@ -76,7 +74,7 @@ public class EstablishmentListViewAdapter extends ArrayAdapter<EstablishmentRowI
 		holder.txtDistance.setText(rowItem.getDistance() + " mi");
 		holder.txtDealCount.setText(rowItem.getDealCount() + " Deals");
 		holder.txtRatingCount.setText(rowItem.getRatingCount());
-		if(rowItem.getRatingCount().matches("1")){
+		if (rowItem.getRatingCount().matches("1")) {
 			holder.ratingWord.setText("Review");
 		}
 

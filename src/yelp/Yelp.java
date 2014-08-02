@@ -12,8 +12,8 @@ import org.scribe.oauth.OAuthService;
  */
 public class Yelp {
 
-	OAuthService service;
-	Token accessToken;
+	private OAuthService service;
+	private Token accessToken;
 
 	/**
 	 * Setup the Yelp API OAuth credentials.
@@ -31,8 +31,7 @@ public class Yelp {
 	 *            Token secret
 	 */
 	public Yelp(String consumerKey, String consumerSecret, String token, String tokenSecret) {
-		this.service = new ServiceBuilder().provider(YelpApi2.class).apiKey(consumerKey)
-				.apiSecret(consumerSecret).build();
+		this.service = new ServiceBuilder().provider(YelpApi2.class).apiKey(consumerKey).apiSecret(consumerSecret).build();
 		this.accessToken = new Token(token, tokenSecret);
 	}
 
@@ -47,31 +46,28 @@ public class Yelp {
 	 *            Longitude
 	 * @return JSON string response
 	 */
-	public String search(String term, double latitude, double longitude, String distance,
-			int sortMode, Integer loadMore) {
-		
-				   OAuthRequest request = new OAuthRequest(Verb.GET, "http://api.yelp.com/v2/search");
-			  		request.addQuerystringParameter("category_filter", "bars");
-			  		request.addQuerystringParameter("term", term);
-			  		request.addQuerystringParameter("ll", latitude + "," + longitude);
-			  		request.addQuerystringParameter("limit", "20");
-			  		request.addQuerystringParameter("radius_filter", distance);
-			  		request.addQuerystringParameter("sort", String.valueOf(sortMode));
-			  		if(loadMore > 0){
-			  			request.addQuerystringParameter("offset", String.valueOf(loadMore));
-			  		}
+	public String search(String term, double latitude, double longitude, String distance, int sortMode, Integer loadMore) {
 
-			  		service.signRequest(accessToken, request);
-			  		Response response = request.send();
-			  		return response.getBody();
-	}
-	
-	public String businessSearch(String id){
-		OAuthRequest request = new OAuthRequest(Verb.GET, "http://api.yelp.com/v2/business/"+id);
+		OAuthRequest request = new OAuthRequest(Verb.GET, "http://api.yelp.com/v2/search");
+		request.addQuerystringParameter("category_filter", "bars");
+		request.addQuerystringParameter("term", term);
+		request.addQuerystringParameter("ll", latitude + "," + longitude);
+		request.addQuerystringParameter("limit", "20");
+		request.addQuerystringParameter("radius_filter", distance);
+		request.addQuerystringParameter("sort", String.valueOf(sortMode));
+		if (loadMore > 0) {
+			request.addQuerystringParameter("offset", String.valueOf(loadMore));
+		}
+
 		service.signRequest(accessToken, request);
-  		Response response = request.send();
-  		return response.getBody();
+		Response response = request.send();
+		return response.getBody();
 	}
-	          
-	    	
+
+	public String businessSearch(String id) {
+		OAuthRequest request = new OAuthRequest(Verb.GET, "http://api.yelp.com/v2/business/" + id);
+		service.signRequest(accessToken, request);
+		Response response = request.send();
+		return response.getBody();
+	}
 }

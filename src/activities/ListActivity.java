@@ -28,7 +28,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.SearchView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -47,28 +46,24 @@ import com.thebarapp.R;
 
 public class ListActivity extends NavDrawer implements LocationListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 	// Declare Variables
-	ListView listview;
-	List<ParseObject> ob = new ArrayList<ParseObject>();
-	String query = "", distanceMiles, establishment_id, obLat, obLng, yelpQuery = "", day_of_week;
-	Object loc;
-	SearchView searchView;
+	private ListView listview;
+	private List<ParseObject> ob = new ArrayList<ParseObject>();
+	private String query = "", distanceMiles, establishment_id, yelpQuery = "", day_of_week;
 	private Location currentLocation = null;
-	Intent intent;
-	Integer countPrev = 0, sort_mode, distanceMeters, loadOffset = 0;
-	Boolean filter = false, onlyDeals;
-	YelpParser yParser;
-	ArrayList<Business> businesses = new ArrayList<Business>(), tempBusiness = new ArrayList<Business>();
-	Business checkBusiness;
-	ProgressDialog listProgressDialog;
-	Calendar calendar = Calendar.getInstance();
-	Boolean food, drinks, resumed = false;
-	ParseObject deal_type = null;
+	private Intent intent;
+	private Integer countPrev = 0, sort_mode, distanceMeters, loadOffset = 0;
+	private ArrayList<Business> businesses = new ArrayList<Business>(), tempBusiness = new ArrayList<Business>();
+	private Business checkBusiness;
+	private ProgressDialog ProgressDialog;
+	private Calendar calendar = Calendar.getInstance();
+	private Boolean food, drinks, resumed = false, onlyDeals;
+	private ParseObject deal_type = null;
 
 	// Stores the current instantiation of the location client in this object
 	private LocationClient locationClient;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		// Get the view from listview_main.xml
 		setContentView(R.layout.listview_main);
 		super.onCreate(savedInstanceState);
@@ -124,17 +119,17 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 		protected void onPreExecute() {
 			super.onPreExecute();
 			// Create a progressdialog
-			if (listProgressDialog != null) {
-				listProgressDialog.dismiss();
-				listProgressDialog = null;
+			if (ProgressDialog != null) {
+				ProgressDialog.dismiss();
+				ProgressDialog = null;
 			}
-			listProgressDialog = new ProgressDialog(context);
+			ProgressDialog = new ProgressDialog(context);
 			// Set progressdialog message
-			listProgressDialog.setMessage("Searching Yelp...");
-			listProgressDialog.setIndeterminate(false);
-			listProgressDialog.setCancelable(false);
+			ProgressDialog.setMessage("Searching Yelp...");
+			ProgressDialog.setIndeterminate(false);
+			ProgressDialog.setCancelable(false);
 			// Show progressdialog
-			listProgressDialog.show();
+			ProgressDialog.show();
 
 			if (loadOffset == 0) {
 				businesses.clear();
@@ -158,7 +153,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 			ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>("Deal");
 			queryDealSearch.include("establishment");
 			queryDealSearch.setLimit(20);
-			if(ob.size() > 0){
+			if (ob.size() > 0) {
 				queryDealSearch.setSkip(ob.size());
 			}
 			if (day_of_week != "") {
@@ -253,15 +248,15 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 			resumed = true;
 			if ((businesses.size() - countPrev) < 1) {
 				displayErrorStay();
-				if (listProgressDialog != null) {
+				if (ProgressDialog != null) {
 					// Close the progressdialog
-					listProgressDialog.dismiss();
+					ProgressDialog.dismiss();
 				}
 			} else if (businesses.size() < 1) {
 				displayError();
-				if (listProgressDialog != null) {
+				if (ProgressDialog != null) {
 					// Close the progressdialog
-					listProgressDialog.dismiss();
+					ProgressDialog.dismiss();
 				}
 			} else {
 				countPrev = businesses.size();
@@ -288,7 +283,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 
 					// Adding button to listview at footer
 					lv.addFooterView(loadMoreButton);
-					
+
 					loadMoreButton.setOnClickListener(new OnClickListener() {
 
 						@Override
@@ -305,9 +300,9 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 				EstablishmentListViewAdapter establishmentAdapter = new EstablishmentListViewAdapter(ListActivity.this, R.layout.listview_item_establishment, rowItems);
 				// Binds the Adapter to the ListView
 				listview.setAdapter(establishmentAdapter);
-				if (listProgressDialog != null) {
+				if (ProgressDialog != null) {
 					// Close the progressdialog
-					listProgressDialog.dismiss();
+					ProgressDialog.dismiss();
 				}
 				// Capture button clicks on ListView items
 				listview.setOnItemClickListener(new OnItemClickListener() {
@@ -353,7 +348,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 						i.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
 						i.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));
 						i.putExtra("mob_url", businesses.get(position).getMobileURL());
-						
+
 						// Open SingleItemView.java Activity
 						startActivity(i);
 					}
@@ -375,7 +370,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		// TODO Auto-generated method stub
-		if(!resumed){
+		if (!resumed) {
 			new RemoteDataTask(ListActivity.this).execute();
 		}
 	}
@@ -410,7 +405,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 
 	}
 
-	private ParseGeoPoint geoPointFromLocation(Location loc) {
+	private static ParseGeoPoint geoPointFromLocation(Location loc) {
 		return new ParseGeoPoint(loc.getLatitude(), loc.getLongitude());
 	}
 
@@ -434,9 +429,9 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 	@Override
 	public void onPause() {
 		super.onPause();
-		if (listProgressDialog != null) {
-			listProgressDialog.dismiss();
-			listProgressDialog = null;
+		if (ProgressDialog != null) {
+			ProgressDialog.dismiss();
+			ProgressDialog = null;
 		}
 	}
 
@@ -446,7 +441,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 		API_Static_Stuff api_keys = new API_Static_Stuff();
 
 		Yelp yelp = new Yelp(api_keys.getYelpConsumerKey(), api_keys.getYelpConsumerSecret(), api_keys.getYelpToken(), api_keys.getYelpTokenSecret());
-		yParser = new YelpParser();
+		YelpParser yParser = new YelpParser();
 		if (businessSearch) {
 			response = yelp.businessSearch(yelp_id);
 			result = yParser.getBusinesses(response, location, lat, lng, businessSearch, currentLocation.getLatitude(), currentLocation.getLongitude());
@@ -477,7 +472,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 		return day_of_week;
 	}
 
-	public void displayError() {
+	private void displayError() {
 		// no deals found so display a popup and return to search options
 		AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
 
@@ -500,8 +495,8 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 		// show it
 		alertDialog.show();
 	}
-	
-	public void displayErrorStay() {
+
+	private void displayErrorStay() {
 		// no deals found so display a popup and return to search options
 		AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
 

@@ -18,11 +18,11 @@ import com.thebarapp.R;
 
 public class DealDetailsActivity extends NavDrawer {
 	// Declare Variables
-	String deal_id, deal_title, deal_details, deal_restrictions, deal_time, est_name;
-	Integer rating, price, up_votes, down_votes;
-	Intent intent;
-	ToggleButton upVoteButton, downVoteButton;
-	ParseObject deal = null, dealVoteUser = null;
+	private String deal_id, deal_title, deal_details, deal_restrictions, deal_time, est_name;
+	private Integer rating, up_votes, down_votes;
+	private Intent intent;
+	private ToggleButton upVoteButton, downVoteButton;
+	private ParseObject deal = null, dealVoteUser = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,20 +38,19 @@ public class DealDetailsActivity extends NavDrawer {
 		deal_restrictions = intent.getStringExtra("deal_restrictions");
 		deal_time = intent.getStringExtra("deal_time");
 		est_name = intent.getStringExtra("est_name");
-		
 
 		TextView title = (TextView) findViewById(R.id.dealTitle);
 		title.setText(deal_title);
 
 		TextView details = (TextView) findViewById(R.id.dealDetails);
 		details.setText(deal_details);
-		
+
 		TextView restrictions = (TextView) findViewById(R.id.dealRestrictions);
 		restrictions.setText(deal_restrictions);
-		
+
 		TextView time = (TextView) findViewById(R.id.dealTime);
 		time.setText(deal_time);
-		
+
 		TextView est = (TextView) findViewById(R.id.dealEst);
 		est.setText(est_name);
 

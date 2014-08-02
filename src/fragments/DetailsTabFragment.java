@@ -25,11 +25,11 @@ import com.thebarapp.R;
 public class DetailsTabFragment extends Fragment {
 
 	// Declare Variables
-	String name, address, city, state, review_count, phoneDisplay, phoneCall, estLat, estLng, curLat, curLng, mobUrl;
-	TextView txtName, txtAddress, txtReviewCount;
-	Double rating;
-	ImageView ratingImg;
-	Button launch_directions, launch_phone, launch_info, launch_review;
+	private String name, address, city, state, review_count, phoneDisplay, phoneCall, estLat, estLng, curLat, curLng, mobUrl;
+	private TextView txtName, txtAddress, txtReviewCount;
+	private Double rating;
+	private ImageView ratingImg;
+	private Button launch_directions, launch_phone, launch_info, launch_review;
 	
 
 	@Override

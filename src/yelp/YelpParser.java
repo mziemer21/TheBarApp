@@ -11,8 +11,8 @@ import com.thebarapp.Business;
 public class YelpParser {
 
 	private String yelp_response;
-	JSONArray businesses;
-	JSONObject o1;
+	private JSONArray businesses;
+	private JSONObject o1;
 	public static final int DISTANCE_IN_FEET = 20924640;
 
 	public void setResponse(String response) {
@@ -97,7 +97,7 @@ public class YelpParser {
 		Object loc = null;
 
 		setResponse(json);
-		
+
 		try {
 			parseBusinesses();
 		} catch (JSONException e) {
@@ -155,11 +155,11 @@ public class YelpParser {
 				b.setLat(lat);
 				b.setLng(lng);
 				b.setDistance(calculateDistance(Double.parseDouble(lat), Double.parseDouble(lng), latCur, lngCur));
-				
+
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}	
+			}
 			try {
 				b.setCity(getBusinessCity((JSONObject) loc));
 			} catch (JSONException e) {
@@ -178,10 +178,9 @@ public class YelpParser {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			BusinessList.add(b);
 		} else {
-			
 
 			for (int i = 0; getJSONSize() > i; i++) {
 				Business b = new Business();
@@ -238,7 +237,7 @@ public class YelpParser {
 					loc = getBusinessLocation(i);
 					b.setAddress(getBusinessAddress((JSONObject) loc));
 					b.setLatLng(getBusinessAddress((JSONObject) loc), getBusinessCity((JSONObject) loc), getBusinessState((JSONObject) loc), getBusinessZipcode((JSONObject) loc));
-					
+
 				} catch (JSONException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -268,28 +267,28 @@ public class YelpParser {
 
 		return BusinessList;
 	}
-	
-			public static String calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-		      double theta = lon1 - lon2;
-		      double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
-		      dist = Math.acos(dist);
-		      dist = rad2deg(dist);
-		      dist = dist * 60 * 1.1515;
-		      return String.valueOf(dist).substring(0, 4);
-		    }
 
-		    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-		    /*::  This function converts decimal degrees to radians             :*/
-		    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-		    private static double deg2rad(double deg) {
-		      return (deg * Math.PI / 180.0);
-		    }
+	public static String calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+		double theta = lon1 - lon2;
+		double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+		dist = Math.acos(dist);
+		dist = rad2deg(dist);
+		dist = dist * 60 * 1.1515;
+		return String.valueOf(dist).substring(0, 4);
+	}
 
-		    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-		    /*::  This function converts radians to decimal degrees             :*/
-		    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-		    private static double rad2deg(double rad) {
-		      return (rad * 180.0 / Math.PI);
-		    }
+	/* ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+	/* :: This function converts decimal degrees to radians : */
+	/* ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+	private static double deg2rad(double deg) {
+		return (deg * Math.PI / 180.0);
+	}
+
+	/* ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+	/* :: This function converts radians to decimal degrees : */
+	/* ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+	private static double rad2deg(double rad) {
+		return (rad * 180.0 / Math.PI);
+	}
 
 }

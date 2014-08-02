@@ -19,14 +19,12 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -40,9 +38,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -59,30 +55,23 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 		com.google.android.gms.location.LocationListener {
 
 	private GoogleMap myMap;
-	List<ParseObject> ob, obSingle;
-	ArrayAdapter<String> adapter;
-	Map<Marker, Business> theMap = new HashMap<Marker, Business>();
-	//private ArrayList<MyMarker> mMyMarkersArray = new ArrayList<MyMarker>();
+	private List<ParseObject> ob, obSingle;
+	private Map<Marker, Business> theMap = new HashMap<Marker, Business>();
 	private HashMap<Marker, MyMarker> mMarkersHashMap;
-	Button redoMapButton, filterMapButton;
-	Integer day;
-	String weekday, query = "", distanceMiles = "3", establishment_id, lat = null, lng = null, yelpQuery = "", estId;
-	int distanceMeters = 4828;
-	Boolean filter = false;
-	YelpParser yParser;
-	ArrayList<Business> businesses = new ArrayList<Business>();
-	ArrayList<Business> tempBusiness = new ArrayList<Business>();
+	private Button redoMapButton;
+	private String query = "", distanceMiles = "3", yelpQuery = "", estId, day_of_week;
+	private Integer distanceMeters = 4828;
+	private YelpParser yParser;
+	private ArrayList<Business> businesses = new ArrayList<Business>(), tempBusiness = new ArrayList<Business>();
 	private Location currentLocation;
 	private LocationClient locationClient;
-	LocationRequest mLocationRequest;
-	Intent intent;
-	ProgressDialog mapProgressDialog;
-	Business checkBusiness, bus;
-	Calendar calendar = Calendar.getInstance();
-	String day_of_week;
-	Boolean food, drinks, onlyDeals;
-	ParseObject deal_type = null;
-	Intent i;
+	private LocationRequest mLocationRequest;
+	private Intent intent, newIntent;
+	private ProgressDialog mapProgressDialog;
+	private Business checkBusiness, bus;
+	private Calendar calendar = Calendar.getInstance();
+	private Boolean food, drinks, onlyDeals;
+	private ParseObject deal_type = null;
 
 	// Milliseconds per second
 	private static final int MILLISECONDS_PER_SECOND = 1000;
@@ -155,7 +144,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 		case R.id.action_filter:
 			Intent i = new Intent(MapActivity.this, MapSearchActivity.class);
 			finish();
-			i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
+			newIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
 			startActivity(i);
 			return true;
 		case R.id.action_clear_search:
@@ -315,15 +304,15 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 					Marker marker = myMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(b.getLatitude()), Double.parseDouble(b.getLongitude()))).title(b.getName()));
 					theMap.put(marker, b);
 					MyMarker myMarker = new MyMarker(b.getName(), b.getRatingCount(), b.getDealCount(), b.getRating(), Double.parseDouble(b.getLatitude()), Double.parseDouble(b.getLongitude()));
-					//mMyMarkersArray.add(myMarker);
+					// mMyMarkersArray.add(myMarker);
 					mMarkersHashMap.put(marker, myMarker);
 					myMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
 				}
-				
+
 				setUpMap();
 
-		        //plotMarkers(mMyMarkersArray);
-		        
+				// plotMarkers(mMyMarkersArray);
+
 				if (mapProgressDialog != null) {
 					mapProgressDialog.dismiss();
 					mapProgressDialog = null;
@@ -337,7 +326,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 
 	}
 
-	public void loadMapOnUser(Location location) {
+	private void loadMapOnUser(Location location) {
 
 		// Getting latitude of the current location
 		double latitude = location.getLatitude();
@@ -425,7 +414,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 		}
 	}
 
-	private ParseGeoPoint geoPointFromLocation(Location loc) {
+	private static ParseGeoPoint geoPointFromLocation(Location loc) {
 		return new ParseGeoPoint(loc.getLatitude(), loc.getLongitude());
 	}
 
@@ -442,7 +431,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 				dialog.cancel();
 				Intent i = new Intent(MapActivity.this, MapSearchActivity.class);
 				finish();
-				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
+				newIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
 				startActivity(i);
 			}
 		});
@@ -490,40 +479,40 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 		return day_of_week;
 	}
 
-	/*private void plotMarkers(ArrayList<MyMarker> markers) {
-		if (markers.size() > 0) {
-			for (MyMarker myMarker : markers) {
-
-				// Create user marker with custom icon and other options
-				MarkerOptions markerOption = new MarkerOptions().position(new LatLng(myMarker.getLat(), myMarker.getLng()));
-				// markerOption.icon(BitmapDescriptorFactory.fromResource(R.drawable.currentlocation_icon));
-
-				Marker currentMarker = myMap.addMarker(markerOption);
-				mMarkersHashMap.put(currentMarker, myMarker);
-				
-				MyMarker myMarker2 = mMarkersHashMap.get(currentMarker);
-				Boolean ya = myMarker.equals(myMarker2);
-
-				myMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
-			}
-		}
-	}*/
+	/*
+	 * private void plotMarkers(ArrayList<MyMarker> markers) { if
+	 * (markers.size() > 0) { for (MyMarker myMarker : markers) {
+	 * 
+	 * // Create user marker with custom icon and other options MarkerOptions
+	 * markerOption = new MarkerOptions().position(new LatLng(myMarker.getLat(),
+	 * myMarker.getLng())); //
+	 * markerOption.icon(BitmapDescriptorFactory.fromResource
+	 * (R.drawable.currentlocation_icon));
+	 * 
+	 * Marker currentMarker = myMap.addMarker(markerOption);
+	 * mMarkersHashMap.put(currentMarker, myMarker);
+	 * 
+	 * MyMarker myMarker2 = mMarkersHashMap.get(currentMarker); Boolean ya =
+	 * myMarker.equals(myMarker2);
+	 * 
+	 * myMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter()); } } }
+	 */
 
 	private void setUpMap() {
-			// Check if we were successful in obtaining the map.
+		// Check if we were successful in obtaining the map.
 
-			if (myMap != null) {
-				myMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-					@Override
-					public boolean onMarkerClick(com.google.android.gms.maps.model.Marker marker) {
-						marker.showInfoWindow();
-						return true;
-					}
-				});
-			} else {
-				Toast.makeText(getApplicationContext(), "Unable to create Maps", Toast.LENGTH_SHORT).show();
-	}
+		if (myMap != null) {
+			myMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+				@Override
+				public boolean onMarkerClick(com.google.android.gms.maps.model.Marker marker) {
+					marker.showInfoWindow();
+					return true;
+				}
+			});
+		} else {
+			Toast.makeText(getApplicationContext(), "Unable to create Maps", Toast.LENGTH_SHORT).show();
 		}
+	}
 
 	public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 		public MarkerInfoWindowAdapter() {
@@ -549,7 +538,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 			ImageView rating = (ImageView) v.findViewById(R.id.est_map_rating);
 
 			Double ratingIn = Double.parseDouble(myMarker.getRating());
-			
+
 			TextView ratingWord = (TextView) v.findViewById(R.id.est_map_rating_word);
 
 			if (ratingIn < .5) {
@@ -577,14 +566,14 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 			title.setText(myMarker.getName());
 			dealCount.setText(myMarker.getDealCount() + " Deals");
 			reviewCount.setText(myMarker.getReviewCount());
-			if(myMarker.getDealCount().matches("1")){
+			if (myMarker.getDealCount().matches("1")) {
 				ratingWord.setText("Review");
 			}
 
 			myMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 				@Override
 				public void onInfoWindowClick(Marker marker) {
-					i = new Intent(MapActivity.this, DetailsActivity.class);
+					newIntent = new Intent(MapActivity.this, DetailsActivity.class);
 					// Pass data "name" followed by the position
 					bus = theMap.get(marker);
 
@@ -600,30 +589,30 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 									estId = obSingle.get(0).getObjectId().toString();
 								}
 
-								i.putExtra("establishment_id", estId);
-								i.putExtra("est_name", bus.getName());
-								i.putExtra("yelp_id", bus.getYelpId());
-								i.putExtra("name", bus.getName());
-								i.putExtra("rating", bus.getRating());
-								i.putExtra("rating_count", bus.getRatingCount());
-								i.putExtra("address", bus.getAddress());
-								i.putExtra("city", bus.getCity());
-								i.putExtra("state", bus.getState());
-								i.putExtra("zip", bus.getZipcode());
-								i.putExtra("phone", bus.getPhone());
-								i.putExtra("display_phone", bus.getDisplayPhone());
-								i.putExtra("distance", bus.getDistance());
-								i.putExtra("mobile_url", bus.getMobileURL());
-								i.putExtra("day_of_week", (day_of_week == "") ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
-								i.putExtra("est_lat", bus.getLatitude());
-								i.putExtra("est_lng", bus.getLongitude());
-								i.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
-								i.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));
-								i.putExtra("mob_url", bus.getMobileURL());
+								newIntent.putExtra("establishment_id", estId);
+								newIntent.putExtra("est_name", bus.getName());
+								newIntent.putExtra("yelp_id", bus.getYelpId());
+								newIntent.putExtra("name", bus.getName());
+								newIntent.putExtra("rating", bus.getRating());
+								newIntent.putExtra("rating_count", bus.getRatingCount());
+								newIntent.putExtra("address", bus.getAddress());
+								newIntent.putExtra("city", bus.getCity());
+								newIntent.putExtra("state", bus.getState());
+								newIntent.putExtra("zip", bus.getZipcode());
+								newIntent.putExtra("phone", bus.getPhone());
+								newIntent.putExtra("display_phone", bus.getDisplayPhone());
+								newIntent.putExtra("distance", bus.getDistance());
+								newIntent.putExtra("mobile_url", bus.getMobileURL());
+								newIntent.putExtra("day_of_week", (day_of_week == "") ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
+								newIntent.putExtra("est_lat", bus.getLatitude());
+								newIntent.putExtra("est_lng", bus.getLongitude());
+								newIntent.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
+								newIntent.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));
+								newIntent.putExtra("mob_url", bus.getMobileURL());
 
 								businesses.clear();
 								// Open SingleItemView.java Activity
-								startActivity(i);
+								startActivity(newIntent);
 							} else {
 								Log.d("score", "Error: " + e.getMessage());
 							}

@@ -7,8 +7,9 @@ import org.scribe.model.Verb;
 
 public class Business {
 
-	String establishment_id, mobile_url, rating, rating_count, deal_count = "NA", name, yelp_id,
-			address, city, state, zip, display_phone, phone, distance, latitude, longitude;
+	private String establishment_id, mobile_url, rating_count, deal_count = "NA", yelp_id,
+			address, city, state, zip, display_phone, phone, latitude, longitude;
+	protected String name, distance, rating;
 
 	public String getEstablishmentId() {
 		return establishment_id;

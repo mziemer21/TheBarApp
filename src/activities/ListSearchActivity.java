@@ -16,22 +16,23 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.ToggleButton;
 
+import com.thebarapp.Helper;
 import com.thebarapp.R;
 
 public class ListSearchActivity extends NavDrawer {
 
 	private Button searchListButton;
 	private ToggleButton oneMi, threeMi, fiveMi, tenMi, twentyMi;
-	String distance = "3";
-	Calendar calendar = Calendar.getInstance();
-	int today = calendar.get(Calendar.DAY_OF_WEEK), search_type;
-	Spinner day_of_week, search_type_spinner;
-	ToggleButton food, drinks;
-	EditText query;
-	CheckBox only_deals;
+	private String distance = "3";
+	private Calendar calendar = Calendar.getInstance();
+	private Integer today = calendar.get(Calendar.DAY_OF_WEEK), search_type;
+	private Spinner day_of_week, search_type_spinner;
+	private ToggleButton food, drinks;
+	private EditText query;
+	private CheckBox only_deals;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		// Get the view from listview_main.xml
 				setContentView(R.layout.list_search);
 		super.onCreate(savedInstanceState);
@@ -50,7 +51,7 @@ public class ListSearchActivity extends NavDrawer {
 		query = (EditText) findViewById(R.id.list_filter_keyword);
 		only_deals = (CheckBox) findViewById(R.id.list_filter_check_box_only_deals);
 
-		setDate(today);
+		Helper.setDate(today, day_of_week);
 
 		threeMi.setChecked(true);
 
@@ -185,7 +186,7 @@ public class ListSearchActivity extends NavDrawer {
 			fiveMi.setChecked(false);
 			tenMi.setChecked(false);
 			twentyMi.setChecked(false);
-			setDate(today);
+			Helper.setDate(today, day_of_week);
 			query.setText("");
 			search_type_spinner.setSelection(0);
 			food.setChecked(false);
@@ -193,24 +194,6 @@ public class ListSearchActivity extends NavDrawer {
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
-		}
-	}
-
-	private void setDate(Integer day) {
-		if (day == 1) {
-			day_of_week.setSelection(0);
-		} else if (day == 2) {
-			day_of_week.setSelection(1);
-		} else if (day == 3) {
-			day_of_week.setSelection(2);
-		} else if (day == 4) {
-			day_of_week.setSelection(3);
-		} else if (day == 5) {
-			day_of_week.setSelection(4);
-		} else if (day == 6) {
-			day_of_week.setSelection(5);
-		} else if (day == 7) {
-			day_of_week.setSelection(6);
 		}
 	}
 }

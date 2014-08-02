@@ -75,7 +75,7 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
-		
+
 	}
 
 	@Override
@@ -110,8 +110,8 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 	public static class AppSectionsPagerAdapter extends FragmentPagerAdapter {
 
 		// Declare Variables
-		String establishment_id, mobile_url, rating, rating_count, name, yelp_id, address, city, state, zip,
-				display_phone, phone, distance, day_of_week, est_name, estLat, estLng, curLat, curLng, mobUrl;
+		private String establishment_id, mobile_url, rating, rating_count, name, yelp_id, address, city, state, zip, display_phone, phone, distance, day_of_week, est_name, estLat, estLng, curLat,
+				curLng, mobUrl;
 
 		public AppSectionsPagerAdapter(FragmentManager fm) {
 			super(fm);
@@ -142,7 +142,6 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 			curLat = intent.getStringExtra("cur_lat");
 			curLng = intent.getStringExtra("cur_lng");
 			mobUrl = intent.getStringExtra("mob_url");
-			
 
 			// Create a bundle, assign it arguments
 			Bundle bundle = new Bundle();
@@ -165,7 +164,7 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 			bundle.putString("cur_lng", curLng);
 			bundle.putString("est_lat", estLat);
 			bundle.putString("est_lng", estLng);
-			bundle.putString("mob_url", mobUrl);			
+			bundle.putString("mob_url", mobUrl);
 
 			switch (i) {
 			case 0:

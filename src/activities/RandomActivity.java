@@ -30,25 +30,24 @@ public class RandomActivity extends Activity implements LocationListener,
 		GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener {
 	// Declare Variables
-	List<ParseObject> ob;
-	Integer position;
-	ArrayAdapter<String> adapter;
+	private List<ParseObject> ob;
+	private Integer position;
 	private Location currentLocation = null;
-	Intent intent;
-	ProgressDialog randomProgressDialog;
+	private Intent intent;
+	private ProgressDialog randomProgressDialog;
 
 	// Stores the current instantiation of the location client in this object
 	private LocationClient locationClient;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		intent = getIntent();
 		locationClient = new LocationClient(this, this, this);
 	}
 
-	private ParseGeoPoint geoPointFromLocation(Location loc) {
+	private static ParseGeoPoint geoPointFromLocation(Location loc) {
 		return new ParseGeoPoint(loc.getLatitude(), loc.getLongitude());
 	}
 
@@ -250,7 +249,7 @@ public class RandomActivity extends Activity implements LocationListener,
 		}
 	}
 
-	public void displayError() {
+	private void displayError() {
 		// no deals found so display a popup and return to search options
 		AlertDialog.Builder builder = new AlertDialog.Builder(RandomActivity.this);
 

@@ -15,21 +15,22 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.ToggleButton;
 
+import com.thebarapp.Helper;
 import com.thebarapp.R;
 
 public class RandomSearchActivity extends NavDrawer {
 
 	private Button randomDealButton;
 	private ToggleButton oneMi, threeMi, fiveMi, tenMi, twentyMi;
-	String distance = "3";
-	Calendar calendar = Calendar.getInstance();
-	int today = calendar.get(Calendar.DAY_OF_WEEK), search_type;
-	Spinner day_of_week, search_type_spinner;
-	ToggleButton food, drinks;
-	EditText query;
+	private String distance = "3";
+	private Calendar calendar = Calendar.getInstance();
+	private Integer today = calendar.get(Calendar.DAY_OF_WEEK);
+	private Spinner day_of_week;
+	private ToggleButton food, drinks;
+	private EditText query;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		// Get the view from listview_main.xml
 				setContentView(R.layout.random_filter);
 		super.onCreate(savedInstanceState);
@@ -46,7 +47,7 @@ public class RandomSearchActivity extends NavDrawer {
 		drinks = (ToggleButton) findViewById(R.id.random_filter_type_drinks);
 		query = (EditText) findViewById(R.id.random_filter_keyword);
 
-		setDate(today);
+		Helper.setDate(today, day_of_week);
 
 		threeMi.setChecked(true);
 
@@ -169,31 +170,13 @@ public class RandomSearchActivity extends NavDrawer {
 			fiveMi.setChecked(false);
 			tenMi.setChecked(false);
 			twentyMi.setChecked(false);
-			setDate(today);
+			Helper.setDate(today, day_of_week);
 			query.setText("");
 			food.setChecked(false);
 			drinks.setChecked(false);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
-		}
-	}
-
-	private void setDate(Integer day) {
-		if (today == 1) {
-			day_of_week.setSelection(0);
-		} else if (today == 2) {
-			day_of_week.setSelection(1);
-		} else if (today == 3) {
-			day_of_week.setSelection(2);
-		} else if (today == 4) {
-			day_of_week.setSelection(3);
-		} else if (today == 5) {
-			day_of_week.setSelection(4);
-		} else if (today == 6) {
-			day_of_week.setSelection(5);
-		} else if (today == 7) {
-			day_of_week.setSelection(6);
 		}
 	}
 }

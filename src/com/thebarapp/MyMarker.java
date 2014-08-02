@@ -3,7 +3,7 @@ package com.thebarapp;
 public class MyMarker
 {
     private String name, dealCount, reviewCount, rating;
-    Double lat, lng;
+    private Double lat, lng;
 
     public MyMarker(String nameIn, String reviewCountIn, String dealCountIn, String ratingIn, Double latIn, Double lngIn)
     {

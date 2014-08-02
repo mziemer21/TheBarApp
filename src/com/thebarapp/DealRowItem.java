@@ -26,7 +26,7 @@ public class DealRowItem {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	
+
 	public String getTime() {
 		return time;
 	}

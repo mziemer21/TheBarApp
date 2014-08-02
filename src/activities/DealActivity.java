@@ -1,8 +1,6 @@
 package activities;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import navigation.NavDrawer;
@@ -17,7 +15,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -31,28 +28,27 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.thebarapp.DealListViewAdapter;
 import com.thebarapp.DealRowItem;
+import com.thebarapp.Helper;
 import com.thebarapp.R;
 
 public class DealActivity extends NavDrawer implements LocationListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 	// Declare Variables
-	ListView listview;
-	List<ParseObject> ob;
-	ArrayAdapter<DealRowItem> adapter;
+	private ListView listview;
+	private List<ParseObject> ob;
 	private Location currentLocation = null;
-	Intent intent;
-	ParseObject est;
-	ProgressDialog dealProgressDialog;
+	private Intent intent;
+	private ProgressDialog ProgressDialog;
 
-	String distance, day_of_week, query;
-	Boolean food, drinks;
-	ParseObject deal_type = null;
-	Integer search_type;
+	private String distance, day_of_week, query;
+	private Boolean food, drinks;
+	private ParseObject deal_type = null, est;
+	private Integer search_type;
 
 	// Stores the current instantiation of the location client in this object
 	private LocationClient locationClient;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		// Get the view from deal_listview.xml
 		setContentView(R.layout.deal_listview);
 		super.onCreate(savedInstanceState);
@@ -97,17 +93,17 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		// Create a progressdialog
-		if (dealProgressDialog != null) {
-			dealProgressDialog.dismiss();
-			dealProgressDialog = null;
+		if (ProgressDialog != null) {
+			ProgressDialog.dismiss();
+			ProgressDialog = null;
 		}
-		dealProgressDialog = new ProgressDialog(DealActivity.this);
+		ProgressDialog = new ProgressDialog(DealActivity.this);
 		// Set progressdialog message
-		dealProgressDialog.setMessage("Loading Yelp Data...");
-		dealProgressDialog.setIndeterminate(false);
-		dealProgressDialog.setCancelable(false);
+		ProgressDialog.setMessage("Loading Yelp Data...");
+		ProgressDialog.setIndeterminate(false);
+		ProgressDialog.setCancelable(false);
 		// Show progressdialog
-		dealProgressDialog.show();
+		ProgressDialog.show();
 
 		currentLocation = getLocation();
 		distance = intent.getStringExtra("distance");
@@ -186,7 +182,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 		});
 	}
 
-	public void makeList() {
+	private void makeList() {
 		List<DealRowItem> rowItems = new ArrayList<DealRowItem>();
 
 		// Locate the listview in deal_listview.xml
@@ -195,7 +191,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 		// Retrieve object "title" from Parse.com
 		// database
 		for (ParseObject deal : ob) {
-			DealRowItem item = new DealRowItem(deal.get("title").toString(), deal.get("rating").toString(), formatTime(deal.getDate("time_start"), deal.getDate("time_end")));
+			DealRowItem item = new DealRowItem(deal.get("title").toString(), deal.get("rating").toString(), Helper.formatTime(deal.getDate("time_start"), deal.getDate("time_end")));
 			rowItems.add(item);
 		}
 
@@ -205,9 +201,9 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 		// Binds the Adapter to the ListView
 		listview.setAdapter(adapter);
 		// Close the progressdialog
-		if (dealProgressDialog != null) {
-			dealProgressDialog.dismiss();
-			dealProgressDialog = null;
+		if (ProgressDialog != null) {
+			ProgressDialog.dismiss();
+			ProgressDialog = null;
 		}
 		// Capture button clicks on ListView items
 		listview.setOnItemClickListener(new OnItemClickListener() {
@@ -228,7 +224,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 				i.putExtra("yelp_id", ob.get(position).getString("yelp_id"));
 				i.putExtra("establishment_id", est.getObjectId().toString());
 				i.putExtra("est_name", est_name);
-				i.putExtra("deal_time", formatTime(ob.get(position).getDate("time_start"), ob.get(position).getDate("time_end")));
+				i.putExtra("deal_time", Helper.formatTime(ob.get(position).getDate("time_start"), ob.get(position).getDate("time_end")));
 				// Open SingleItemView.java Activity
 				startActivity(i);
 
@@ -236,7 +232,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 		});
 	}
 
-	public void displayError() {
+	private void displayError() {
 		// no deals found so display a popup and return to search options
 		AlertDialog.Builder builder = new AlertDialog.Builder(DealActivity.this);
 
@@ -282,31 +278,9 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 	@Override
 	public void onPause() {
 		super.onPause();
-		if (dealProgressDialog != null) {
-			dealProgressDialog.dismiss();
-			dealProgressDialog = null;
+		if (ProgressDialog != null) {
+			ProgressDialog.dismiss();
+			ProgressDialog = null;
 		}
-	}
-	
-	private String formatTime(Date start, Date end){
-		Date dateStart = start;
-		Date dateEnd = end;
-		SimpleDateFormat simpDate, simpDateNo;
-
-		simpDateNo = new SimpleDateFormat("hh:mm a");
-		simpDate = new SimpleDateFormat("hh:mm a");
-
-		String startTime = simpDateNo.format(dateStart);
-		String endTime = simpDate.format(dateEnd);
-
-		if (startTime.charAt(0) == '0') {
-			startTime.substring(1);
-		}
-
-		if (endTime.charAt(0) == '0') {
-			endTime.substring(1);
-		}
-		
-		return startTime + " - " + endTime;
 	}
 }

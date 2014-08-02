@@ -1,8 +1,6 @@
 package fragments;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import activities.DealAddActivity;
@@ -30,6 +28,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.thebarapp.DealListViewAdapter;
 import com.thebarapp.DealRowItem;
+import com.thebarapp.Helper;
 import com.thebarapp.R;
 
 /***
@@ -41,12 +40,12 @@ import com.thebarapp.R;
 public class DealsTabFragment extends Fragment {
 
 	private Button addDealButton;
-	Bundle extrasDeal;
+	private Bundle extrasDeal;
 	// Declare Variables
-	ListView dealListview;
-	List<ParseObject> obDeal = new ArrayList<ParseObject>();
-	ProgressDialog dealTabProgressDialog;
-	String day_of_week;
+	private ListView dealListview;
+	private List<ParseObject> obDeal = new ArrayList<ParseObject>();
+	private ProgressDialog dealTabProgressDialog;
+	private String day_of_week;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -175,7 +174,7 @@ public class DealsTabFragment extends Fragment {
 			// Retrieve object "title" from Parse.com database
 			if (obDeal.size() > 0) {
 				for (ParseObject deal : obDeal) {
-					DealRowItem item = new DealRowItem(deal.get("title").toString(), deal.get("rating").toString(), formatTime(deal.getDate("time_start"), deal.getDate("time_end")));
+					DealRowItem item = new DealRowItem(deal.get("title").toString(), deal.get("rating").toString(), Helper.formatTime(deal.getDate("time_start"), deal.getDate("time_end")));
 					rowItems.add(item);
 				}
 
@@ -198,7 +197,7 @@ public class DealsTabFragment extends Fragment {
 						iDeal.putExtra("deal_details", obDeal.get(position).getString("details").toString());
 						iDeal.putExtra("deal_title", obDeal.get(position).getString("title").toString());
 						iDeal.putExtra("deal_restrictions", obDeal.get(position).getString("restrictions"));
-						iDeal.putExtra("deal_time", formatTime(obDeal.get(position).getDate("time_start"), obDeal.get(position).getDate("time_end")));
+						iDeal.putExtra("deal_time", Helper.formatTime(obDeal.get(position).getDate("time_start"), obDeal.get(position).getDate("time_end")));
 
 						// Open SingleItemView.java Activity
 						startActivity(iDeal);
@@ -221,27 +220,5 @@ public class DealsTabFragment extends Fragment {
 			dealTabProgressDialog.dismiss();
 			dealTabProgressDialog = null;
 		}
-	}
-
-	private String formatTime(Date start, Date end) {
-		Date dateStart = start;
-		Date dateEnd = end;
-		SimpleDateFormat simpDate, simpDateNo;
-
-		simpDateNo = new SimpleDateFormat("hh:mm a");
-		simpDate = new SimpleDateFormat("hh:mm a");
-
-		String startTime = simpDateNo.format(dateStart);
-		String endTime = simpDate.format(dateEnd);
-
-		if (startTime.charAt(0) == '0') {
-			startTime.substring(1);
-		}
-
-		if (endTime.charAt(0) == '0') {
-			endTime.substring(1);
-		}
-
-		return startTime + " - " + endTime;
 	}
 }

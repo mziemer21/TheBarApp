@@ -36,28 +36,27 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.thebarapp.Helper;
 import com.thebarapp.LocationParser;
 import com.thebarapp.R;
 
 public class DealAddActivity extends NavDrawer {
 
 	private Button submitButton, timeStartButton, timeEndButton;
-	Intent intent;
-	ProgressDialog dealAddProgressDialog;
-	EditText mEdit;
-	Switch switchType;
-	ParseObject establishment = null, deal_type = null;
-	ParseGeoPoint location = null;
-	String switchText, result, searchString, lat = null, lng = null;
+	private Intent intent;
+	private ProgressDialog ProgressDialog;
+	private EditText mEdit;
+	private Switch switchType;
+	private ParseObject establishment = null, deal_type = null, deal = new ParseObject("Deal");
+	private ParseGeoPoint location = null;
+	private String switchText, result, searchString, lat = null, lng = null;
 	static String timeOfDay;
-	Spinner spinner;
-	Calendar calendar = Calendar.getInstance();
-	Integer today = calendar.get(Calendar.DAY_OF_WEEK), deal_count = 0;
-	LocationParser lParser;
+	private Spinner day_of_week;
+	private Calendar calendar = Calendar.getInstance();
+	private Integer today = calendar.get(Calendar.DAY_OF_WEEK), deal_count = 0;
+	private LocationParser lParser;
 	static TextView timeStartText, timeEndText;
 	static Date myDateStart, myDateEnd;
-
-	ParseObject deal = new ParseObject("Deal");
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +71,9 @@ public class DealAddActivity extends NavDrawer {
 		submitButton = (Button) this.findViewById(R.id.submitDealButton);
 		timeStartButton = (Button) findViewById(R.id.time_start_button);
 		timeEndButton = (Button) findViewById(R.id.time_end_button);
-		spinner = (Spinner) findViewById(R.id.deal_day_spinner);
+		day_of_week = (Spinner) findViewById(R.id.deal_day_spinner);
 
-		setDate(today);
+		Helper.setDate(today, day_of_week);
 
 		timeStartButton.setOnClickListener(new OnClickListener() {
 
@@ -108,17 +107,17 @@ public class DealAddActivity extends NavDrawer {
 					displayError("Please select a end time.");
 				} else {
 
-					if (dealAddProgressDialog != null) {
-						dealAddProgressDialog.dismiss();
-						dealAddProgressDialog = null;
+					if (ProgressDialog != null) {
+						ProgressDialog.dismiss();
+						ProgressDialog = null;
 					}
 					// Create a progressdialog
-					dealAddProgressDialog = new ProgressDialog(DealAddActivity.this);
+					ProgressDialog = new ProgressDialog(DealAddActivity.this);
 					// Set progressdialog message
-					dealAddProgressDialog.setMessage("Saving...");
-					dealAddProgressDialog.setIndeterminate(false);
+					ProgressDialog.setMessage("Saving...");
+					ProgressDialog.setIndeterminate(false);
 					// Show progressdialog
-					dealAddProgressDialog.show();
+					ProgressDialog.show();
 
 					new AsyncTask<Void, Void, Void>() {
 						@Override
@@ -133,8 +132,8 @@ public class DealAddActivity extends NavDrawer {
 							deal.put("up_votes", 0);
 							deal.put("down_votes", 0);
 
-							spinner = (Spinner) findViewById(R.id.deal_day_spinner);
-							deal.put("day", spinner.getSelectedItem().toString());
+							day_of_week = (Spinner) findViewById(R.id.deal_day_spinner);
+							deal.put("day", day_of_week.getSelectedItem().toString());
 							deal.put("yelp_id", intent.getStringExtra("yelp_id"));
 
 							ParseQuery<ParseObject> queryEstablishment = ParseQuery.getQuery("Establishment");
@@ -231,9 +230,9 @@ public class DealAddActivity extends NavDrawer {
 
 						@Override
 						protected void onPostExecute(Void result) {
-							if (dealAddProgressDialog != null) {
-								dealAddProgressDialog.dismiss();
-								dealAddProgressDialog = null;
+							if (ProgressDialog != null) {
+								ProgressDialog.dismiss();
+								ProgressDialog = null;
 							}
 							DealAddActivity.this.finish();
 							Toast.makeText(getApplicationContext(), "Deal Added!", Toast.LENGTH_LONG).show();
@@ -247,9 +246,9 @@ public class DealAddActivity extends NavDrawer {
 	@Override
 	public void onPause() {
 		super.onPause();
-		if (dealAddProgressDialog != null) {
-			dealAddProgressDialog.dismiss();
-			dealAddProgressDialog = null;
+		if (ProgressDialog != null) {
+			ProgressDialog.dismiss();
+			ProgressDialog = null;
 		}
 	}
 
@@ -310,25 +309,7 @@ public class DealAddActivity extends NavDrawer {
 		}
 	}
 
-	private void setDate(Integer day) {
-		if (today == 1) {
-			spinner.setSelection(0);
-		} else if (today == 2) {
-			spinner.setSelection(1);
-		} else if (today == 3) {
-			spinner.setSelection(2);
-		} else if (today == 4) {
-			spinner.setSelection(3);
-		} else if (today == 5) {
-			spinner.setSelection(4);
-		} else if (today == 6) {
-			spinner.setSelection(5);
-		} else if (today == 7) {
-			spinner.setSelection(6);
-		}
-	}
-
-	public void displayError(String message) {
+	private void displayError(String message) {
 		// no deals found so display a popup and return to search options
 		AlertDialog.Builder builder = new AlertDialog.Builder(DealAddActivity.this);
 
