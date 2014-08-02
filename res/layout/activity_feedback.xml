@@ -7,22 +7,36 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    
-    <TextView
-        android:id="@+id/txtLabel"
-         android:layout_width="wrap_content"
+
+    <EditText
+        android:id="@+id/email_message"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:textSize="16dp"
-        android:text="Feedback View"/>
-    
-    <ImageView android:layout_width="wrap_content"
+        android:layout_below="@+id/email_subject"
+        android:hint="Message"
+        android:ems="10"
+        android:inputType="textMultiLine" >
+    </EditText>
+
+    <Button
+        android:id="@+id/send_button"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/txtLabel"
-        android:src="@drawable/ic_feedback"
+        android:layout_below="@+id/email_message"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"/>
-    
+        android:text="Send" />
+
+    <EditText
+        android:id="@+id/email_subject"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:ems="10"
+        android:hint="Subject" >
+
+        <requestFocus />
+    </EditText>
 
 </RelativeLayout>
 <!-- Listview to display slider menu -->

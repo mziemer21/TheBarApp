@@ -58,7 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/dealTitle"
+        android:layout_below="@+id/dealDetailsLabel"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -75,8 +75,7 @@
         android:id="@+id/dealRestrictions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/dealRestrictionsLabel"
-        android:layout_alignBottom="@+id/dealRestrictionsLabel"
+        android:layout_below="@+id/dealRestrictionsLabel"
         android:layout_alignParentRight="true"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -86,7 +85,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/dealRestrictionsLabel"
-        android:layout_below="@+id/dealRestrictionsLabel"
+        android:layout_below="@+id/dealRestrictions"
         android:text="Time:"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
