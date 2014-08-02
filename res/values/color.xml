@@ -3,11 +3,12 @@
     <color name="list_item_title">#FFFFFF</color>
     <color name="list_background">#303030</color>
     <color name="list_background_pressed">#992416</color>
-    <color name="list_divider">#272727</color>
+    <color name="list_divider">#bdbdbd</color>
     <color name="counter_text_bg">#626262</color>
     <color name="counter_text_color">#c5c4c4</color>
-    <color name="gray">#262626</color>
-    <color name="red">#FF6B6D</color>
+    <color name="off_white">#fafafa</color>
+    <color name="gray">#212121</color>
+    <color name="red">#e84e40</color>
     <color name="green">#02CDB0</color>
-    <color name="blue">#2DB5E5</color>
+    <color name="blue">#536dfe</color>
 </resources>

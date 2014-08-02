@@ -33,10 +33,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="16dp"
+            android:layout_marginLeft="6dp"
             android:layout_toRightOf="@+id/rating_imageview"
             android:textColor="#ffffff"
             android:textSize="20sp" />
+        
+        <ImageView
+        android:id="@+id/details_yelp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/review_count"
+        android:layout_marginLeft="5dp"
+        android:src="@drawable/yelp_logo_sm" />
 
         <Button
             android:id="@+id/review_button"

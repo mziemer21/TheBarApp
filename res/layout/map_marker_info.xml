@@ -8,6 +8,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:textColor="#000000"
         android:text="title"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -17,15 +18,17 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/est_map_title"
-        android:src="@drawable/zero_stars" />
+        android:layout_marginTop="2dp"
+        android:src="@drawable/zero_stars_md" />
 
     <TextView
         android:id="@+id/est_map_rating_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/est_map_title"
-        android:layout_marginLeft="14dp"
+        android:layout_marginLeft="5dp"
         android:layout_toRightOf="@+id/est_map_rating"
+        android:textColor="#000000"
         android:text="rating cnt"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -33,10 +36,30 @@
         android:id="@+id/est_map_deal_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="38dp"
+        android:textColor="#000000"
+        android:layout_marginLeft="28dp"
+        android:layout_below="@+id/est_map_title"
+        android:layout_toRightOf="@+id/est_map_rating_word"
+        android:text="deal cnt"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+    
+    <ImageView
+        android:id="@+id/est_map_yelp"
+        android:layout_width="wrap_content"
+        android:textColor="#000000"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/est_map_title"
         android:layout_toRightOf="@+id/est_map_rating_count"
-        android:text="deal cnt"
+        android:src="@drawable/yelp_logo_sm" />
+    
+    <TextView
+        android:id="@+id/est_map_rating_word"
+        android:layout_width="wrap_content"
+        android:textColor="#000000"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/est_map_title"
+        android:layout_toRightOf="@+id/est_map_yelp"
+        android:text="Reviews"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>

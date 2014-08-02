@@ -1,6 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:background="@color/gray" >
 
     <TextView
         android:id="@+id/est_list_title"
@@ -8,24 +9,17 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:textColor="@color/off_white"
         android:text="title"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
-        android:id="@+id/est_list_distance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:text="dist"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <TextView
         android:id="@+id/est_list_address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/est_list_rating"
-        android:layout_alignParentRight="true"
+        android:layout_below="@+id/est_list_title"
+        android:layout_alignParentLeft="true"
+        android:textColor="@color/off_white"
         android:text="addr"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -35,6 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/est_list_address"
+        android:textColor="@color/off_white"
         android:text="deal cnt"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -43,17 +38,48 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/est_list_title"
-        android:src="@drawable/zero_stars" />
+        android:layout_below="@+id/est_list_address"
+        android:layout_marginTop="2dp"
+        android:src="@drawable/zero_stars_md" />
 
     <TextView
         android:id="@+id/est_list_rating_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/est_list_title"
-        android:layout_marginLeft="14dp"
+        android:layout_below="@+id/est_list_address"
+        android:layout_marginLeft="5dp"
         android:layout_toRightOf="@+id/est_list_rating"
+        android:textColor="@color/off_white"
         android:text="rating cnt"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <ImageView
+        android:id="@+id/est_list_yelp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/est_list_address"
+        android:layout_toRightOf="@+id/est_list_rating_count"
+        android:textColor="@color/off_white"
+        android:src="@drawable/yelp_logo_sm" />
+    
+    <TextView
+        android:id="@+id/est_list_rating_word"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/est_list_address"
+        android:layout_toRightOf="@+id/est_list_yelp"
+        android:textColor="@color/off_white"
+        android:text="Reviews"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/est_list_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/est_list_title"
+        android:textColor="@color/off_white"
+        android:text="dist"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>

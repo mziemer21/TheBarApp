@@ -549,32 +549,37 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 			ImageView rating = (ImageView) v.findViewById(R.id.est_map_rating);
 
 			Double ratingIn = Double.parseDouble(myMarker.getRating());
+			
+			TextView ratingWord = (TextView) v.findViewById(R.id.est_map_rating_word);
 
 			if (ratingIn < .5) {
-				rating.setImageResource(R.drawable.zero_stars);
+				rating.setImageResource(R.drawable.zero_stars_md);
 			} else if (ratingIn < 1) {
-				rating.setImageResource(R.drawable.one_stars);
+				rating.setImageResource(R.drawable.one_stars_md);
 			} else if (ratingIn < 1.5) {
-				rating.setImageResource(R.drawable.one_half_stars);
+				rating.setImageResource(R.drawable.one_half_stars_md);
 			} else if (ratingIn < 2) {
-				rating.setImageResource(R.drawable.two_stars);
+				rating.setImageResource(R.drawable.two_stars_md);
 			} else if (ratingIn < 2.5) {
-				rating.setImageResource(R.drawable.two_half_stars);
+				rating.setImageResource(R.drawable.two_half_stars_md);
 			} else if (ratingIn < 3) {
-				rating.setImageResource(R.drawable.three_stars);
+				rating.setImageResource(R.drawable.three_stars_md);
 			} else if (ratingIn < 3.5) {
-				rating.setImageResource(R.drawable.three_half_stars);
+				rating.setImageResource(R.drawable.three_half_stars_md);
 			} else if (ratingIn < 4) {
-				rating.setImageResource(R.drawable.four_stars);
+				rating.setImageResource(R.drawable.four_stars_md);
 			} else if (ratingIn < 4.5) {
-				rating.setImageResource(R.drawable.four_half_stars);
+				rating.setImageResource(R.drawable.four_half_stars_md);
 			} else if (ratingIn < 5) {
-				rating.setImageResource(R.drawable.five_stars);
+				rating.setImageResource(R.drawable.five_stars_md);
 			}
 
 			title.setText(myMarker.getName());
 			dealCount.setText(myMarker.getDealCount() + " Deals");
-			reviewCount.setText(myMarker.getReviewCount() + " Reviews");
+			reviewCount.setText(myMarker.getReviewCount());
+			if(myMarker.getDealCount().matches("1")){
+				ratingWord.setText("Review");
+			}
 
 			myMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 				@Override
