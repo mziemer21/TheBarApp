@@ -13,7 +13,9 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
@@ -35,14 +37,15 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 	// Declare Variables
 	private ListView listview;
 	private List<ParseObject> ob;
+	private List<DealRowItem> rowItems = new ArrayList<DealRowItem>();
 	private Location currentLocation = null;
 	private Intent intent;
 	private ProgressDialog ProgressDialog;
 
 	private String distance, day_of_week, query;
-	private Boolean food, drinks;
+	private Boolean food, drinks, moreButton = false, resumed = false;
 	private ParseObject deal_type = null, est;
-	private Integer search_type;
+	private Integer search_type, countPrev = 0, loadOffset = 0;
 
 	// Stores the current instantiation of the location client in this object
 	private LocationClient locationClient;
@@ -92,7 +95,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		if (Helper.isConnectedToInternet(DealActivity.this)) {
+		if ((!resumed) && (Helper.isConnectedToInternet(DealActivity.this))) {
 			// Create a progressdialog
 			if (ProgressDialog != null) {
 				ProgressDialog.dismiss();
@@ -116,7 +119,10 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 
 			// Locate the class table named "establishment" in Parse.com
 			ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>("Deal");
-			queryDealSearch.setLimit(15);
+			queryDealSearch.setLimit(20);
+			if (loadOffset > 0) {
+				queryDealSearch.setSkip(loadOffset);
+			}
 			queryDealSearch.include("establishment");
 			if (query != "") {
 				queryDealSearch.whereContains("title", query);
@@ -155,28 +161,29 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 				queryDealSearch.orderByDescending("rating");
 			}
 
-			final ParseQuery<ParseObject> queryDealSearchCount = queryDealSearch;
-
 			queryDealSearch.findInBackground(new FindCallback<ParseObject>() {
 				public void done(List<ParseObject> dealList, ParseException e) {
 					if (e == null) {
 						ob = dealList;
-
-						queryDealSearchCount.countInBackground(new CountCallback() {
-							public void done(int count, ParseException e) {
-								if (e == null) {
-									// The count request succeeded. Log the
-									// count
-									if (count > 0) {
-										makeList();
-									} else {
-										Helper.displayError("Sorry, nothing was found.  Try and widen your search.", DealSearchActivity.class, DealActivity.this);
-									}
-								} else {
-									Log.d("Deal Count Error", e.toString());
-								}
+						// The count request succeeded. Log the
+						// count
+						if (((ob.size()) < 1) && (moreButton)) {
+							Helper.displayErrorStay("Sorry, nothing was found.  Try and widen your search.", DealActivity.this);
+							moreButton = false;
+							if (ProgressDialog != null) {
+								// Close the progressdialog
+								ProgressDialog.dismiss();
 							}
-						});
+						} else if (ob.size() < 1) {
+							Helper.displayError("Sorry, nothing was found.  Try and widen your search.", DealSearchActivity.class, DealActivity.this);
+							if (ProgressDialog != null) {
+								// Close the progressdialog
+								ProgressDialog.dismiss();
+							}
+						} else {
+							countPrev = ob.size();
+							makeList();
+						}
 					} else {
 						Log.d("Deal Search Error", e.toString());
 					}
@@ -188,10 +195,34 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 	}
 
 	private void makeList() {
-		List<DealRowItem> rowItems = new ArrayList<DealRowItem>();
-
+		resumed = true;
 		// Locate the listview in deal_listview.xml
 		listview = (ListView) findViewById(R.id.deal_listview);
+
+		if ((loadOffset == 0) && (countPrev >= 20)) {
+
+			// Creating a button - Load More
+			Button loadMoreButton = new Button(DealActivity.this);
+			loadMoreButton.setText("Load More");
+
+			// Adding button to listview at footer
+			listview.addFooterView(loadMoreButton);
+
+			loadMoreButton.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View arg0) {
+					resumed = false;
+					loadOffset += 20;
+					locationClient.disconnect();
+					locationClient.connect();
+					moreButton = true;
+				}
+			});
+		}
+		if(!moreButton){
+			rowItems.clear();
+		}
 
 		// Retrieve object "title" from Parse.com
 		// database

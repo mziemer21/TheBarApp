@@ -246,7 +246,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 		protected void onPostExecute(Void result) {
 			resumed = true;
 			if (((businesses.size() - countPrev) < 1) && (moreButton)) {
-				Helper.displayErrorStay("Sorry, nothing was found.  Could not connect to the internet.", ListActivity.this);
+				Helper.displayErrorStay("Sorry, nothing was found.  Try and widen your search.", ListActivity.this);
 				moreButton = false;
 				if (ProgressDialog != null) {
 					// Close the progressdialog
