@@ -8,7 +8,6 @@
     <color name="counter_text_color">#c5c4c4</color>
     <color name="off_white">#fafafa</color>
     <color name="gray">#212121</color>
-    <color name="red">#e84e40</color>
-    <color name="green">#02CDB0</color>
-    <color name="blue">#536dfe</color>
+    <color name="yello">#F79400</color>
+    <color name="green">#8bc34a</color>
 </resources>

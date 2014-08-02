@@ -26,7 +26,7 @@ public class DetailsTabFragment extends Fragment {
 
 	// Declare Variables
 	private String name, address, city, state, review_count, phoneDisplay, phoneCall, estLat, estLng, curLat, curLng, mobUrl;
-	private TextView txtName, txtAddress, txtReviewCount;
+	private TextView txtName, txtAddress, txtReviewCount, txtReviewWord;
 	private Double rating;
 	private ImageView ratingImg;
 	private Button launch_directions, launch_phone, launch_info, launch_review;
@@ -59,6 +59,7 @@ public class DetailsTabFragment extends Fragment {
 		ratingImg = (ImageView) rootDetailsView.findViewById(R.id.rating_imageview);
 		txtAddress = (TextView) rootDetailsView.findViewById(R.id.address);
 		txtReviewCount = (TextView) rootDetailsView.findViewById(R.id.review_count);
+		txtReviewWord = (TextView) rootDetailsView.findViewById(R.id.review_count_word);
 		launch_phone = (Button) rootDetailsView.findViewById(R.id.phone_button);
 		launch_directions = (Button) rootDetailsView.findViewById(R.id.directions_button);
 		launch_info = (Button) rootDetailsView.findViewById(R.id.info_button);
@@ -67,7 +68,12 @@ public class DetailsTabFragment extends Fragment {
 		// Load the text into the TextView
 		txtName.setText(name);
 		txtAddress.setText(address + " " + city + " " + state);
-		txtReviewCount.setText(review_count + " reviews");
+		txtReviewCount.setText(review_count);
+		if(review_count.matches("1")){
+			txtReviewWord.setText("Review");
+		} else {
+			txtReviewWord.setText("Reviews");
+		}
 		
 		launch_phone.setOnClickListener(new OnClickListener() {
 
