@@ -19,6 +19,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.model.GraphUser;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
@@ -28,6 +31,7 @@ import com.thebarapp.R;
 public class LoginActivity extends Activity {
 
 	private Dialog loginProgressDialog;
+	private String fName, lName, email, birthday, relationship;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -97,21 +101,54 @@ public class LoginActivity extends Activity {
 		List<String> permissions = Arrays.asList("public_profile", "user_about_me", "user_relationships", "user_birthday", "user_location", "email");
 		ParseFacebookUtils.logIn(permissions, this, new LogInCallback() {
 			@Override
-			public void done(ParseUser user, ParseException err) {
+			public void done(ParseUser pUser, ParseException err) {
+
+				if (email != null) {
+					pUser.put("email", email);
+				}
+				if (fName != null) {
+					pUser.put("firstName", fName);
+				}
+				if (lName != null) {
+					pUser.put("lastName", lName);
+				}
+				if (birthday != null) {
+					pUser.put("birthday", birthday);
+				}
+				if (relationship != null) {
+					pUser.put("relationship", relationship);
+				}
+				
+				pUser.saveInBackground();
+
 				if (loginProgressDialog != null) {
 					loginProgressDialog.dismiss();
 					loginProgressDialog = null;
 				}
 
-				if (user == null) {
+				if (pUser == null) {
 					Log.d("The Bar App", "Uh oh. The user cancelled the Facebook login.");
-				} else if (user.isNew()) {
+				} else if (pUser.isNew()) {
 					Log.d("The Bar App", "User signed up and logged in through Facebook!");
 					showNextActivity();
 				} else {
 					Log.d("The Bar App", "User logged in through Facebook!");
 					showNextActivity();
 				}
+			}
+		});
+		
+		com.facebook.Request.executeMeRequestAsync(ParseFacebookUtils.getSession(), new com.facebook.Request.GraphUserCallback() {
+
+			@Override
+			public void onCompleted(GraphUser user, Response response) {
+				email = user.getProperty("email").toString();
+				fName = user.getFirstName();
+				lName = user.getLastName();
+				birthday = user.getBirthday();
+				relationship = user.getProperty("relationship_status").toString();
+				
+			
 			}
 		});
 	}

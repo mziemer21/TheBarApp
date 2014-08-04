@@ -95,100 +95,102 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		if ((!resumed) && (Helper.isConnectedToInternet(DealActivity.this))) {
-			// Create a progressdialog
-			if (ProgressDialog != null) {
-				ProgressDialog.dismiss();
-				ProgressDialog = null;
-			}
-			ProgressDialog = new ProgressDialog(DealActivity.this);
-			// Set progressdialog message
-			ProgressDialog.setMessage("Loading Yelp Data...");
-			ProgressDialog.setIndeterminate(false);
-			ProgressDialog.setCancelable(false);
-			// Show progressdialog
-			ProgressDialog.show();
-
-			currentLocation = getLocation();
-			distance = intent.getStringExtra("distance");
-			day_of_week = intent.getStringExtra("day_of_week");
-			food = intent.getBooleanExtra("food", true);
-			drinks = intent.getBooleanExtra("drinks", true);
-			query = intent.getStringExtra("query");
-			search_type = intent.getIntExtra("search_type", 0);
-
-			// Locate the class table named "establishment" in Parse.com
-			ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>("Deal");
-			queryDealSearch.setLimit(20);
-			if (loadOffset > 0) {
-				queryDealSearch.setSkip(loadOffset);
-			}
-			queryDealSearch.include("establishment");
-			if (query != "") {
-				queryDealSearch.whereContains("title", query);
-			}
-			if (day_of_week != null) {
-				queryDealSearch.whereContains("day", day_of_week);
-			}
-			if (distance != null) {
-				queryDealSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation), Double.parseDouble(distance));
-			}
-			if ((food == true) || (drinks == true)) {
-				if (food == false) {
-					ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
-					queryDealType.whereEqualTo("name", "Drinks");
-					try {
-						deal_type = queryDealType.getFirst();
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
-					queryDealSearch.whereEqualTo("deal_type", deal_type);
+		if (Helper.isConnectedToInternet(DealActivity.this)) {
+			if (!resumed) {
+				// Create a progressdialog
+				if (ProgressDialog != null) {
+					ProgressDialog.dismiss();
+					ProgressDialog = null;
 				}
-				if (drinks == false) {
-					ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
-					queryDealType.whereEqualTo("name", "Food");
-					try {
-						deal_type = queryDealType.getFirst();
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
-					queryDealSearch.whereEqualTo("deal_type", deal_type);
-				}
-			}
-			if (search_type == 0) {
-				// already distance sorted
-			} else if (search_type == 1) {
-				queryDealSearch.orderByDescending("rating");
-			}
+				ProgressDialog = new ProgressDialog(DealActivity.this);
+				// Set progressdialog message
+				ProgressDialog.setMessage("Loading Yelp Data...");
+				ProgressDialog.setIndeterminate(false);
+				ProgressDialog.setCancelable(false);
+				// Show progressdialog
+				ProgressDialog.show();
 
-			queryDealSearch.findInBackground(new FindCallback<ParseObject>() {
-				public void done(List<ParseObject> dealList, ParseException e) {
-					if (e == null) {
-						ob = dealList;
-						// The count request succeeded. Log the
-						// count
-						if (((ob.size()) < 1) && (moreButton)) {
-							Helper.displayErrorStay("Sorry, nothing was found.  Try and widen your search.", DealActivity.this);
-							moreButton = false;
-							if (ProgressDialog != null) {
-								// Close the progressdialog
-								ProgressDialog.dismiss();
-							}
-						} else if (ob.size() < 1) {
-							Helper.displayError("Sorry, nothing was found.  Try and widen your search.", DealSearchActivity.class, DealActivity.this);
-							if (ProgressDialog != null) {
-								// Close the progressdialog
-								ProgressDialog.dismiss();
+				currentLocation = getLocation();
+				distance = intent.getStringExtra("distance");
+				day_of_week = intent.getStringExtra("day_of_week");
+				food = intent.getBooleanExtra("food", true);
+				drinks = intent.getBooleanExtra("drinks", true);
+				query = intent.getStringExtra("query");
+				search_type = intent.getIntExtra("search_type", 0);
+
+				// Locate the class table named "establishment" in Parse.com
+				ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>("Deal");
+				queryDealSearch.setLimit(20);
+				if (loadOffset > 0) {
+					queryDealSearch.setSkip(loadOffset);
+				}
+				queryDealSearch.include("establishment");
+				if (query != "") {
+					queryDealSearch.whereContains("title", query);
+				}
+				if (day_of_week != null) {
+					queryDealSearch.whereContains("day", day_of_week);
+				}
+				if (distance != null) {
+					queryDealSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation), Double.parseDouble(distance));
+				}
+				if ((food == true) || (drinks == true)) {
+					if (food == false) {
+						ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
+						queryDealType.whereEqualTo("name", "Drinks");
+						try {
+							deal_type = queryDealType.getFirst();
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+						queryDealSearch.whereEqualTo("deal_type", deal_type);
+					}
+					if (drinks == false) {
+						ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
+						queryDealType.whereEqualTo("name", "Food");
+						try {
+							deal_type = queryDealType.getFirst();
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+						queryDealSearch.whereEqualTo("deal_type", deal_type);
+					}
+				}
+				if (search_type == 0) {
+					// already distance sorted
+				} else if (search_type == 1) {
+					queryDealSearch.orderByDescending("rating");
+				}
+
+				queryDealSearch.findInBackground(new FindCallback<ParseObject>() {
+					public void done(List<ParseObject> dealList, ParseException e) {
+						if (e == null) {
+							ob = dealList;
+							// The count request succeeded. Log the
+							// count
+							if (((ob.size()) < 1) && (moreButton)) {
+								Helper.displayErrorStay("Sorry, nothing was found.  Try and widen your search.", DealActivity.this);
+								moreButton = false;
+								if (ProgressDialog != null) {
+									// Close the progressdialog
+									ProgressDialog.dismiss();
+								}
+							} else if (ob.size() < 1) {
+								Helper.displayError("Sorry, nothing was found.  Try and widen your search.", DealSearchActivity.class, DealActivity.this);
+								if (ProgressDialog != null) {
+									// Close the progressdialog
+									ProgressDialog.dismiss();
+								}
+							} else {
+								countPrev = ob.size();
+								makeList();
 							}
 						} else {
-							countPrev = ob.size();
-							makeList();
+							Log.d("Deal Search Error", e.toString());
 						}
-					} else {
-						Log.d("Deal Search Error", e.toString());
 					}
-				}
-			});
+				});
+			}
 		} else {
 			Helper.displayError("Sorry, nothing was found.  Could not connect to the internet.", DealSearchActivity.class, DealActivity.this);
 		}
@@ -220,7 +222,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 				}
 			});
 		}
-		if(!moreButton){
+		if (!moreButton) {
 			rowItems.clear();
 		}
 

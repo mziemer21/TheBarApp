@@ -140,4 +140,6 @@
 	<string name="ten_miles">10mi</string>
 	<string name="twenty_miles">20mi</string>
 	<!-- End Distances -->
+	
+	<string name="fb_app_id">1403369603273131</string>
 </resources>
