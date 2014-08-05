@@ -95,6 +95,7 @@ public class LoginActivity extends Activity {
 		ParseFacebookUtils.finishAuthentication(requestCode, resultCode, data);
 	}
 
+	@SuppressWarnings("deprecation")
 	private void onLoginButtonClicked() {
 		if (loginProgressDialog != null) {
 			loginProgressDialog.dismiss();
@@ -139,20 +140,20 @@ public class LoginActivity extends Activity {
 					Log.d("The Bar App", "User logged in through Facebook!");
 					showNextActivity();
 				}
-			}
-		});
-		
-		com.facebook.Request.executeMeRequestAsync(ParseFacebookUtils.getSession(), new com.facebook.Request.GraphUserCallback() {
-
-			@Override
-			public void onCompleted(GraphUser user, Response response) {
-				email = user.getProperty("email").toString();
-				fName = user.getFirstName();
-				lName = user.getLastName();
-				birthday = user.getBirthday();
-				relationship = user.getProperty("relationship_status").toString();
 				
-			
+				com.facebook.Request.executeMeRequestAsync(ParseFacebookUtils.getSession(), new com.facebook.Request.GraphUserCallback() {
+
+					@Override
+					public void onCompleted(GraphUser user, Response response) {
+						email = user.getProperty("email").toString();
+						fName = user.getFirstName();
+						lName = user.getLastName();
+						birthday = user.getBirthday();
+						relationship = user.getProperty("relationship_status").toString();
+						
+					
+					}
+				});
 			}
 		});
 	}
