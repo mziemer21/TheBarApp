@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -38,6 +39,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.thebarapp.Helper;
 import com.thebarapp.LocationParser;
+import com.thebarapp.ParseApplication;
 import com.thebarapp.R;
 
 public class DealAddActivity extends NavDrawer {
@@ -74,6 +76,9 @@ public class DealAddActivity extends NavDrawer {
 		day_of_week = (Spinner) findViewById(R.id.deal_day_spinner);
 
 		Helper.setDate(today, day_of_week);
+		
+		// Get tracker.
+		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
 
 		timeStartButton.setOnClickListener(new OnClickListener() {
 
@@ -327,5 +332,17 @@ public class DealAddActivity extends NavDrawer {
 
 		// show it
 		alertDialog.show();
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		GoogleAnalytics.getInstance(this).reportActivityStart(this);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		GoogleAnalytics.getInstance(this).reportActivityStop(this);
 	}
 }

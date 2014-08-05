@@ -20,12 +20,13 @@ import android.view.Menu;
 import android.view.View;
 
 import com.facebook.Response;
-import com.facebook.Session;
 import com.facebook.model.GraphUser;
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
+import com.thebarapp.ParseApplication;
 import com.thebarapp.R;
 
 public class LoginActivity extends Activity {
@@ -42,6 +43,9 @@ public class LoginActivity extends Activity {
 			// Go to the user info activity
 			showNextActivity();
 		}
+		
+		// Get tracker.
+		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
@@ -168,5 +172,17 @@ public class LoginActivity extends Activity {
 			loginProgressDialog.dismiss();
 			loginProgressDialog = null;
 		}
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		GoogleAnalytics.getInstance(this).reportActivityStart(this);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		GoogleAnalytics.getInstance(this).reportActivityStop(this);
 	}
 }

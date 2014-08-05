@@ -11,6 +11,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.thebarapp.ParseApplication;
 import com.thebarapp.R;
 
 import fragments.DealsTabFragment;
@@ -46,6 +48,9 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 		viewPager.setAdapter(mAdapter);
 		viewPager.setOffscreenPageLimit(2);
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		
+		// Get tracker.
+		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
 
 		// Adding Tabs
 		for (String tab_name : tabs) {
@@ -194,5 +199,17 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 		public int getCount() {
 			return 2;
 		}
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		GoogleAnalytics.getInstance(this).reportActivityStart(this);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		GoogleAnalytics.getInstance(this).reportActivityStop(this);
 	}
 }

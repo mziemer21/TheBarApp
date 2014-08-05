@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
@@ -26,6 +27,7 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.thebarapp.Helper;
+import com.thebarapp.ParseApplication;
 
 public class RandomActivity extends Activity implements LocationListener,
 		GooglePlayServicesClient.ConnectionCallbacks,
@@ -44,6 +46,10 @@ public class RandomActivity extends Activity implements LocationListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		
+		// Get tracker.
+		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
+		
 		intent = getIntent();
 		locationClient = new LocationClient(this, this, this);
 	}
@@ -228,20 +234,21 @@ public class RandomActivity extends Activity implements LocationListener,
 	}
 
 	@Override
-	public void onStop() {
-		super.onStop();
-		// After disconnect() is called, the client is considered "dead".
-		locationClient.disconnect();
-	}
-
-	/*
-	 * Called when the Activity is restarted, even before it becomes visible.
-	 */
-	@Override
 	public void onStart() {
 		super.onStart();
+		GoogleAnalytics.getInstance(this).reportActivityStart(this);
+		
 		// Connect to the location services client
 		locationClient.connect();
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		GoogleAnalytics.getInstance(this).reportActivityStop(this);
+
+		// After disconnect() is called, the client is considered "dead".
+		locationClient.disconnect();
 	}
 
 	@Override

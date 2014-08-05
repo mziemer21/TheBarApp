@@ -18,8 +18,10 @@ import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.ProfilePictureView;
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
+import com.thebarapp.ParseApplication;
 import com.thebarapp.R;
 
 public class LogoutActivity extends NavDrawer {
@@ -36,6 +38,9 @@ public class LogoutActivity extends NavDrawer {
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_logout);
 		super.onCreate(savedInstanceState);
+		
+		// Get tracker.
+		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
 
 		userProfilePictureView = (ProfilePictureView) findViewById(R.id.userProfilePicture);
 		userNameView = (TextView) findViewById(R.id.userName);
@@ -182,5 +187,17 @@ public class LogoutActivity extends NavDrawer {
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(intent);
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		GoogleAnalytics.getInstance(this).reportActivityStart(this);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		GoogleAnalytics.getInstance(this).reportActivityStop(this);
 	}
 }

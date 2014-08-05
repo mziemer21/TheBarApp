@@ -13,16 +13,19 @@ import yelp.YelpParser;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -40,6 +43,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -69,8 +73,10 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 	private ProgressDialog mapProgressDialog;
 	private Business checkBusiness, bus;
 	private Calendar calendar = Calendar.getInstance();
-	private Boolean food, drinks, onlyDeals;
+	private Boolean food, drinks, onlyDeals, reload = false, reloadHere = false;
 	private ParseObject deal_type = null;
+	private LatLng currentLatLng;
+	private VisibleRegion vr;
 
 	// Milliseconds per second
 	private static final int MILLISECONDS_PER_SECOND = 1000;
@@ -106,11 +112,10 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 
 			@Override
 			public void onClick(View arg0) {
-				LatLng currentLatLng = myMap.getCameraPosition().target;
-				currentLocation.setLatitude(currentLatLng.latitude);
-				currentLocation.setLongitude(currentLatLng.longitude);
+				reloadHere = true;
+				currentLatLng = myMap.getCameraPosition().target;
+				vr = myMap.getProjection().getVisibleRegion();
 				new RemoteDataTask(MapActivity.this).execute();
-
 			}
 		});
 
@@ -143,7 +148,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 		case R.id.action_filter:
 			Intent i = new Intent(MapActivity.this, MapSearchActivity.class);
 			finish();
-			newIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
+			i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
 			startActivity(i);
 			return true;
 		case R.id.action_clear_search:
@@ -186,20 +191,36 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 
 		@Override
 		protected Void doInBackground(Void... params) {
+			if (reloadHere) {
+				
+				currentLocation.setLatitude(currentLatLng.latitude);
+				currentLocation.setLongitude(currentLatLng.longitude);
+				
+				Location MiddleLeftCorner = new Location("middleleftcorner");
+				MiddleLeftCorner.setLatitude(vr.latLngBounds.getCenter().latitude);
+				MiddleLeftCorner.setLongitude(vr.latLngBounds.southwest.longitude);
+				Location center = new Location("center");
+				center.setLatitude(vr.latLngBounds.getCenter().latitude);
+				center.setLongitude(vr.latLngBounds.getCenter().longitude);
+				distanceMeters = (int) center.distanceTo(MiddleLeftCorner)*2; 
+				distanceMiles = String.valueOf(distanceMeters/1609.0);
+			} else {
+				currentLocation = getLocation();
+				distanceMiles = (intent.getStringExtra("distance") == null) ? "1" : intent.getStringExtra("distance");
+				distanceMeters = Integer.parseInt(distanceMiles) * 1609;
+			}
 
-			currentLocation = getLocation();
 			day_of_week = (intent.getStringExtra("day_of_week") == null) ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : intent.getStringExtra("day_of_week");
 			food = intent.getBooleanExtra("food", true);
 			drinks = intent.getBooleanExtra("drinks", true);
 			onlyDeals = intent.getBooleanExtra("only_deals", false);
 
 			query = (intent.getStringExtra("query") == null) ? "" : intent.getStringExtra("query");
-			distanceMiles = (intent.getStringExtra("distance") == null) ? "3" : intent.getStringExtra("distance");
-			distanceMeters = Integer.parseInt(distanceMiles) * 1609;
+			
 			// Locate the class table named "establishment" in Parse.com
 			ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>("Deal");
 			queryDealSearch.include("establishment");
-			queryDealSearch.setLimit(20);
+			queryDealSearch.setLimit(30);
 			if (day_of_week != "") {
 				queryDealSearch.whereEqualTo("day", day_of_week);
 			}
@@ -281,13 +302,30 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 		@Override
 		protected void onPostExecute(Void result) {
 			if (businesses.size() < 1) {
-				Helper.displayError("Sorry, nothing was found.  Try and widen your search.", MapSearchActivity.class, MapActivity.this);
+				Helper.displayError("Sorry, nothing was found. Try and widen your search.", MapSearchActivity.class, MapActivity.this);
 			} else {
-				if (currentLocation != null) {
-					LatLng coordinate = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-					CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 15);
-					myMap.animateCamera(yourLocation);
-				}
+				
+				 WindowManager wm = (WindowManager)
+				 context.getSystemService(Context.WINDOW_SERVICE); 
+				 Display display = wm.getDefaultDisplay();
+				 
+				//Display display = getWindowManager().getDefaultDisplay();
+				Point size = new Point();
+				display.getSize(size);
+				int width = size.x;
+			    Double[] zooms = {21282.0,16355.0,10064.0,5540.0,2909.0,1485.0,752.0,378.0,190.0,95.0,48.0,24.0,12.0,6.0,3.0,1.48,0.74,0.37,0.19};
+			    Integer z = 19;
+				Double m;
+			    while( z > 0 ){
+			    	z--;
+			        m = zooms[z] * width;
+			        if( distanceMeters < m ){
+			            break;
+			        }
+			    }
+				LatLng coordinate = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+				CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, z);
+				myMap.animateCamera(yourLocation);
 
 				myMap.setMyLocationEnabled(true);
 
@@ -380,7 +418,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 		if (Helper.isConnectedToInternet(MapActivity.this)) {
 			new RemoteDataTask(MapActivity.this).execute();
 		} else {
-			Helper.displayError("Sorry, nothing was found.  Could not connect to the internet.", MainActivity.class, MapActivity.this);
+			Helper.displayError("Sorry, nothing was found. Could not connect to the internet.", MainActivity.class, MapActivity.this);
 		}
 
 	}
@@ -591,6 +629,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 									newIntent.putExtra("mob_url", bus.getMobileURL());
 
 									businesses.clear();
+									reload = true;
 									// Open SingleItemView.java Activity
 									startActivity(newIntent);
 								} else {
@@ -599,14 +638,11 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 							}
 						});
 					} else {
-						Helper.displayErrorStay("Sorry, nothing was found.  Could not connect to the internet.", MapActivity.this);
+						Helper.displayErrorStay("Sorry, nothing was found. Could not connect to the internet.", MapActivity.this);
 					}
 				}
 			});
-
 			return v;
 		}
-
 	}
-
 }

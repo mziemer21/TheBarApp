@@ -3,11 +3,9 @@ package fragments;
 import java.util.ArrayList;
 import java.util.List;
 
-import activities.DealActivity;
 import activities.DealAddActivity;
 import activities.DealDetailsActivity;
 import activities.LoginActivity;
-import activities.MapActivity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -24,6 +22,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -31,6 +32,8 @@ import com.parse.ParseUser;
 import com.thebarapp.DealListViewAdapter;
 import com.thebarapp.DealRowItem;
 import com.thebarapp.Helper;
+import com.thebarapp.ParseApplication;
+import com.thebarapp.ParseApplication.TrackerName;
 import com.thebarapp.R;
 
 /***
@@ -111,6 +114,12 @@ public class DealsTabFragment extends Fragment {
 		} else {
 			// new RemoteDataTaskDeal().execute();
 		}
+		
+		Tracker t = ((ParseApplication) getActivity().getApplication()).getTracker(
+                TrackerName.APP_TRACKER);
+        t.setScreenName("Deals Tab Fragment");
+        t.send(new HitBuilders.AppViewBuilder().build());
+		
 		return rootDealView;
 	}
 

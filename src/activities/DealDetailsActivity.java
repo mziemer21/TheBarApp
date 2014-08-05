@@ -9,12 +9,14 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.thebarapp.Helper;
+import com.thebarapp.ParseApplication;
 import com.thebarapp.R;
 
 public class DealDetailsActivity extends NavDrawer {
@@ -31,6 +33,9 @@ public class DealDetailsActivity extends NavDrawer {
 		super.onCreate(savedInstanceState);
 
 		intent = getIntent();
+		
+		// Get tracker.
+		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
 
 		// Get the arguments from intent
 		deal_id = intent.getStringExtra("deal_id");
@@ -228,5 +233,17 @@ public class DealDetailsActivity extends NavDrawer {
 		if ((dealVoteUser != null) && (dealVoteUser.isDirty())) {
 			dealVoteUser.saveInBackground();
 		}
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		GoogleAnalytics.getInstance(this).reportActivityStart(this);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		GoogleAnalytics.getInstance(this).reportActivityStop(this);
 	}
 }

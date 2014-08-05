@@ -14,7 +14,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+import com.thebarapp.ParseApplication;
 import com.thebarapp.R;
+import com.thebarapp.ParseApplication.TrackerName;
 
 /***
  * Tab used by details fragment It contains info about an establishment
@@ -147,6 +151,11 @@ public class DetailsTabFragment extends Fragment {
 			ratingImg.setImageResource(R.drawable.five_stars_lg);
 		}
 
+		Tracker t = ((ParseApplication) getActivity().getApplication()).getTracker(
+                TrackerName.APP_TRACKER);
+        t.setScreenName("Details Tab Fragment");
+        t.send(new HitBuilders.AppViewBuilder().build());
+		
 		return rootDetailsView;
 	}
 }

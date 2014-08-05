@@ -27,6 +27,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
@@ -41,6 +42,7 @@ import com.thebarapp.BusinessRatingComparator;
 import com.thebarapp.EstablishmentListViewAdapter;
 import com.thebarapp.EstablishmentRowItem;
 import com.thebarapp.Helper;
+import com.thebarapp.ParseApplication;
 import com.thebarapp.R;
 
 public class ListActivity extends NavDrawer implements LocationListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
@@ -70,6 +72,9 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 		intent = getIntent();
 
 		locationClient = new LocationClient(this, this, this);
+		
+		// Get tracker.
+		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
 	}
 
 	@Override
@@ -145,7 +150,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 			sort_mode = intent.getIntExtra("search_type", 1);
 			onlyDeals = intent.getBooleanExtra("only_deals", false);
 			query = (intent.getStringExtra("query") == null) ? "" : intent.getStringExtra("query");
-			distanceMiles = (intent.getStringExtra("distance") == null) ? "3" : intent.getStringExtra("distance");
+			distanceMiles = (intent.getStringExtra("distance") == null) ? "1" : intent.getStringExtra("distance");
 			distanceMeters = Integer.parseInt(distanceMiles) * 1609;
 
 			// Locate the class table named "establishment" in Parse.com
@@ -419,20 +424,21 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 	}
 
 	@Override
-	public void onStop() {
-		super.onStop();
-		// After disconnect() is called, the client is considered "dead".
-		locationClient.disconnect();
-	}
-
-	/*
-	 * Called when the Activity is restarted, even before it becomes visible.
-	 */
-	@Override
 	public void onStart() {
 		super.onStart();
+		GoogleAnalytics.getInstance(this).reportActivityStart(this);
+		
 		// Connect to the location services client
 		locationClient.connect();
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		GoogleAnalytics.getInstance(this).reportActivityStop(this);
+
+		// After disconnect() is called, the client is considered "dead".
+		locationClient.disconnect();
 	}
 
 	@Override

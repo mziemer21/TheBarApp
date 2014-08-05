@@ -16,14 +16,16 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.ToggleButton;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.thebarapp.Helper;
+import com.thebarapp.ParseApplication;
 import com.thebarapp.R;
 
 public class ListSearchActivity extends NavDrawer {
 
 	private Button searchListButton;
 	private ToggleButton oneMi, threeMi, fiveMi, tenMi, twentyMi;
-	private String distance = "3";
+	private String distance = "1";
 	private Calendar calendar = Calendar.getInstance();
 	private Integer today = calendar.get(Calendar.DAY_OF_WEEK), search_type;
 	private Spinner day_of_week, search_type_spinner;
@@ -37,6 +39,8 @@ public class ListSearchActivity extends NavDrawer {
 				setContentView(R.layout.list_search);
 		super.onCreate(savedInstanceState);
 		
+		// Get tracker.
+		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
 
 		searchListButton = (Button) findViewById(R.id.list_filter_button);
 		oneMi = (ToggleButton) findViewById(R.id.list_filter_one_mile);
@@ -53,7 +57,7 @@ public class ListSearchActivity extends NavDrawer {
 
 		Helper.setDate(today, day_of_week);
 
-		threeMi.setChecked(true);
+		oneMi.setChecked(true);
 
 		searchListButton.setOnClickListener(new OnClickListener() {
 
@@ -93,9 +97,7 @@ public class ListSearchActivity extends NavDrawer {
 					twentyMi.setChecked(false);
 
 					distance = "1";
-				} else {
-					distance = "3";
-				}
+				} 
 			}
 		});
 
@@ -108,8 +110,12 @@ public class ListSearchActivity extends NavDrawer {
 					fiveMi.setChecked(false);
 					tenMi.setChecked(false);
 					twentyMi.setChecked(false);
+					
+					distance = "3";
+				} else {
+					distance = "1";
 				}
-				distance = "3";
+				
 			}
 		});
 
@@ -125,7 +131,7 @@ public class ListSearchActivity extends NavDrawer {
 
 					distance = "5";
 				} else {
-					distance = "3";
+					distance = "1";
 				}
 			}
 		});
@@ -142,7 +148,7 @@ public class ListSearchActivity extends NavDrawer {
 
 					distance = "10";
 				} else {
-					distance = "3";
+					distance = "1";
 				}
 			}
 		});
@@ -159,7 +165,7 @@ public class ListSearchActivity extends NavDrawer {
 
 					distance = "20";
 				} else {
-					distance = "3";
+					distance = "1";
 				}
 			}
 		});
@@ -181,8 +187,8 @@ public class ListSearchActivity extends NavDrawer {
 		// Take appropriate action for each action item click
 		switch (item.getItemId()) {
 		case R.id.filter_clear:
-			threeMi.setChecked(true);
-			oneMi.setChecked(false);
+			threeMi.setChecked(false);
+			oneMi.setChecked(true);
 			fiveMi.setChecked(false);
 			tenMi.setChecked(false);
 			twentyMi.setChecked(false);
@@ -195,5 +201,17 @@ public class ListSearchActivity extends NavDrawer {
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		GoogleAnalytics.getInstance(this).reportActivityStart(this);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		GoogleAnalytics.getInstance(this).reportActivityStop(this);
 	}
 }

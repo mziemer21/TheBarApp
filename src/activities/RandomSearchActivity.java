@@ -15,7 +15,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.ToggleButton;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.thebarapp.Helper;
+import com.thebarapp.ParseApplication;
 import com.thebarapp.R;
 
 public class RandomSearchActivity extends NavDrawer {
@@ -35,6 +37,8 @@ public class RandomSearchActivity extends NavDrawer {
 				setContentView(R.layout.random_filter);
 		super.onCreate(savedInstanceState);
 		
+		// Get tracker.
+		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
 
 		randomDealButton = (Button) findViewById(R.id.random_filter_button);
 		oneMi = (ToggleButton) findViewById(R.id.random_filter_one_mile);
@@ -178,5 +182,17 @@ public class RandomSearchActivity extends NavDrawer {
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		GoogleAnalytics.getInstance(this).reportActivityStart(this);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		GoogleAnalytics.getInstance(this).reportActivityStop(this);
 	}
 }

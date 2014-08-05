@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
@@ -31,6 +32,7 @@ import com.parse.ParseQuery;
 import com.thebarapp.DealListViewAdapter;
 import com.thebarapp.DealRowItem;
 import com.thebarapp.Helper;
+import com.thebarapp.ParseApplication;
 import com.thebarapp.R;
 
 public class DealActivity extends NavDrawer implements LocationListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
@@ -58,6 +60,9 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 
 		intent = getIntent();
 		locationClient = new LocationClient(this, this, this);
+		
+		// Get tracker.
+		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
 	}
 
 	@Override
@@ -274,22 +279,23 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 	public void onDisconnected() {
 		// TODO Auto-generated method stub
 	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		GoogleAnalytics.getInstance(this).reportActivityStart(this);
+		
+		// Connect to the location services client
+		locationClient.connect();
+	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
+		GoogleAnalytics.getInstance(this).reportActivityStop(this);
+
 		// After disconnect() is called, the client is considered "dead".
 		locationClient.disconnect();
-	}
-
-	/*
-	 * Called when the Activity is restarted, even before it becomes visible.
-	 */
-	@Override
-	public void onStart() {
-		super.onStart();
-		// Connect to the location services client
-		locationClient.connect();
 	}
 
 	@Override
