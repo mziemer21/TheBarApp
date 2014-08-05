@@ -149,6 +149,11 @@ public class DealAddActivity extends NavDrawer {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
+							try {
+								Thread.sleep(101);
+							} catch (InterruptedException ex) {
+								Thread.currentThread().interrupt();
+							}
 
 							if (establishment != null) {
 								Log.d("establishment", establishment.toString());
