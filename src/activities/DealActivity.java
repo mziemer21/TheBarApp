@@ -37,7 +37,7 @@ import com.thebarapp.R;
 public class DealActivity extends NavDrawer implements LocationListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 	// Declare Variables
 	private ListView listview;
-	private List<ParseObject> ob;
+	private List<ParseObject> ob, obE;
 	private List<DealRowItem> rowItems = new ArrayList<DealRowItem>();
 	private Location currentLocation = null;
 	private Intent intent;

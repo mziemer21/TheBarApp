@@ -153,7 +153,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 			// Locate the class table named "establishment" in Parse.com
 			ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>("Deal");
 			queryDealSearch.include("establishment");
-			queryDealSearch.setLimit(20);
+			queryDealSearch.setLimit(100);
 			if (ob.size() > 0) {
 				queryDealSearch.setSkip(ob.size());
 			}
@@ -216,7 +216,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 				}
 			}
 
-			if ((ob.size() < 20) && (!onlyDeals)) {
+			if ((businesses.size() < 20) && (!onlyDeals)) {
 				if (intent.getStringExtra("query") != null) {
 					yelpQuery = intent.getStringExtra("query");
 				} else {
