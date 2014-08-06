@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import navigation.NavDrawer;
-import yelp.API_Static_Stuff;
-import yelp.Yelp;
 import yelp.YelpParser;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -113,6 +111,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 			@Override
 			public void onClick(View arg0) {
 				reloadHere = true;
+				reload = false;
 				currentLatLng = myMap.getCameraPosition().target;
 				vr = myMap.getProjection().getVisibleRegion();
 				new RemoteDataTask(MapActivity.this).execute();
@@ -210,7 +209,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 				distanceMeters = Integer.parseInt(distanceMiles) * 1609;
 			}
 
-			day_of_week = (intent.getStringExtra("day_of_week") == null) ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : intent.getStringExtra("day_of_week");
+			day_of_week = (intent.getStringExtra("day_of_week") == null) ? Helper.setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : intent.getStringExtra("day_of_week");
 			food = intent.getBooleanExtra("food", true);
 			drinks = intent.getBooleanExtra("drinks", true);
 			onlyDeals = intent.getBooleanExtra("only_deals", false);
@@ -261,8 +260,8 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 			if (ob.size() > 0) {
 				for (int j = 0; ob.size() > j; j++) {
 					yelpQuery = ob.get(j).getString("yelp_id").toString();
-					tempBusiness = searchYelp(false, Double.toString(ob.get(j).getParseGeoPoint("location").getLatitude()), Double.toString(ob.get(j).getParseGeoPoint("location").getLongitude()),
-							yelpQuery, true);
+					tempBusiness = Helper.searchYelp(false, Double.toString(ob.get(j).getParseGeoPoint("location").getLatitude()), Double.toString(ob.get(j).getParseGeoPoint("location").getLongitude()),
+							yelpQuery, true, currentLocation, distanceMeters, 0, 0);
 					if ((tempBusiness.size() > 0) && (!businesses.contains(tempBusiness.get(0)))) {
 						ParseObject curDeal = ob.get(j);
 						ParseObject curEst = curDeal.getParseObject("establishment");
@@ -286,7 +285,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 					yelpQuery = "";
 				}
 
-				tempBusiness = searchYelp(true, "", "", "", false);
+				tempBusiness = Helper.searchYelp(true, "", "", "", false, currentLocation, distanceMeters, 0, 0);
 				for (int m = 0; m < tempBusiness.size() - 1; m++) {
 					checkBusiness = (Business) tempBusiness.get(m);
 					if (!businesses.contains(checkBusiness)) {
@@ -363,25 +362,6 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 
 	}
 
-	private void loadMapOnUser(Location location) {
-
-		// Getting latitude of the current location
-		double latitude = location.getLatitude();
-
-		// Getting longitude of the current location
-		double longitude = location.getLongitude();
-
-		// Creating a LatLng object for the current location
-		LatLng latLng = new LatLng(latitude, longitude);
-
-		// Showing the current location in Google Map
-		myMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
-		// Zoom in the Google Map
-		myMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-
-	}
-
 	@Override
 	public void onProviderDisabled(String arg0) {
 		// TODO Auto-generated method stub
@@ -416,7 +396,9 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 		locationClient.requestLocationUpdates(mLocationRequest, this);
 		currentLocation = getLocation();
 		if (Helper.isConnectedToInternet(MapActivity.this)) {
-			new RemoteDataTask(MapActivity.this).execute();
+			if(!reload){
+				new RemoteDataTask(MapActivity.this).execute();
+			}
 		} else {
 			Helper.displayError("Sorry, nothing was found. Could not connect to the internet.", MainActivity.class, MapActivity.this);
 		}
@@ -458,62 +440,6 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 	private static ParseGeoPoint geoPointFromLocation(Location loc) {
 		return new ParseGeoPoint(loc.getLatitude(), loc.getLongitude());
 	}
-
-	private ArrayList<Business> searchYelp(boolean location, String lat, String lng, String yelp_id, boolean businessSearch) {
-		String response;
-		ArrayList<Business> result = new ArrayList<Business>();
-		API_Static_Stuff api_keys = new API_Static_Stuff();
-
-		Yelp yelp = new Yelp(api_keys.getYelpConsumerKey(), api_keys.getYelpConsumerSecret(), api_keys.getYelpToken(), api_keys.getYelpTokenSecret());
-		YelpParser yParser = new YelpParser();
-		if (businessSearch) {
-			response = yelp.businessSearch(yelp_id);
-			result = yParser.getBusinesses(response, location, lat, lng, businessSearch, currentLocation.getLatitude(), currentLocation.getLongitude());
-		} else {
-			response = yelp.search(yelp_id, currentLocation.getLatitude(), currentLocation.getLongitude(), String.valueOf(distanceMeters), 0, 0);
-			result = yParser.getBusinesses(response, location, lat, lng, businessSearch, currentLocation.getLatitude(), currentLocation.getLongitude());
-		}
-
-		return result;
-	}
-
-	private String setDayOfWeek(int i) {
-		if (i == 1) {
-			day_of_week = "Sunday";
-		} else if (i == 2) {
-			day_of_week = "Monday";
-		} else if (i == 3) {
-			day_of_week = "Tuesday";
-		} else if (i == 4) {
-			day_of_week = "Wednesday";
-		} else if (i == 5) {
-			day_of_week = "Thursday";
-		} else if (i == 6) {
-			day_of_week = "Friday";
-		} else if (i == 7) {
-			day_of_week = "Saturday";
-		}
-		return day_of_week;
-	}
-
-	/*
-	 * private void plotMarkers(ArrayList<MyMarker> markers) { if
-	 * (markers.size() > 0) { for (MyMarker myMarker : markers) {
-	 * 
-	 * // Create user marker with custom icon and other options MarkerOptions
-	 * markerOption = new MarkerOptions().position(new LatLng(myMarker.getLat(),
-	 * myMarker.getLng())); //
-	 * markerOption.icon(BitmapDescriptorFactory.fromResource
-	 * (R.drawable.currentlocation_icon));
-	 * 
-	 * Marker currentMarker = myMap.addMarker(markerOption);
-	 * mMarkersHashMap.put(currentMarker, myMarker);
-	 * 
-	 * MyMarker myMarker2 = mMarkersHashMap.get(currentMarker); Boolean ya =
-	 * myMarker.equals(myMarker2);
-	 * 
-	 * myMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter()); } } }
-	 */
 
 	private void setUpMap() {
 		// Check if we were successful in obtaining the map.
@@ -610,7 +536,6 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 									newIntent.putExtra("establishment_id", estId);
 									newIntent.putExtra("est_name", bus.getName());
 									newIntent.putExtra("yelp_id", bus.getYelpId());
-									newIntent.putExtra("name", bus.getName());
 									newIntent.putExtra("rating", bus.getRating());
 									newIntent.putExtra("rating_count", bus.getRatingCount());
 									newIntent.putExtra("address", bus.getAddress());
@@ -621,12 +546,11 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 									newIntent.putExtra("display_phone", bus.getDisplayPhone());
 									newIntent.putExtra("distance", bus.getDistance());
 									newIntent.putExtra("mobile_url", bus.getMobileURL());
-									newIntent.putExtra("day_of_week", (day_of_week == "") ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
+									newIntent.putExtra("day_of_week", (day_of_week == "") ? Helper.setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
 									newIntent.putExtra("est_lat", bus.getLatitude());
 									newIntent.putExtra("est_lng", bus.getLongitude());
 									newIntent.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
 									newIntent.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));
-									newIntent.putExtra("mob_url", bus.getMobileURL());
 
 									businesses.clear();
 									reload = true;

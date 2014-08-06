@@ -71,7 +71,6 @@ public class MapSearchActivity extends NavDrawer {
 				mapActivity.putExtra("drinks", drinks.isChecked());
 				mapActivity.putExtra("query", query.getText().toString());
 				mapActivity.putExtra("only_deals", only_deals.isChecked());
-				mapActivity.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 				startActivity(mapActivity);
 			}
 		});

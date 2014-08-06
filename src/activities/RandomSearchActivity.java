@@ -24,7 +24,7 @@ public class RandomSearchActivity extends NavDrawer {
 
 	private Button randomDealButton;
 	private ToggleButton oneMi, threeMi, fiveMi, tenMi, twentyMi;
-	private String distance = "3";
+	private String distance = "1";
 	private Calendar calendar = Calendar.getInstance();
 	private Integer today = calendar.get(Calendar.DAY_OF_WEEK);
 	private Spinner day_of_week;
@@ -53,7 +53,7 @@ public class RandomSearchActivity extends NavDrawer {
 
 		Helper.setDate(today, day_of_week);
 
-		threeMi.setChecked(true);
+		oneMi.setChecked(true);
 
 		randomDealButton.setOnClickListener(new OnClickListener() {
 
@@ -81,9 +81,7 @@ public class RandomSearchActivity extends NavDrawer {
 					twentyMi.setChecked(false);
 
 					distance = "1";
-				} else {
-					distance = "3";
-				}
+				} 
 			}
 		});
 
@@ -96,8 +94,11 @@ public class RandomSearchActivity extends NavDrawer {
 					fiveMi.setChecked(false);
 					tenMi.setChecked(false);
 					twentyMi.setChecked(false);
+					
+					distance = "3";
+				} else {
+					distance = "1";
 				}
-				distance = "3";
 			}
 		});
 
@@ -113,7 +114,7 @@ public class RandomSearchActivity extends NavDrawer {
 
 					distance = "5";
 				} else {
-					distance = "3";
+					distance = "1";
 				}
 			}
 		});
@@ -130,7 +131,7 @@ public class RandomSearchActivity extends NavDrawer {
 
 					distance = "10";
 				} else {
-					distance = "3";
+					distance = "1";
 				}
 			}
 		});
@@ -147,7 +148,7 @@ public class RandomSearchActivity extends NavDrawer {
 
 					distance = "20";
 				} else {
-					distance = "3";
+					distance = "1";
 				}
 			}
 		});
@@ -169,8 +170,8 @@ public class RandomSearchActivity extends NavDrawer {
 		// Take appropriate action for each action item click
 		switch (item.getItemId()) {
 		case R.id.filter_clear:
-			threeMi.setChecked(true);
-			oneMi.setChecked(false);
+			threeMi.setChecked(false);
+			oneMi.setChecked(true);
 			fiveMi.setChecked(false);
 			tenMi.setChecked(false);
 			twentyMi.setChecked(false);

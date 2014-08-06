@@ -115,7 +115,7 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 	public static class AppSectionsPagerAdapter extends FragmentPagerAdapter {
 
 		// Declare Variables
-		private String establishment_id, mobile_url, rating, rating_count, name, yelp_id, address, city, state, zip, display_phone, phone, distance, day_of_week, est_name, estLat, estLng, curLat,
+		private String establishment_id, mobile_url, rating, rating_count, yelp_id, address, city, state, zip, display_phone, phone, distance, day_of_week, est_name, estLat, estLng, curLat,
 				curLng, mobUrl;
 
 		public AppSectionsPagerAdapter(FragmentManager fm) {
@@ -129,7 +129,6 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 			// Get the arguments from intent
 			establishment_id = intent.getStringExtra("establishment_id");
 			est_name = intent.getStringExtra("est_name");
-			name = intent.getStringExtra("name");
 			rating = intent.getStringExtra("rating");
 			rating_count = intent.getStringExtra("rating_count");
 			address = intent.getStringExtra("address");
@@ -146,14 +145,13 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 			estLng = intent.getStringExtra("est_lng");
 			curLat = intent.getStringExtra("cur_lat");
 			curLng = intent.getStringExtra("cur_lng");
-			mobUrl = intent.getStringExtra("mob_url");
+			mobUrl = intent.getStringExtra("mobile_url");
 
 			// Create a bundle, assign it arguments
 			Bundle bundle = new Bundle();
 			bundle.putString("establishment_id", establishment_id);
 			bundle.putString("est_name", est_name);
 			bundle.putString("yelp_id", yelp_id);
-			bundle.putString("name", name);
 			bundle.putString("rating", rating);
 			bundle.putString("rating_count", rating_count);
 			bundle.putString("address", address);

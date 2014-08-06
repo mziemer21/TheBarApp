@@ -81,7 +81,6 @@ public class ListSearchActivity extends NavDrawer {
 				listActivity.putExtra("drinks", drinks.isChecked());
 				listActivity.putExtra("query", query.getText().toString());
 				listActivity.putExtra("only_deals", only_deals.isChecked());
-				listActivity.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 				startActivity(listActivity);
 			}
 		});

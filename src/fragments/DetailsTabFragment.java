@@ -17,8 +17,8 @@ import android.widget.TextView;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.thebarapp.ParseApplication;
-import com.thebarapp.R;
 import com.thebarapp.ParseApplication.TrackerName;
+import com.thebarapp.R;
 
 /***
  * Tab used by details fragment It contains info about an establishment
@@ -43,7 +43,7 @@ public class DetailsTabFragment extends Fragment {
 
 		/* get arguments from activity */
 		Bundle extraDetails = getArguments();
-		name = extraDetails.getString("name");
+		name = extraDetails.getString("est_name");
 		address = extraDetails.getString("address");
 		city = extraDetails.getString("city");
 		state = extraDetails.getString("state");

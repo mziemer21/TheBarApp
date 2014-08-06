@@ -1,12 +1,11 @@
 package activities;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import navigation.NavDrawer;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
@@ -15,20 +14,20 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
-import com.parse.CountCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.thebarapp.Business;
 import com.thebarapp.DealListViewAdapter;
 import com.thebarapp.DealRowItem;
 import com.thebarapp.Helper;
@@ -47,7 +46,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 	private String distance, day_of_week, query;
 	private Boolean food, drinks, moreButton = false, resumed = false;
 	private ParseObject deal_type = null, est;
-	private Integer search_type, countPrev = 0, loadOffset = 0;
+	private Integer search_type, countPrev = 0, loadOffset = 0, distanceMeters;
 
 	// Stores the current instantiation of the location client in this object
 	private LocationClient locationClient;
@@ -117,6 +116,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 
 				currentLocation = getLocation();
 				distance = intent.getStringExtra("distance");
+				distanceMeters = Integer.parseInt(distance) * 1609;
 				day_of_week = intent.getStringExtra("day_of_week");
 				food = intent.getBooleanExtra("food", true);
 				drinks = intent.getBooleanExtra("drinks", true);
@@ -256,7 +256,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 					Intent i = new Intent(DealActivity.this, DealDetailsActivity.class);
 					est = (ParseObject) ob.get(position).get("establishment");
 					ParseObject curEst = ob.get(position).getParseObject("establishment");
-					String est_name = curEst.getString("name");
+					
 					// Pass data to next activity
 					i.putExtra("deal_id", ob.get(position).getObjectId().toString());
 					i.putExtra("deal_title", ob.get(position).getString("title").toString());
@@ -264,8 +264,28 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 					i.putExtra("deal_restrictions", ob.get(position).getInt("restrictions"));
 					i.putExtra("yelp_id", ob.get(position).getString("yelp_id"));
 					i.putExtra("establishment_id", est.getObjectId().toString());
-					i.putExtra("est_name", est_name);
+					i.putExtra("est_name", curEst.getString("name"));
 					i.putExtra("deal_time", Helper.formatTime(ob.get(position).getDate("time_start"), ob.get(position).getDate("time_end")));
+					
+					/*ArrayList<Business>tempBusiness = Helper.searchYelp(false, Double.toString(curEst.getParseGeoPoint("location").getLatitude()), Double.toString(curEst.getParseGeoPoint("location").getLongitude()),
+							ob.get(position).getString("yelp_id"), true, currentLocation, distanceMeters, 0, 0);
+					
+					i.putExtra("rating", tempBusiness.get(0).getRating());
+					i.putExtra("rating_count", tempBusiness.get(0).getRatingCount());
+					i.putExtra("address", tempBusiness.get(0).getAddress());
+					i.putExtra("city", tempBusiness.get(0).getCity());
+					i.putExtra("state", tempBusiness.get(0).getState());
+					i.putExtra("zip", tempBusiness.get(0).getZipcode());
+					i.putExtra("phone", tempBusiness.get(0).getPhone());
+					i.putExtra("display_phone", tempBusiness.get(0).getDisplayPhone());
+					i.putExtra("distance", tempBusiness.get(0).getDistance());
+					i.putExtra("mobile_url", tempBusiness.get(0).getMobileURL());
+					Calendar calendar = Calendar.getInstance();
+					i.putExtra("day_of_week", (day_of_week == "") ? Helper.setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
+					i.putExtra("est_lat", tempBusiness.get(0).getLatitude());
+					i.putExtra("est_lng", tempBusiness.get(0).getLongitude());
+					i.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
+					i.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));*/
 					// Open SingleItemView.java Activity
 					startActivity(i);
 				} else {

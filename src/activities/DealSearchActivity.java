@@ -24,7 +24,7 @@ public class DealSearchActivity extends NavDrawer {
 
 	private Button searchDealButton;
 	private ToggleButton oneMi, threeMi, fiveMi, tenMi, twentyMi;
-	private String distance = "3";
+	private String distance = "1";
 	private Calendar calendar = Calendar.getInstance();
 	int today = calendar.get(Calendar.DAY_OF_WEEK), search_type;
 	private Spinner day_of_week, search_type_spinner;
@@ -54,7 +54,7 @@ public class DealSearchActivity extends NavDrawer {
 
 		Helper.setDate(today, day_of_week);
 
-		threeMi.setChecked(true);
+		oneMi.setChecked(true);
 
 		searchDealButton.setOnClickListener(new OnClickListener() {
 
@@ -90,9 +90,7 @@ public class DealSearchActivity extends NavDrawer {
 					twentyMi.setChecked(false);
 
 					distance = "1";
-				} else {
-					distance = "3";
-				}
+				} 
 			}
 		});
 
@@ -105,8 +103,10 @@ public class DealSearchActivity extends NavDrawer {
 					fiveMi.setChecked(false);
 					tenMi.setChecked(false);
 					twentyMi.setChecked(false);
+					distance = "3";
+				} else {
+					distance = "1";
 				}
-				distance = "3";
 			}
 		});
 
@@ -122,7 +122,7 @@ public class DealSearchActivity extends NavDrawer {
 
 					distance = "5";
 				} else {
-					distance = "3";
+					distance = "1";
 				}
 			}
 		});
@@ -139,7 +139,7 @@ public class DealSearchActivity extends NavDrawer {
 
 					distance = "10";
 				} else {
-					distance = "3";
+					distance = "1";
 				}
 			}
 		});
@@ -156,7 +156,7 @@ public class DealSearchActivity extends NavDrawer {
 
 					distance = "20";
 				} else {
-					distance = "3";
+					distance = "1";
 				}
 			}
 		});
@@ -178,8 +178,8 @@ public class DealSearchActivity extends NavDrawer {
 		// Take appropriate action for each action item click
 		switch (item.getItemId()) {
 		case R.id.filter_clear:
-			threeMi.setChecked(true);
-			oneMi.setChecked(false);
+			threeMi.setChecked(false);
+			oneMi.setChecked(true);
 			fiveMi.setChecked(false);
 			tenMi.setChecked(false);
 			twentyMi.setChecked(false);

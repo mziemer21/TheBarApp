@@ -6,9 +6,6 @@ import java.util.Collections;
 import java.util.List;
 
 import navigation.NavDrawer;
-import yelp.API_Static_Stuff;
-import yelp.Yelp;
-import yelp.YelpParser;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -144,7 +141,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 		protected Void doInBackground(Void... params) {
 
 			currentLocation = getLocation();
-			day_of_week = (intent.getStringExtra("day_of_week") == null) ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : intent.getStringExtra("day_of_week");
+			day_of_week = (intent.getStringExtra("day_of_week") == null) ? Helper.setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : intent.getStringExtra("day_of_week");
 			food = intent.getBooleanExtra("food", true);
 			drinks = intent.getBooleanExtra("drinks", true);
 			sort_mode = intent.getIntExtra("search_type", 1);
@@ -204,8 +201,8 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 					ParseObject curEst = curDeal.getParseObject("establishment");
 					String estabDealCount = curEst.getString("deal_count");
 
-					tempBusiness = searchYelp(false, Double.toString(curDeal.getParseGeoPoint("location").getLatitude()), Double.toString(curDeal.getParseGeoPoint("location").getLongitude()),
-							yelpQuery, true);
+					tempBusiness = Helper.searchYelp(false, Double.toString(curDeal.getParseGeoPoint("location").getLatitude()), Double.toString(curDeal.getParseGeoPoint("location").getLongitude()),
+							yelpQuery, true, currentLocation, distanceMeters, sort_mode, loadOffset);
 					if ((tempBusiness.size() > 0) && (!businesses.contains(tempBusiness.get(0)))) {
 
 						if ((query != "") && (tempBusiness.get(0).getName().toLowerCase().contains(query.toLowerCase()))) {
@@ -226,7 +223,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 					yelpQuery = "";
 				}
 
-				tempBusiness = searchYelp(true, "", "", "", false);
+				tempBusiness = Helper.searchYelp(true, "", "", "", false, currentLocation, distanceMeters, sort_mode, loadOffset);
 				for (int m = 0; m < tempBusiness.size() - 1; m++) {
 					checkBusiness = (Business) tempBusiness.get(m);
 					if (!businesses.contains(checkBusiness)) {
@@ -340,7 +337,6 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 							i.putExtra("establishment_id", establishment_id);
 							i.putExtra("est_name", businesses.get(position).getName());
 							i.putExtra("yelp_id", businesses.get(position).getYelpId());
-							i.putExtra("name", businesses.get(position).getName());
 							i.putExtra("rating", businesses.get(position).getRating());
 							i.putExtra("rating_count", businesses.get(position).getRatingCount());
 							i.putExtra("address", businesses.get(position).getAddress());
@@ -351,12 +347,11 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 							i.putExtra("display_phone", businesses.get(position).getDisplayPhone());
 							i.putExtra("distance", businesses.get(position).getDistance());
 							i.putExtra("mobile_url", businesses.get(position).getMobileURL());
-							i.putExtra("day_of_week", (day_of_week == "") ? setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
+							i.putExtra("day_of_week", (day_of_week == "") ? Helper.setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
 							i.putExtra("est_lat", businesses.get(position).getLatitude());
 							i.putExtra("est_lng", businesses.get(position).getLongitude());
 							i.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
 							i.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));
-							i.putExtra("mob_url", businesses.get(position).getMobileURL());
 
 							// Open SingleItemView.java Activity
 							startActivity(i);
@@ -449,42 +444,4 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 			ProgressDialog = null;
 		}
 	}
-
-	private ArrayList<Business> searchYelp(boolean location, String lat, String lng, String yelp_id, boolean businessSearch) {
-		String response;
-		ArrayList<Business> result = new ArrayList<Business>();
-		API_Static_Stuff api_keys = new API_Static_Stuff();
-
-		Yelp yelp = new Yelp(api_keys.getYelpConsumerKey(), api_keys.getYelpConsumerSecret(), api_keys.getYelpToken(), api_keys.getYelpTokenSecret());
-		YelpParser yParser = new YelpParser();
-		if (businessSearch) {
-			response = yelp.businessSearch(yelp_id);
-			result = yParser.getBusinesses(response, location, lat, lng, businessSearch, currentLocation.getLatitude(), currentLocation.getLongitude());
-		} else {
-			response = yelp.search(yelp_id, currentLocation.getLatitude(), currentLocation.getLongitude(), String.valueOf(distanceMeters), sort_mode, loadOffset);
-			result = yParser.getBusinesses(response, location, lat, lng, businessSearch, currentLocation.getLatitude(), currentLocation.getLongitude());
-		}
-
-		return result;
-	}
-
-	private String setDayOfWeek(int i) {
-		if (i == 1) {
-			day_of_week = "Sunday";
-		} else if (i == 2) {
-			day_of_week = "Monday";
-		} else if (i == 3) {
-			day_of_week = "Tuesday";
-		} else if (i == 4) {
-			day_of_week = "Wednesday";
-		} else if (i == 5) {
-			day_of_week = "Thursday";
-		} else if (i == 6) {
-			day_of_week = "Friday";
-		} else if (i == 7) {
-			day_of_week = "Saturday";
-		}
-		return day_of_week;
-	}
-
 }
