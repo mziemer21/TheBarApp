@@ -152,4 +152,25 @@ public class Helper {
 
 		return result;
 	}
+	
+	public static String toTitleCase(String givenString) {
+        String[] arr = givenString.split(" ");
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < arr.length; i++) {
+        sb.append(Character.toUpperCase(arr[i].charAt(0))).append(arr[i].substring(1)).append(" ");
+        }          
+      return sb.toString().trim();
+    } 
+	
+	public static String cleanId(String id){
+        String guess = "-";
+        int i = 0;
+        int index = id.indexOf(guess);
+        while (index >= 0) {
+            i = index;
+            index = id.indexOf(guess, index + 1);
+        }
+        id = id.substring(0, i).replaceAll("-", " ");
+        return toTitleCase(id);
+	}
 }

@@ -95,7 +95,7 @@ public class DealsTabFragment extends Fragment {
 					Intent dealAddFragment = new Intent(getActivity(), DealAddActivity.class);
 					// Pass data "name" followed by the position
 					dealAddFragment.putExtra("establishment_id", extrasDeal.getString("establishment_id"));
-					dealAddFragment.putExtra("name", extrasDeal.getString("name").toString());
+					dealAddFragment.putExtra("name", extrasDeal.getString("est_name").toString());
 					dealAddFragment.putExtra("rating", extrasDeal.getString("rating"));
 					dealAddFragment.putExtra("address", extrasDeal.getString("address").toString());
 					dealAddFragment.putExtra("city", extrasDeal.getString("city"));

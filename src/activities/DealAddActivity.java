@@ -32,6 +32,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -76,7 +77,7 @@ public class DealAddActivity extends NavDrawer {
 		day_of_week = (Spinner) findViewById(R.id.deal_day_spinner);
 
 		Helper.setDate(today, day_of_week);
-		
+
 		// Get tracker.
 		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
 
@@ -160,6 +161,28 @@ public class DealAddActivity extends NavDrawer {
 								location = establishment.getParseGeoPoint("location");
 								deal_count = Integer.parseInt(establishment.getString("deal_count")) + 1;
 								establishment.put("deal_count", deal_count.toString());
+
+								ParseQuery<ParseObject> queryEstDay = ParseQuery.getQuery("establishment_day_deals");
+								queryEstDay.whereEqualTo("establishment", establishment);
+								queryEstDay.getFirstInBackground(new GetCallback<ParseObject>() {
+									public void done(ParseObject estDayObject, ParseException e) {
+										if (estDayObject == null) {
+											Log.d("get deal user", e.toString());
+										} else {
+											String day = day_of_week.getSelectedItem().toString().toLowerCase();
+											Integer countDeal = estDayObject.getInt(day) + 1;
+											estDayObject.put(day, countDeal);
+											try {
+												estDayObject.save();
+											} catch (ParseException e1) {
+												// TODO Auto-generated catch
+												// block
+												e1.printStackTrace();
+											}
+										}
+									}
+								});
+
 							} else {
 								searchString = intent.getStringExtra("address").replaceAll("\\s+", "+") + "+" + intent.getStringExtra("city").replaceAll("\\s+", "+") + "+"
 										+ intent.getStringExtra("state").replaceAll("\\s+", "+") + "+" + intent.getStringExtra("zip");
@@ -193,6 +216,7 @@ public class DealAddActivity extends NavDrawer {
 								addEstablishment.put("location", newLocation);
 								addEstablishment.put("yelp_id", intent.getStringExtra("yelp_id"));
 								addEstablishment.put("deal_count", "1");
+								addEstablishment.put("name", Helper.cleanId(intent.getStringExtra("yelp_id")));
 								try {
 									addEstablishment.save();
 								} catch (ParseException e) {
@@ -201,6 +225,23 @@ public class DealAddActivity extends NavDrawer {
 								}
 								establishment = addEstablishment;
 								location = newLocation;
+
+								ParseObject addEstablishmentDay = new ParseObject("establishment_day_deals");
+								addEstablishmentDay.put("establishment", establishment);
+								addEstablishmentDay.put("sunday", 0);
+								addEstablishmentDay.put("monday", 0);
+								addEstablishmentDay.put("tuesday", 0);
+								addEstablishmentDay.put("wednesday", 0);
+								addEstablishmentDay.put("thursday", 0);
+								addEstablishmentDay.put("friday", 0);
+								addEstablishmentDay.put("saturday", 0);
+								addEstablishmentDay.put(day_of_week.getSelectedItem().toString().toLowerCase(), 1);
+								try {
+									addEstablishmentDay.save();
+								} catch (ParseException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
 
 							switchType = (Switch) findViewById(R.id.deal_type_switch);
@@ -235,6 +276,7 @@ public class DealAddActivity extends NavDrawer {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
+
 							return null;
 						}
 
@@ -338,7 +380,7 @@ public class DealAddActivity extends NavDrawer {
 		// show it
 		alertDialog.show();
 	}
-	
+
 	@Override
 	public void onStart() {
 		super.onStart();
