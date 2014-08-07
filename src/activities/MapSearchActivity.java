@@ -29,7 +29,6 @@ public class MapSearchActivity extends NavDrawer {
 	private Calendar calendar = Calendar.getInstance();
 	private Integer today = calendar.get(Calendar.DAY_OF_WEEK), search_type;
 	private Spinner day_of_week;
-	private ToggleButton food, drinks;
 	private EditText query;
 	private CheckBox only_deals;
 
@@ -49,8 +48,6 @@ public class MapSearchActivity extends NavDrawer {
 		tenMi = (ToggleButton) findViewById(R.id.map_filter_ten_miles);
 		twentyMi = (ToggleButton) findViewById(R.id.map_filter_twenty_miles);
 		day_of_week = (Spinner) findViewById(R.id.map_filter_day_of_week);
-		food = (ToggleButton) findViewById(R.id.map_filter_type_food);
-		drinks = (ToggleButton) findViewById(R.id.map_filter_type_drinks);
 		query = (EditText) findViewById(R.id.map_filter_keyword);
 		only_deals = (CheckBox) findViewById(R.id.map_filter_check_box_only_deals);
 
@@ -67,8 +64,6 @@ public class MapSearchActivity extends NavDrawer {
 				mapActivity.putExtra("search_type", search_type);
 				mapActivity.putExtra("day_of_week", day_of_week.getSelectedItem().toString());
 				mapActivity.putExtra("distance", distance);
-				mapActivity.putExtra("food", food.isChecked());
-				mapActivity.putExtra("drinks", drinks.isChecked());
 				mapActivity.putExtra("query", query.getText().toString());
 				mapActivity.putExtra("only_deals", only_deals.isChecked());
 				startActivity(mapActivity);
@@ -182,8 +177,6 @@ public class MapSearchActivity extends NavDrawer {
 			twentyMi.setChecked(false);
 			Helper.setDate(today, day_of_week);
 			query.setText("");
-			food.setChecked(false);
-			drinks.setChecked(false);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

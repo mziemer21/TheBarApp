@@ -33,7 +33,7 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.thebarapp.Business;
-import com.thebarapp.BusinessBestMatchComparator;
+import com.thebarapp.BusinessAlphabeticalComparator;
 import com.thebarapp.BusinessDistanceComparator;
 import com.thebarapp.BusinessRatingComparator;
 import com.thebarapp.EstablishmentListViewAdapter;
@@ -49,12 +49,12 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 	private String query = "", distanceMiles, establishment_id, yelpQuery = "", day_of_week;
 	private Location currentLocation = null;
 	private Intent intent;
-	private Integer countPrev = 0, sort_mode, distanceMeters, loadOffset = 0;
+	private Integer countPrev = 0, sort_mode, distanceMeters, loadOffset = 0, listSize = 20;
 	private ArrayList<Business> businesses = new ArrayList<Business>(), tempBusiness = new ArrayList<Business>();
 	private Business checkBusiness;
 	private ProgressDialog ProgressDialog;
 	private Calendar calendar = Calendar.getInstance();
-	private Boolean food, drinks, resumed = false, onlyDeals, moreButton = false;
+	private Boolean resumed = false, onlyDeals, moreButton = false;
 	private ParseObject deal_type = null;
 
 	// Stores the current instantiation of the location client in this object
@@ -142,8 +142,6 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 
 			currentLocation = getLocation();
 			day_of_week = (intent.getStringExtra("day_of_week") == null) ? Helper.setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : intent.getStringExtra("day_of_week");
-			food = intent.getBooleanExtra("food", true);
-			drinks = intent.getBooleanExtra("drinks", true);
 			sort_mode = intent.getIntExtra("search_type", 1);
 			onlyDeals = intent.getBooleanExtra("only_deals", false);
 			query = (intent.getStringExtra("query") == null) ? "" : intent.getStringExtra("query");
@@ -151,44 +149,23 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 			distanceMeters = Integer.parseInt(distanceMiles) * 1609;
 
 			// Locate the class table named "establishment" in Parse.com
-			ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>("Deal");
-			queryDealSearch.include("establishment");
-			queryDealSearch.setLimit(100);
+			ParseQuery<ParseObject> queryEstSearch = new ParseQuery<ParseObject>("Establishment");
 			if (ob.size() > 0) {
-				queryDealSearch.setSkip(ob.size());
-			}
-			if (day_of_week != "") {
-				queryDealSearch.whereEqualTo("day", day_of_week);
+				queryEstSearch.setSkip(ob.size());
 			}
 			if (distanceMiles != null) {
-				queryDealSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation), Double.parseDouble(distanceMiles));
+				queryEstSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation), Double.parseDouble(distanceMiles));
 			}
-			if ((food == true) || (drinks == true)) {
-				if (food == false) {
-					ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
-					queryDealType.whereEqualTo("name", "Drinks");
-					try {
-						deal_type = queryDealType.getFirst();
-					} catch (ParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					queryDealSearch.whereEqualTo("deal_type", deal_type);
-				}
-				if (drinks == false) {
-					ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
-					queryDealType.whereEqualTo("name", "Food");
-					try {
-						deal_type = queryDealType.getFirst();
-					} catch (ParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					queryDealSearch.whereEqualTo("deal_type", deal_type);
-				}
+			ParseQuery<ParseObject> queryEstDeals = new ParseQuery<ParseObject>("establishment_day_deals");
+			queryEstDeals.whereMatchesQuery("establishment", queryEstSearch);
+			queryEstDeals.include("establishment");
+			queryEstDeals.setLimit(20);
+			if (day_of_week != "") {
+				queryEstDeals.whereGreaterThan(day_of_week.toLowerCase(), 0);
 			}
+			
 			try {
-				ob = queryDealSearch.find();
+				ob = queryEstDeals.find();
 			} catch (Exception e) {
 				// Log.e("Error", e.getMessage());
 				// e.printStackTrace();
@@ -196,13 +173,13 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 
 			if (ob.size() > 0) {
 				for (int j = 0; ob.size() > j; j++) {
-					yelpQuery = ob.get(j).getString("yelp_id").toString();
-					ParseObject curDeal = ob.get(j);
-					ParseObject curEst = curDeal.getParseObject("establishment");
-					String estabDealCount = curEst.getString("deal_count");
+					ParseObject curEstDeal = ob.get(j);
+					ParseObject curEst = curEstDeal.getParseObject("establishment");
+					String estabDealCount = String.valueOf(curEstDeal.getInt(day_of_week.toLowerCase()));
+					yelpQuery = curEst.getString("yelp_id").toString();
 
-					tempBusiness = Helper.searchYelp(false, Double.toString(curDeal.getParseGeoPoint("location").getLatitude()), Double.toString(curDeal.getParseGeoPoint("location").getLongitude()),
-							yelpQuery, true, currentLocation, distanceMeters, sort_mode, loadOffset);
+					tempBusiness = Helper.searchYelp(false, Double.toString(curEst.getParseGeoPoint("location").getLatitude()), Double.toString(curEst.getParseGeoPoint("location").getLongitude()),
+							yelpQuery, true, currentLocation, distanceMeters, 0, 0);
 					if ((tempBusiness.size() > 0) && (!businesses.contains(tempBusiness.get(0)))) {
 
 						if ((query != "") && (tempBusiness.get(0).getName().toLowerCase().contains(query.toLowerCase()))) {
@@ -216,7 +193,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 				}
 			}
 
-			if ((businesses.size() < 20) && (!onlyDeals)) {
+			if ((businesses.size() < listSize) && (!onlyDeals)) {
 				if (intent.getStringExtra("query") != null) {
 					yelpQuery = intent.getStringExtra("query");
 				} else {
@@ -234,13 +211,15 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 			}
 
 			if (sort_mode == 0) {
-				Collections.sort(businesses, new BusinessBestMatchComparator());
+				Collections.sort(businesses, new BusinessAlphabeticalComparator());
 			} else if (sort_mode == 1) {
 				Collections.sort(businesses, new BusinessDistanceComparator());
 			} else if (sort_mode == 2) {
 				Collections.sort(businesses, new BusinessRatingComparator());
 			}
-
+			
+			listSize += businesses.size();
+			
 			return null;
 		}
 

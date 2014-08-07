@@ -61,7 +61,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 	private HashMap<Marker, MyMarker> mMarkersHashMap;
 	private Button redoMapButton;
 	private String query = "", distanceMiles = "3", yelpQuery = "", estId, day_of_week;
-	private Integer distanceMeters = 4828;
+	private Integer distanceMeters = 4828, listSize = 30;
 	private YelpParser yParser;
 	private ArrayList<Business> businesses = new ArrayList<Business>(), tempBusiness = new ArrayList<Business>();
 	private Location currentLocation;
@@ -71,7 +71,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 	private ProgressDialog mapProgressDialog;
 	private Business checkBusiness, bus;
 	private Calendar calendar = Calendar.getInstance();
-	private Boolean food, drinks, onlyDeals, reload = false, reloadHere = false;
+	private Boolean onlyDeals, reload = false, reloadHere = false;
 	private ParseObject deal_type = null;
 	private LatLng currentLatLng;
 	private VisibleRegion vr;
@@ -191,18 +191,18 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 		@Override
 		protected Void doInBackground(Void... params) {
 			if (reloadHere) {
-				
+
 				currentLocation.setLatitude(currentLatLng.latitude);
 				currentLocation.setLongitude(currentLatLng.longitude);
-				
+
 				Location MiddleLeftCorner = new Location("middleleftcorner");
 				MiddleLeftCorner.setLatitude(vr.latLngBounds.getCenter().latitude);
 				MiddleLeftCorner.setLongitude(vr.latLngBounds.southwest.longitude);
 				Location center = new Location("center");
 				center.setLatitude(vr.latLngBounds.getCenter().latitude);
 				center.setLongitude(vr.latLngBounds.getCenter().longitude);
-				distanceMeters = (int) center.distanceTo(MiddleLeftCorner)*2; 
-				distanceMiles = String.valueOf(distanceMeters/1609.0);
+				distanceMeters = (int) center.distanceTo(MiddleLeftCorner) * 2;
+				distanceMiles = String.valueOf(distanceMeters / 1609.0);
 			} else {
 				currentLocation = getLocation();
 				distanceMiles = (intent.getStringExtra("distance") == null) ? "1" : intent.getStringExtra("distance");
@@ -210,48 +210,28 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 			}
 
 			day_of_week = (intent.getStringExtra("day_of_week") == null) ? Helper.setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : intent.getStringExtra("day_of_week");
-			food = intent.getBooleanExtra("food", true);
-			drinks = intent.getBooleanExtra("drinks", true);
 			onlyDeals = intent.getBooleanExtra("only_deals", false);
 
 			query = (intent.getStringExtra("query") == null) ? "" : intent.getStringExtra("query");
-			
+
 			// Locate the class table named "establishment" in Parse.com
-			ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>("Deal");
-			queryDealSearch.include("establishment");
-			queryDealSearch.setLimit(30);
-			if (day_of_week != "") {
-				queryDealSearch.whereEqualTo("day", day_of_week);
+			ParseQuery<ParseObject> queryEstSearch = new ParseQuery<ParseObject>("Establishment");
+			if (ob.size() > 0) {
+				queryEstSearch.setSkip(ob.size());
 			}
 			if (distanceMiles != null) {
-				queryDealSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation), Double.parseDouble(distanceMiles));
+				queryEstSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation), Double.parseDouble(distanceMiles));
 			}
-			if ((food == true) || (drinks == true)) {
-				if (food == false) {
-					ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
-					queryDealType.whereEqualTo("name", "Drinks");
-					try {
-						deal_type = queryDealType.getFirst();
-					} catch (ParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					queryDealSearch.whereEqualTo("deal_type", deal_type);
-				}
-				if (drinks == false) {
-					ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
-					queryDealType.whereEqualTo("name", "Food");
-					try {
-						deal_type = queryDealType.getFirst();
-					} catch (ParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					queryDealSearch.whereEqualTo("deal_type", deal_type);
-				}
+			ParseQuery<ParseObject> queryEstDeals = new ParseQuery<ParseObject>("establishment_day_deals");
+			queryEstDeals.whereMatchesQuery("establishment", queryEstSearch);
+			queryEstDeals.include("establishment");
+			queryEstDeals.setLimit(20);
+			if (day_of_week != "") {
+				queryEstDeals.whereGreaterThan(day_of_week.toLowerCase(), 0);
 			}
+
 			try {
-				ob = queryDealSearch.find();
+				ob = queryEstDeals.find();
 			} catch (Exception e) {
 				// Log.e("Error", e.getMessage());
 				// e.printStackTrace();
@@ -259,15 +239,16 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 
 			if (ob.size() > 0) {
 				for (int j = 0; ob.size() > j; j++) {
-					yelpQuery = ob.get(j).getString("yelp_id").toString();
-					tempBusiness = Helper.searchYelp(false, Double.toString(ob.get(j).getParseGeoPoint("location").getLatitude()), Double.toString(ob.get(j).getParseGeoPoint("location").getLongitude()),
+					ParseObject curEstDeal = ob.get(j);
+					ParseObject curEst = curEstDeal.getParseObject("establishment");
+					String estabDealCount = String.valueOf(curEstDeal.getInt(day_of_week.toLowerCase()));
+					yelpQuery = curEst.getString("yelp_id").toString();
+
+					tempBusiness = Helper.searchYelp(false, Double.toString(curEst.getParseGeoPoint("location").getLatitude()), Double.toString(curEst.getParseGeoPoint("location").getLongitude()),
 							yelpQuery, true, currentLocation, distanceMeters, 0, 0);
 					if ((tempBusiness.size() > 0) && (!businesses.contains(tempBusiness.get(0)))) {
-						ParseObject curDeal = ob.get(j);
-						ParseObject curEst = curDeal.getParseObject("establishment");
-						String estabDealCount = curEst.getString("deal_count");
-						Business b = tempBusiness.get(0);
-						if ((query != "") && (b.getName().toLowerCase().contains(query.toLowerCase()))) {
+
+						if ((query != "") && (tempBusiness.get(0).getName().toLowerCase().contains(query.toLowerCase()))) {
 							tempBusiness.get(0).setDealCount(estabDealCount);
 							businesses.add(tempBusiness.get(0));
 						} else if (query == "") {
@@ -278,7 +259,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 				}
 			}
 
-			if ((businesses.size() < 20) && (!onlyDeals)) {
+			if ((businesses.size() < listSize) && (!onlyDeals)) {
 				if (intent.getStringExtra("query") != null) {
 					yelpQuery = intent.getStringExtra("query");
 				} else {
@@ -294,7 +275,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 					}
 				}
 			}
-
+			listSize += businesses.size();
 			return null;
 		}
 
@@ -303,25 +284,24 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 			if (businesses.size() < 1) {
 				Helper.displayError("Sorry, nothing was found. Try and widen your search.", MapSearchActivity.class, MapActivity.this);
 			} else {
-				
-				 WindowManager wm = (WindowManager)
-				 context.getSystemService(Context.WINDOW_SERVICE); 
-				 Display display = wm.getDefaultDisplay();
-				 
-				//Display display = getWindowManager().getDefaultDisplay();
+
+				WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+				Display display = wm.getDefaultDisplay();
+
+				// Display display = getWindowManager().getDefaultDisplay();
 				Point size = new Point();
 				display.getSize(size);
 				int width = size.x;
-			    Double[] zooms = {21282.0,16355.0,10064.0,5540.0,2909.0,1485.0,752.0,378.0,190.0,95.0,48.0,24.0,12.0,6.0,3.0,1.48,0.74,0.37,0.19};
-			    Integer z = 19;
+				Double[] zooms = { 21282.0, 16355.0, 10064.0, 5540.0, 2909.0, 1485.0, 752.0, 378.0, 190.0, 95.0, 48.0, 24.0, 12.0, 6.0, 3.0, 1.48, 0.74, 0.37, 0.19 };
+				Integer z = 19;
 				Double m;
-			    while( z > 0 ){
-			    	z--;
-			        m = zooms[z] * width;
-			        if( distanceMeters < m ){
-			            break;
-			        }
-			    }
+				while (z > 0) {
+					z--;
+					m = zooms[z] * width;
+					if (distanceMeters < m) {
+						break;
+					}
+				}
 				LatLng coordinate = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
 				CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, z);
 				myMap.animateCamera(yourLocation);
@@ -396,7 +376,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 		locationClient.requestLocationUpdates(mLocationRequest, this);
 		currentLocation = getLocation();
 		if (Helper.isConnectedToInternet(MapActivity.this)) {
-			if(!reload){
+			if (!reload) {
 				new RemoteDataTask(MapActivity.this).execute();
 			}
 		} else {

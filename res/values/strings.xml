@@ -122,8 +122,8 @@
     
     <!-- Search Types -->
     <array name="search_type_dropdown">
-        <item>Best matched</item>
         <item>Distance</item>
+        <item>Alphabetical</item>
         <item>Highest Rated</item>
     </array>
     

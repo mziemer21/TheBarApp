@@ -50,22 +50,6 @@
     android:layout_height="wrap_content"
     android:gravity="center_horizontal"
     android:orientation="horizontal">
-	    
-	    <ToggleButton
-	        android:id="@+id/list_filter_type_drinks"
-	        android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:layout_weight="2"
-	        android:textOff="@string/drinks"
-	        android:textOn="@string/drinks" />
-	
-	    <ToggleButton
-	        android:id="@+id/list_filter_type_food"
-	        android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:layout_weight="2"
-	        android:textOff="@string/food"
-	        android:textOn="@string/food" />
 	 </LinearLayout>
 	 
     <LinearLayout 

@@ -123,32 +123,6 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 
 				// Locate the class table named "establishment" in Parse.com
 				ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>("Deal");
-				/*ParseQuery<ParseObject> qde = new ParseQuery<ParseObject>("Deal");
-				qde.whereEqualTo("yelp_id", "madhatters-madison");
-				qde.findInBackground(new FindCallback<ParseObject>() {
-					public void done(List<ParseObject> dealList, ParseException e) {
-						if (e == null) {
-							Double lat = 43.0745028;
-							Double lng = -89.3926204;
-							ParseGeoPoint loc = new ParseGeoPoint(lat, lng);
-							obE = dealList;
-							for (ParseObject deal : obE) {
-								deal.put("location", loc);
-								deal.put("down_votes", 0);
-								deal.put("up_votes", 0);
-								deal.put("rating", 0);
-								try {
-									deal.save();
-								} catch (ParseException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-							}
-						} else {
-							Log.d("Deal Search Error", e.toString());
-						}
-					}
-				});*/
 				
 				queryDealSearch.setLimit(20);
 				if (loadOffset > 0) {
