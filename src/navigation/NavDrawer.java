@@ -115,6 +115,9 @@ public class NavDrawer extends FragmentActivity {
 		} else if (callingClass.equalsIgnoreCase("ChangeLocationActivity")) {
 			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_change_location);
 			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_change_location);
+		} else if (callingClass.equalsIgnoreCase("FavoritesActivity")) {
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_list_favorites);
+			mDrawerList = (ListView) findViewById(R.id.list_slidermenu_list_favorites);
 		}
 
 		navDrawerItems = new ArrayList<NavDrawerItem>();

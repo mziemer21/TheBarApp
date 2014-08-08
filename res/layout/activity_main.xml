@@ -93,6 +93,16 @@
 		    
 		</TableRow>
 	</TableLayout>
+
+    <Button
+        android:id="@+id/buttonFavorites"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonBar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:layout_weight="0.5"
+        android:text="Favorites" />
     
 </RelativeLayout>
 

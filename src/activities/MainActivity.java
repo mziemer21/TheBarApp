@@ -31,12 +31,13 @@ public class MainActivity extends NavDrawer {
 		// Get tracker.
 		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
         
-        Button bars, random, map, deals;
+        Button bars, random, map, deals, favorites;
 
 		bars = (Button) findViewById(R.id.buttonList);
 		random = (Button) findViewById(R.id.buttonRandom);
 		map = (Button) findViewById(R.id.buttonMap);
 		deals = (Button) findViewById(R.id.buttonDeals);
+		favorites = (Button) findViewById(R.id.buttonFavorites);
 
 		bars.setOnClickListener(new OnClickListener() {
 
@@ -71,6 +72,15 @@ public class MainActivity extends NavDrawer {
 			public void onClick(View arg0) {
 				Intent DealActivity = new Intent(MainActivity.this, DealSearchActivity.class);
 				startActivity(DealActivity);
+			}
+		});
+		
+		favorites.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				Intent FavoritesActivity = new Intent(MainActivity.this, FavoritesActivity.class);
+				startActivity(FavoritesActivity);
 			}
 		});
 	}
