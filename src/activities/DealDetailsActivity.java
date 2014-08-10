@@ -1,12 +1,16 @@
 package activities;
 
 import navigation.NavDrawer;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -21,11 +25,13 @@ import com.thebarapp.R;
 
 public class DealDetailsActivity extends NavDrawer {
 	// Declare Variables
-	private String deal_id, deal_title, deal_details, deal_restrictions, deal_time, est_name;
+	private String deal_id, deal_title, deal_details, deal_restrictions, deal_time, est_name, created_by;
 	private Integer rating, up_votes, down_votes;
 	private Intent intent;
 	private ToggleButton upVoteButton, downVoteButton;
 	private ParseObject deal = null, dealVoteUser = null;
+	private Button deleteButton;
+	private Boolean delete = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +39,7 @@ public class DealDetailsActivity extends NavDrawer {
 		super.onCreate(savedInstanceState);
 
 		intent = getIntent();
-		
+
 		// Get tracker.
 		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
 
@@ -44,6 +50,7 @@ public class DealDetailsActivity extends NavDrawer {
 		deal_restrictions = intent.getStringExtra("deal_restrictions");
 		deal_time = intent.getStringExtra("deal_time");
 		est_name = intent.getStringExtra("est_name");
+		created_by = intent.getStringExtra("created_by");
 
 		TextView title = (TextView) findViewById(R.id.dealTitle);
 		title.setText(deal_title);
@@ -80,6 +87,46 @@ public class DealDetailsActivity extends NavDrawer {
 				}
 			}
 		});
+
+		deleteButton = (Button) findViewById(R.id.deal_delete_button);
+		deleteButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(DealDetailsActivity.this);
+
+				// set title
+				builder.setTitle("Delete?");
+
+				// set dialog message
+				builder.setMessage("Are you sure you want to delete this deal?").setCancelable(false).setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						delete = true;
+						dialog.dismiss();
+						finish();
+					}
+				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						// if this button is clicked, just close
+						// the dialog box and do nothing
+						delete = false;
+						dialog.cancel();
+					}
+				});
+
+				// create alert dialog
+				AlertDialog alertDialog = builder.create();
+
+				// show it
+				alertDialog.show();
+			}
+		});
+
+		if (created_by.equals(ParseUser.getCurrentUser().getObjectId())) {
+			deleteButton.setVisibility(View.VISIBLE);
+		} else {
+			deleteButton.setVisibility(View.GONE);
+		}
 
 		queryParse(true);
 	}
@@ -142,99 +189,104 @@ public class DealDetailsActivity extends NavDrawer {
 	public void onPause() {
 		super.onPause();
 
-		if (upVoteButton.isChecked()) {
-			queryParse(false);
+		if ((deal != null) && (delete)) {
+			deal.deleteInBackground();
+			Toast.makeText(getApplicationContext(), "Deal Added!", Toast.LENGTH_LONG).show();
+		} else {
+			if (upVoteButton.isChecked()) {
+				queryParse(false);
 
-			if (deal != null) {
-				down_votes = deal.getInt("down_votes");
-				if (dealVoteUser == null) {
-					// create new and assign vote to 1
-					dealVoteUser = new ParseObject("deal_vote_users");
-					dealVoteUser.put("deal", deal);
-					dealVoteUser.put("user", ParseUser.getCurrentUser());
-					dealVoteUser.put("vote", 1);
-					up_votes = deal.getInt("up_votes") + 1;
-				} else if (dealVoteUser.get("vote").toString().equals("0")) {
-					// change vote to 1
-					dealVoteUser.put("vote", 1);
-					up_votes = deal.getInt("up_votes") + 1;
-					down_votes--;
-				} else if (dealVoteUser.get("vote").toString().equals("1")) {
-					// already voted up
-					dealVoteUser.put("vote", 2);
-					up_votes = deal.getInt("up_votes") - 1;
-				} else if (dealVoteUser.get("vote").toString().equals("2")) {
-					// change vote to 1
-					dealVoteUser.put("vote", 1);
-					up_votes = deal.getInt("up_votes") + 1;
-				}
+				if (deal != null) {
+					down_votes = deal.getInt("down_votes");
+					if (dealVoteUser == null) {
+						// create new and assign vote to 1
+						dealVoteUser = new ParseObject("deal_vote_users");
+						dealVoteUser.put("deal", deal);
+						dealVoteUser.put("user", ParseUser.getCurrentUser());
+						dealVoteUser.put("vote", 1);
+						up_votes = deal.getInt("up_votes") + 1;
+					} else if (dealVoteUser.get("vote").toString().equals("0")) {
+						// change vote to 1
+						dealVoteUser.put("vote", 1);
+						up_votes = deal.getInt("up_votes") + 1;
+						down_votes--;
+					} else if (dealVoteUser.get("vote").toString().equals("1")) {
+						// already voted up
+						dealVoteUser.put("vote", 2);
+						up_votes = deal.getInt("up_votes") - 1;
+					} else if (dealVoteUser.get("vote").toString().equals("2")) {
+						// change vote to 1
+						dealVoteUser.put("vote", 1);
+						up_votes = deal.getInt("up_votes") + 1;
+					}
 
-				if ((up_votes + down_votes) != 0) {
-					rating = (up_votes / (up_votes + down_votes)) * 100;
-				} else if ((up_votes == 0) && (down_votes == 0)) {
-					rating = 0;
+					if ((up_votes + down_votes) != 0) {
+						rating = (up_votes / (up_votes + down_votes)) * 100;
+					} else if ((up_votes == 0) && (down_votes == 0)) {
+						rating = 0;
+					} else {
+						rating = 50;
+					}
+
+					deal.put("rating", rating);
+					deal.put("down_votes", down_votes);
+					deal.put("up_votes", up_votes);
+
 				} else {
-					rating = 50;
+					// deal not found problem
 				}
-
-				deal.put("rating", rating);
-				deal.put("down_votes", down_votes);
-				deal.put("up_votes", up_votes);
-
-			} else {
-				// deal not found problem
 			}
-		}
 
-		if (downVoteButton.isChecked()) {
-			queryParse(false);
+			if (downVoteButton.isChecked()) {
+				queryParse(false);
 
-			if (deal != null) {
-				up_votes = deal.getInt("up_votes");
-				if (dealVoteUser == null) {
-					// create new and assign vote to 1
-					dealVoteUser = new ParseObject("deal_vote_users");
-					dealVoteUser.put("deal", deal);
-					dealVoteUser.put("user", ParseUser.getCurrentUser());
-					dealVoteUser.put("vote", 0);
-					down_votes = deal.getInt("down_votes") + 1;
-				} else if (dealVoteUser.get("vote").toString().equals("0")) {
-					// already voted down
-					dealVoteUser.put("vote", 2);
-					down_votes = deal.getInt("down_votes") - 1;
-				} else if (dealVoteUser.get("vote").toString().equals("1")) {
-					dealVoteUser.put("vote", 0);
-					down_votes = deal.getInt("down_votes") + 1;
-					up_votes--;
-				} else if (dealVoteUser.get("vote").toString().equals("2")) {
-					dealVoteUser.put("vote", 0);
-					down_votes = deal.getInt("down_votes") + 1;
-				}
+				if (deal != null) {
+					up_votes = deal.getInt("up_votes");
+					if (dealVoteUser == null) {
+						// create new and assign vote to 1
+						dealVoteUser = new ParseObject("deal_vote_users");
+						dealVoteUser.put("deal", deal);
+						dealVoteUser.put("user", ParseUser.getCurrentUser());
+						dealVoteUser.put("vote", 0);
+						down_votes = deal.getInt("down_votes") + 1;
+					} else if (dealVoteUser.get("vote").toString().equals("0")) {
+						// already voted down
+						dealVoteUser.put("vote", 2);
+						down_votes = deal.getInt("down_votes") - 1;
+					} else if (dealVoteUser.get("vote").toString().equals("1")) {
+						dealVoteUser.put("vote", 0);
+						down_votes = deal.getInt("down_votes") + 1;
+						up_votes--;
+					} else if (dealVoteUser.get("vote").toString().equals("2")) {
+						dealVoteUser.put("vote", 0);
+						down_votes = deal.getInt("down_votes") + 1;
+					}
 
-				if ((up_votes + down_votes) != 0) {
-					rating = (up_votes / (up_votes + down_votes)) * 100;
-				} else if ((up_votes == 0) && (down_votes == 0)) {
-					rating = 0;
+					if ((up_votes + down_votes) != 0) {
+						rating = (up_votes / (up_votes + down_votes)) * 100;
+					} else if ((up_votes == 0) && (down_votes == 0)) {
+						rating = 0;
+					} else {
+						rating = 50;
+					}
+
+					deal.put("rating", rating);
+					deal.put("down_votes", down_votes);
+					deal.put("up_votes", up_votes);
 				} else {
-					rating = 50;
+					// deal not found problem
 				}
-
-				deal.put("rating", rating);
-				deal.put("down_votes", down_votes);
-				deal.put("up_votes", up_votes);
-			} else {
-				// deal not found problem
 			}
-		}
 
-		if ((deal != null) && (deal.isDirty())) {
-			deal.saveInBackground();
-		}
-		if ((dealVoteUser != null) && (dealVoteUser.isDirty())) {
-			dealVoteUser.saveInBackground();
+			if ((deal != null) && (deal.isDirty())) {
+				deal.saveInBackground();
+			}
+			if ((dealVoteUser != null) && (dealVoteUser.isDirty())) {
+				dealVoteUser.saveInBackground();
+			}
 		}
 	}
-	
+
 	@Override
 	public void onStart() {
 		super.onStart();

@@ -1,6 +1,7 @@
 package fragments;
 
 import activities.ListActivity;
+import activities.LoginActivity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -221,30 +222,58 @@ public class DetailsTabFragment extends Fragment {
 
 				@Override
 				public void onClick(View arg0) {
-					if (delete) {
-						estFav.deleteInBackground();
-						favorite.setText("Add To Favorites");
-						Toast.makeText(getActivity(), "Deleted From Favorites", Toast.LENGTH_LONG).show();
-					} else {
-						if (extrasDeal.getString("establishment_id").contains("empty")) {
-							Helper.displayErrorStay("Sorry, a bar must have deals posted before you can favorite it.", getActivity());
-						} else {
-							favorite.setText("Add To Favorites");
-							ParseObject newFav = new ParseObject("user_favorite_establishments");
-							newFav.put("user", ParseUser.getCurrentUser());
-							newFav.put("establishment", est);
-							newFav.put("establishment_days", est.get("days"));
-							try {
-								newFav.save();
-							} catch (ParseException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							favorite.setText("Remove From Favorites");
-							Toast.makeText(getActivity(), "Added To Favorites", Toast.LENGTH_LONG).show();
-						}
-					}
+					if (ParseUser.getCurrentUser().getCreatedAt() == null) {
+						AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
+						// set title
+						builder.setTitle("Cannot Add Deal");
+
+						// set dialog message
+						builder.setMessage("You must be logged in to add favorites.").setCancelable(false).setPositiveButton("Login", new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								Intent loginActivity = new Intent(getActivity(), LoginActivity.class);
+								startActivity(loginActivity);
+								dialog.dismiss();
+							}
+						}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								// if this button is clicked, just close
+								// the dialog box and do nothing
+								dialog.cancel();
+							}
+						});
+
+						// create alert dialog
+						AlertDialog alertDialog = builder.create();
+
+						// show it
+						alertDialog.show();
+					} else {
+						if (delete) {
+							estFav.deleteInBackground();
+							favorite.setText("Add To Favorites");
+							Toast.makeText(getActivity(), "Deleted From Favorites", Toast.LENGTH_LONG).show();
+						} else {
+							if (extrasDeal.getString("establishment_id").contains("empty")) {
+								Helper.displayErrorStay("Sorry, a bar must have deals posted before you can favorite it.", getActivity());
+							} else {
+								favorite.setText("Add To Favorites");
+								ParseObject newFav = new ParseObject("user_favorite_establishments");
+								newFav.put("user", ParseUser.getCurrentUser());
+								newFav.put("establishment", est);
+								newFav.put("establishment_days", est.get("days"));
+								try {
+									newFav.save();
+								} catch (ParseException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								favorite.setText("Remove From Favorites");
+								Toast.makeText(getActivity(), "Added To Favorites", Toast.LENGTH_LONG).show();
+							}
+						}
+
+					}
 				}
 			});
 		}

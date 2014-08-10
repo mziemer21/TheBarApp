@@ -202,13 +202,15 @@ public class DealsTabFragment extends Fragment {
 						// Send single item click data to SingleItemView Class
 						Intent iDeal = new Intent(getActivity(), DealDetailsActivity.class);
 						// Pass data "name" followed by the position
-						iDeal.putExtra("establishment_id", extrasDeal.getString("establishment_id").toString());
+						ParseObject user = (ParseObject) obDeal.get(position).get("user");
+						iDeal.putExtra("establishment_id", extrasDeal.getString("establishment_id"));
 						iDeal.putExtra("est_name", extrasDeal.getString("est_name"));
 						iDeal.putExtra("deal_id", obDeal.get(position).getObjectId().toString());
 						iDeal.putExtra("deal_details", obDeal.get(position).getString("details").toString());
 						iDeal.putExtra("deal_title", obDeal.get(position).getString("title").toString());
 						iDeal.putExtra("deal_restrictions", obDeal.get(position).getString("restrictions"));
 						iDeal.putExtra("deal_time", Helper.formatTime(obDeal.get(position).getDate("time_start"), obDeal.get(position).getDate("time_end")));
+						iDeal.putExtra("created_by", user.getObjectId());
 
 						// Open SingleItemView.java Activity
 						startActivity(iDeal);

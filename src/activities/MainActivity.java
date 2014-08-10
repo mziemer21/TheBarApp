@@ -1,6 +1,8 @@
 package activities;
 
 import navigation.NavDrawer;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -11,10 +13,10 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Logger.LogLevel;
 import com.google.android.gms.analytics.Tracker;
+import com.parse.ParseUser;
 import com.thebarapp.ParseApplication;
 import com.thebarapp.ParseApplication.TrackerName;
 import com.thebarapp.R;
-
 
 /***
  * empty main page that loads the nav drawer and home fragment
@@ -30,8 +32,8 @@ public class MainActivity extends NavDrawer {
 		super.onCreate(savedInstanceState);
 		// Get tracker.
 		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
-        
-        Button bars, random, map, deals, favorites;
+
+		Button bars, random, map, deals, favorites;
 
 		bars = (Button) findViewById(R.id.buttonList);
 		random = (Button) findViewById(R.id.buttonRandom);
@@ -74,13 +76,41 @@ public class MainActivity extends NavDrawer {
 				startActivity(DealActivity);
 			}
 		});
-		
+
 		favorites.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
-				Intent FavoritesActivity = new Intent(MainActivity.this, FavoritesActivity.class);
-				startActivity(FavoritesActivity);
+				if (ParseUser.getCurrentUser().getCreatedAt() == null) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+					// set title
+					builder.setTitle("Cannot Add Deal");
+
+					// set dialog message
+					builder.setMessage("You must be logged in to view your favorites.").setCancelable(false).setPositiveButton("Login", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							Intent loginActivity = new Intent(MainActivity.this, LoginActivity.class);
+							startActivity(loginActivity);
+							dialog.dismiss();
+						}
+					}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							// if this button is clicked, just close
+							// the dialog box and do nothing
+							dialog.cancel();
+						}
+					});
+
+					// create alert dialog
+					AlertDialog alertDialog = builder.create();
+
+					// show it
+					alertDialog.show();
+				} else {
+					Intent FavoritesActivity = new Intent(MainActivity.this, FavoritesActivity.class);
+					startActivity(FavoritesActivity);
+				}
 			}
 		});
 	}

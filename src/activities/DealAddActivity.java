@@ -217,12 +217,7 @@ public class DealAddActivity extends NavDrawer {
 								addEstablishment.put("yelp_id", intent.getStringExtra("yelp_id"));
 								addEstablishment.put("deal_count", "1");
 								addEstablishment.put("name", Helper.cleanId(intent.getStringExtra("yelp_id")));
-								try {
-									addEstablishment.save();
-								} catch (ParseException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
+								
 								establishment = addEstablishment;
 								location = newLocation;
 
@@ -238,6 +233,13 @@ public class DealAddActivity extends NavDrawer {
 								addEstablishmentDay.put(day_of_week.getSelectedItem().toString().toLowerCase(), 1);
 								try {
 									addEstablishmentDay.save();
+								} catch (ParseException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								addEstablishment.put("days", addEstablishmentDay);
+								try {
+									addEstablishment.save();
 								} catch (ParseException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();

@@ -18,10 +18,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.ListView;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -46,10 +44,10 @@ public class FavoritesActivity extends NavDrawer implements LocationListener, Go
 	// Declare Variables
 	private ListView listview;
 	private List<ParseObject> ob = new ArrayList<ParseObject>();
-	private String query = "", distanceMiles, establishment_id, yelpQuery = "", day_of_week;
+	private String distanceMiles, establishment_id, yelpQuery = "", day_of_week;
 	private Location currentLocation = null;
 	private Intent intent;
-	private Integer countPrev = 0, sort_mode, distanceMeters, loadOffset = 0, listSize = 20;
+	private Integer sort_mode, distanceMeters;
 	private ArrayList<Business> businesses = new ArrayList<Business>(), tempBusiness = new ArrayList<Business>();
 	private Business checkBusiness;
 	private ProgressDialog ProgressDialog;
@@ -75,7 +73,7 @@ public class FavoritesActivity extends NavDrawer implements LocationListener, Go
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		//inflater.inflate(R.menu.filter_actions, menu);
+		inflater.inflate(R.menu.filter_actions, menu);
 
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -88,14 +86,12 @@ public class FavoritesActivity extends NavDrawer implements LocationListener, Go
 		// Take appropriate action for each action item click
 		switch (item.getItemId()) {
 		case R.id.action_filter:
-			loadOffset = 0;
-			Intent i = new Intent(FavoritesActivity.this, ListSearchActivity.class);
+			Intent i = new Intent(FavoritesActivity.this, FavoritesSearchActivity.class);
 			finish();
 			i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
 			startActivity(i);
 			return true;
 		case R.id.action_clear_search:
-			loadOffset = 0;
 			Intent j = new Intent(FavoritesActivity.this, FavoritesActivity.class);
 			finish();
 			j.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -129,10 +125,6 @@ public class FavoritesActivity extends NavDrawer implements LocationListener, Go
 			ProgressDialog.setCancelable(false);
 			// Show progressdialog
 			ProgressDialog.show();
-
-			if (loadOffset == 0) {
-				businesses.clear();
-			}
 		}
 
 		@Override
@@ -168,10 +160,10 @@ public class FavoritesActivity extends NavDrawer implements LocationListener, Go
 							yelpQuery, true, currentLocation, distanceMeters, 0, 0);
 					if ((tempBusiness.size() > 0) && (!businesses.contains(tempBusiness.get(0)))) {
 
-						if ((curDay.getInt(day_of_week.toLowerCase()) > 0) && (query != "") && (tempBusiness.get(0).getName().toLowerCase().contains(query.toLowerCase()))) {
+						if (curDay.getInt(day_of_week.toLowerCase()) > 0) {
 							tempBusiness.get(0).setDealCount(estabDealCount);
 							businesses.add(tempBusiness.get(0));
-						} else if ((curDay.getInt(day_of_week.toLowerCase()) > 0) && (query == "")) {
+						} else if (curDay.getInt(day_of_week.toLowerCase()) > 0) {
 							tempBusiness.get(0).setDealCount(estabDealCount);
 							businesses.add(tempBusiness.get(0));
 						}
@@ -187,8 +179,6 @@ public class FavoritesActivity extends NavDrawer implements LocationListener, Go
 				Collections.sort(businesses, new BusinessRatingComparator());
 			}
 			
-			listSize += businesses.size();
-			
 			return null;
 		}
 
@@ -201,7 +191,6 @@ public class FavoritesActivity extends NavDrawer implements LocationListener, Go
 					ProgressDialog.dismiss();
 				}
 			} else {
-				countPrev = businesses.size();
 				// Locate the listview in listview_main.xml
 				listview = (ListView) findViewById(R.id.listview_favorites);
 				// Pass the results into an ArrayAdapter

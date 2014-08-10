@@ -29,9 +29,7 @@ import com.parse.ParseQuery;
 import com.thebarapp.Helper;
 import com.thebarapp.ParseApplication;
 
-public class RandomActivity extends Activity implements LocationListener,
-		GooglePlayServicesClient.ConnectionCallbacks,
-		GooglePlayServicesClient.OnConnectionFailedListener {
+public class RandomActivity extends Activity implements LocationListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 	// Declare Variables
 	private List<ParseObject> ob;
 	private Integer position;
@@ -46,10 +44,9 @@ public class RandomActivity extends Activity implements LocationListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		
 		// Get tracker.
 		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
-		
+
 		intent = getIntent();
 		locationClient = new LocationClient(this, this, this);
 	}
@@ -70,134 +67,124 @@ public class RandomActivity extends Activity implements LocationListener,
 
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		if(Helper.isConnectedToInternet(RandomActivity.this)){
-		// Create a progressdialog
-		if (randomProgressDialog != null) {
-			randomProgressDialog.dismiss();
-			randomProgressDialog = null;
-		}
-		randomProgressDialog = new ProgressDialog(RandomActivity.this);
-		// Set progressdialog message
-		randomProgressDialog.setMessage("Loading Yelp Data...");
-		randomProgressDialog.setIndeterminate(false);
-		randomProgressDialog.setCancelable(false);
-		// Show progressdialog
-		randomProgressDialog.show();
-
-		String distance, day_of_week, query;
-		Boolean food, drinks;
-		ParseObject deal_type = null;
-
-		currentLocation = getLocation();
-		distance = intent.getStringExtra("distance");
-		day_of_week = intent.getStringExtra("day_of_week");
-		food = intent.getBooleanExtra("food", true);
-		drinks = intent.getBooleanExtra("drinks", true);
-		query = intent.getStringExtra("query");
-
-		// Locate the class table named "establishment" in Parse.com
-		ParseQuery<ParseObject> queryRandomSearch = new ParseQuery<ParseObject>("Deal");
-		queryRandomSearch.include("establishment");
-		queryRandomSearch.setLimit(15);
-		if (query != "") {
-			queryRandomSearch.whereContains("title", query);
-		}
-		if (day_of_week != null) {
-			queryRandomSearch.whereContains("day", day_of_week);
-		}
-		if (distance != null) {
-			queryRandomSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation),
-					Double.parseDouble(distance));
-		}
-		if ((food == true) || (drinks == true)) {
-			if (food == false) {
-				ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
-				queryDealType.whereEqualTo("name", "Drinks");
-				try {
-					deal_type = queryDealType.getFirst();
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				queryRandomSearch.whereEqualTo("deal_type", deal_type);
+		if (Helper.isConnectedToInternet(RandomActivity.this)) {
+			// Create a progressdialog
+			if (randomProgressDialog != null) {
+				randomProgressDialog.dismiss();
+				randomProgressDialog = null;
 			}
-			if (drinks == false) {
-				ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
-				queryDealType.whereEqualTo("name", "Food");
-				try {
-					deal_type = queryDealType.getFirst();
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				queryRandomSearch.whereEqualTo("deal_type", deal_type);
+			randomProgressDialog = new ProgressDialog(RandomActivity.this);
+			// Set progressdialog message
+			randomProgressDialog.setMessage("Loading Yelp Data...");
+			randomProgressDialog.setIndeterminate(false);
+			randomProgressDialog.setCancelable(false);
+			// Show progressdialog
+			randomProgressDialog.show();
+
+			String distance, day_of_week, query;
+			Boolean food, drinks;
+			ParseObject deal_type = null;
+
+			currentLocation = getLocation();
+			distance = intent.getStringExtra("distance");
+			day_of_week = intent.getStringExtra("day_of_week");
+			food = intent.getBooleanExtra("food", true);
+			drinks = intent.getBooleanExtra("drinks", true);
+			query = intent.getStringExtra("query");
+
+			// Locate the class table named "establishment" in Parse.com
+			ParseQuery<ParseObject> queryRandomSearch = new ParseQuery<ParseObject>("Deal");
+			queryRandomSearch.include("establishment");
+			queryRandomSearch.setLimit(15);
+			if (query != "") {
+				queryRandomSearch.whereContains("title", query);
 			}
-		}
+			if (day_of_week != null) {
+				queryRandomSearch.whereContains("day", day_of_week);
+			}
+			if (distance != null) {
+				queryRandomSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation), Double.parseDouble(distance));
+			}
+			if ((food == true) || (drinks == true)) {
+				if (food == false) {
+					ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
+					queryDealType.whereEqualTo("name", "Drinks");
+					try {
+						deal_type = queryDealType.getFirst();
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					queryRandomSearch.whereEqualTo("deal_type", deal_type);
+				}
+				if (drinks == false) {
+					ParseQuery<ParseObject> queryDealType = ParseQuery.getQuery("deal_type");
+					queryDealType.whereEqualTo("name", "Food");
+					try {
+						deal_type = queryDealType.getFirst();
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					queryRandomSearch.whereEqualTo("deal_type", deal_type);
+				}
+			}
 
-		final ParseQuery<ParseObject> queryRandomSearchCount = queryRandomSearch;
+			final ParseQuery<ParseObject> queryRandomSearchCount = queryRandomSearch;
 
-		queryRandomSearch.findInBackground(new FindCallback<ParseObject>() {
-			public void done(List<ParseObject> dealList, ParseException e) {
-				if (e == null) {
-					ob = dealList;
+			queryRandomSearch.findInBackground(new FindCallback<ParseObject>() {
+				public void done(List<ParseObject> dealList, ParseException e) {
+					if (e == null) {
+						ob = dealList;
+						if (ob.size() > 0) {
+							Random random = new Random();
+							position = random.nextInt(ob.size());
+							Intent i = new Intent(RandomActivity.this, DealDetailsActivity.class);
+							ParseObject curEst = ob.get(position).getParseObject("establishment");
+							String est_name = curEst.getString("name");
+							ParseObject user = (ParseObject) ob.get(position).get("user");
+							
+							// Pass data to next activity
+							i.putExtra("deal_id", ob.get(position).getObjectId().toString());
+							i.putExtra("deal_title", ob.get(position).getString("title").toString());
+							i.putExtra("deal_details", ob.get(position).getString("details").toString());
+							i.putExtra("deal_restrictions", ob.get(position).getInt("restrictions"));
+							i.putExtra("yelp_id", ob.get(position).getString("yelp_id"));
+							i.putExtra("establishment_id", curEst.getObjectId());
+							i.putExtra("est_name", est_name);
+							i.putExtra("created_by", user.getObjectId());
 
-					queryRandomSearchCount.countInBackground(new CountCallback() {
-						public void done(int count, ParseException e) {
-							if (e == null) {
-								// The count request succeeded. Log the
-								// count
-								if (count > 0) {
-									Random random = new Random();
-									position = random.nextInt(count);
-									Intent i = new Intent(RandomActivity.this,
-											DealDetailsActivity.class);
-									ParseObject curEst = ob.get(position).getParseObject("establishment");
-									String est_name = curEst.getString("name");
-									// Pass data to next activity
-									i.putExtra("deal_id", ob.get(position).getObjectId().toString());
-									i.putExtra("deal_title", ob.get(position).getString("title").toString());
-									i.putExtra("deal_details", ob.get(position).getString("details").toString());
-									i.putExtra("deal_restrictions", ob.get(position).getInt("restrictions"));
-									i.putExtra("yelp_id", ob.get(position).getString("yelp_id"));
-									i.putExtra("establishment_id", curEst.getObjectId().toString());
-									i.putExtra("est_name", est_name);
+							Date dateStart = ob.get(position).getDate("time_start");
+							Date dateEnd = ob.get(position).getDate("time_end");
+							SimpleDateFormat simpDate, simpDateNo;
 
-									Date dateStart = ob.get(position).getDate("time_start");
-									Date dateEnd = ob.get(position).getDate("time_end");
-									SimpleDateFormat simpDate, simpDateNo;
+							simpDateNo = new SimpleDateFormat("hh:mm a");
+							simpDate = new SimpleDateFormat("hh:mm a");
 
-									simpDateNo = new SimpleDateFormat("hh:mm a");
-									simpDate = new SimpleDateFormat("hh:mm a");
+							String start = simpDateNo.format(dateStart);
+							String end = simpDate.format(dateEnd);
 
-									String start = simpDateNo.format(dateStart);
-									String end = simpDate.format(dateEnd);
-
-									if (start.charAt(0) == '0') {
-										start.substring(1);
-									}
-
-									if (simpDate.format(dateEnd).charAt(0) == '0') {
-										end.substring(1);
-									}
-
-									i.putExtra("deal_time", start + " - " + end);
-									// Open SingleItemView.java Activity
-									ob = null;
-									startActivity(i);
-									RandomActivity.this.finish();
-								} else {
-									Helper.displayError("Sorry, nothing was found.  Try and widen your search.", RandomSearchActivity.class, RandomActivity.this);
-								}
-							} else {
-								Log.d("Deal Count Error", e.toString());
+							if (start.charAt(0) == '0') {
+								start.substring(1);
 							}
+
+							if (simpDate.format(dateEnd).charAt(0) == '0') {
+								end.substring(1);
+							}
+
+							i.putExtra("deal_time", start + " - " + end);
+							// Open SingleItemView.java Activity
+							ob = null;
+							startActivity(i);
+							RandomActivity.this.finish();
+						} else {
+							Helper.displayError("Sorry, nothing was found.  Try and widen your search.", RandomSearchActivity.class, RandomActivity.this);
 						}
-					});
-				} else {
-					Log.d("Deal Search Error", e.toString());
+					} else {
+						Log.d("Deal Search Error", e.toString());
+					}
 				}
-			}
-		}); 
+			});
 		} else {
 			Helper.displayError("Sorry, nothing was found.  Could not connect to the internet.", RandomSearchActivity.class, RandomActivity.this);
 		}
@@ -237,7 +224,7 @@ public class RandomActivity extends Activity implements LocationListener,
 	public void onStart() {
 		super.onStart();
 		GoogleAnalytics.getInstance(this).reportActivityStart(this);
-		
+
 		// Connect to the location services client
 		locationClient.connect();
 	}

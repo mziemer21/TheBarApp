@@ -1,0 +1,133 @@
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout_favorites_list_search"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    
+    <TextView
+        android:id="@+id/favorites_list_filter_sort_by"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sort_by"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Spinner
+        android:id="@+id/favorites_list_filter_search_type"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/search_type_dropdown"
+        android:prompt="@string/sort_by" />
+    
+    <TextView
+        android:id="@+id/favorites_list_filter_filter_by"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/filter_by"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <Spinner
+        android:id="@+id/favorites_list_filter_day_of_week"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/day_of_week_dropdown"
+        android:prompt="@string/day_of_week" />
+
+    <LinearLayout 
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal">
+	 </LinearLayout>
+	 
+    <LinearLayout 
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal">
+	    
+	    <ToggleButton
+	        android:id="@+id/favorites_list_filter_one_mile"
+	        android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+	        android:textOff="@string/one_mile"
+	        android:textOn="@string/one_mile" 
+	        android:layout_marginLeft="-5dip"
+    		android:layout_marginRight="-5dip"/>
+	    
+	    <ToggleButton
+	        android:id="@+id/favorites_list_filter_three_miles"
+	        android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+	        android:textOff="@string/three_miles"
+	        android:textOn="@string/three_miles" 
+	        android:layout_marginLeft="-5dip"
+    		android:layout_marginRight="-5dip"/>
+	
+	    <ToggleButton
+	        android:id="@+id/favorites_list_filter_five_miles"
+	        android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+	        android:textOff="@string/five_miles"
+	        android:textOn="@string/five_miles" 
+	        android:layout_marginLeft="-5dip"
+    		android:layout_marginRight="-5dip"/>
+	    
+	    <ToggleButton
+	        android:id="@+id/favorites_list_filter_ten_miles"
+	        android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+	        android:textOff="@string/ten_miles"
+	        android:textOn="@string/ten_miles" 
+	        android:layout_marginLeft="-5dip"
+    		android:layout_marginRight="-5dip"/>
+	
+	    <ToggleButton
+	        android:id="@+id/favorites_list_filter_twenty_miles"
+	        android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+	        android:textOff="@string/twenty_miles"
+	        android:textOn="@string/twenty_miles" 
+	        android:layout_marginLeft="-5dip"
+    		android:layout_marginRight="-5dip"/>
+	    
+	    
+	</LinearLayout>
+
+    <CheckBox
+        android:id="@+id/favorites_list_filter_check_box_only_deals"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/only_deals" />
+        
+    <Button
+        android:id="@+id/favorites_list_filter_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/search" />
+
+</LinearLayout>
+<!-- Listview to display slider menu -->
+    <ListView
+        android:id="@+id/favorites_list_slidermenu_favorites_list_search"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:divider="@color/list_divider"
+        android:dividerHeight="1dp"        
+        android:listSelector="@drawable/list_selector"
+        android:background="@color/list_background"/>
+</android.support.v4.widget.DrawerLayout>
+
+    
+

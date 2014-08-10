@@ -1,6 +1,7 @@
 package activities;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import navigation.NavDrawer;
@@ -43,7 +44,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 
 	private String distance, day_of_week, query;
 	private Boolean food, drinks, moreButton = false, resumed = false;
-	private ParseObject deal_type = null, est;
+	private ParseObject deal_type = null;
 	private Integer search_type, countPrev = 0, loadOffset = 0, distanceMeters;
 
 	// Stores the current instantiation of the location client in this object
@@ -57,7 +58,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 
 		intent = getIntent();
 		locationClient = new LocationClient(this, this, this);
-		
+
 		// Get tracker.
 		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
 	}
@@ -123,7 +124,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 
 				// Locate the class table named "establishment" in Parse.com
 				ParseQuery<ParseObject> queryDealSearch = new ParseQuery<ParseObject>("Deal");
-				
+
 				queryDealSearch.setLimit(20);
 				if (loadOffset > 0) {
 					queryDealSearch.setSkip(loadOffset);
@@ -253,38 +254,55 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				if (Helper.isConnectedToInternet(DealActivity.this)) {
 					Intent i = new Intent(DealActivity.this, DealDetailsActivity.class);
-					est = (ParseObject) ob.get(position).get("establishment");
 					ParseObject curEst = ob.get(position).getParseObject("establishment");
+					ParseObject user = (ParseObject) ob.get(position).get("user");
 					
 					// Pass data to next activity
 					i.putExtra("deal_id", ob.get(position).getObjectId().toString());
 					i.putExtra("deal_title", ob.get(position).getString("title").toString());
 					i.putExtra("deal_details", ob.get(position).getString("details").toString());
 					i.putExtra("deal_restrictions", ob.get(position).getInt("restrictions"));
-					i.putExtra("yelp_id", ob.get(position).getString("yelp_id"));
-					i.putExtra("establishment_id", est.getObjectId().toString());
+					i.putExtra("yelp_id", curEst.getString("yelp_id"));
+					i.putExtra("establishment_id", curEst.getObjectId());
 					i.putExtra("est_name", curEst.getString("name"));
 					i.putExtra("deal_time", Helper.formatTime(ob.get(position).getDate("time_start"), ob.get(position).getDate("time_end")));
-					
-					/*ArrayList<Business>tempBusiness = Helper.searchYelp(false, Double.toString(curEst.getParseGeoPoint("location").getLatitude()), Double.toString(curEst.getParseGeoPoint("location").getLongitude()),
-							ob.get(position).getString("yelp_id"), true, currentLocation, distanceMeters, 0, 0);
-					
-					i.putExtra("rating", tempBusiness.get(0).getRating());
-					i.putExtra("rating_count", tempBusiness.get(0).getRatingCount());
-					i.putExtra("address", tempBusiness.get(0).getAddress());
-					i.putExtra("city", tempBusiness.get(0).getCity());
-					i.putExtra("state", tempBusiness.get(0).getState());
-					i.putExtra("zip", tempBusiness.get(0).getZipcode());
-					i.putExtra("phone", tempBusiness.get(0).getPhone());
-					i.putExtra("display_phone", tempBusiness.get(0).getDisplayPhone());
-					i.putExtra("distance", tempBusiness.get(0).getDistance());
-					i.putExtra("mobile_url", tempBusiness.get(0).getMobileURL());
-					Calendar calendar = Calendar.getInstance();
-					i.putExtra("day_of_week", (day_of_week == "") ? Helper.setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
-					i.putExtra("est_lat", tempBusiness.get(0).getLatitude());
-					i.putExtra("est_lng", tempBusiness.get(0).getLongitude());
-					i.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
-					i.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));*/
+					i.putExtra("created_by", user.getObjectId());
+
+					/*
+					 * ArrayList<Business>tempBusiness =
+					 * Helper.searchYelp(false,
+					 * Double.toString(curEst.getParseGeoPoint
+					 * ("location").getLatitude()),
+					 * Double.toString(curEst.getParseGeoPoint
+					 * ("location").getLongitude()),
+					 * ob.get(position).getString("yelp_id"), true,
+					 * currentLocation, distanceMeters, 0, 0);
+					 * 
+					 * i.putExtra("rating", tempBusiness.get(0).getRating());
+					 * i.putExtra("rating_count",
+					 * tempBusiness.get(0).getRatingCount());
+					 * i.putExtra("address", tempBusiness.get(0).getAddress());
+					 * i.putExtra("city", tempBusiness.get(0).getCity());
+					 * i.putExtra("state", tempBusiness.get(0).getState());
+					 * i.putExtra("zip", tempBusiness.get(0).getZipcode());
+					 * i.putExtra("phone", tempBusiness.get(0).getPhone());
+					 * i.putExtra("display_phone",
+					 * tempBusiness.get(0).getDisplayPhone());
+					 * i.putExtra("distance",
+					 * tempBusiness.get(0).getDistance());
+					 * i.putExtra("mobile_url",
+					 * tempBusiness.get(0).getMobileURL()); Calendar calendar =
+					 * Calendar.getInstance(); i.putExtra("day_of_week",
+					 * (day_of_week == "") ?
+					 * Helper.setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) :
+					 * day_of_week); i.putExtra("est_lat",
+					 * tempBusiness.get(0).getLatitude()); i.putExtra("est_lng",
+					 * tempBusiness.get(0).getLongitude());
+					 * i.putExtra("cur_lat",
+					 * String.valueOf(currentLocation.getLatitude()));
+					 * i.putExtra("cur_lng",
+					 * String.valueOf(currentLocation.getLongitude()));
+					 */
 					// Open SingleItemView.java Activity
 					startActivity(i);
 				} else {
@@ -298,12 +316,12 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 	public void onDisconnected() {
 		// TODO Auto-generated method stub
 	}
-	
+
 	@Override
 	public void onStart() {
 		super.onStart();
 		GoogleAnalytics.getInstance(this).reportActivityStart(this);
-		
+
 		// Connect to the location services client
 		locationClient.connect();
 	}
