@@ -23,7 +23,7 @@
             android:ems="10"
             android:hint="Title"
             android:inputType="textCapWords"
-            android:maxLength="25" />
+            android:maxLength="45" />
         <!-- End Title -->
 
         <!-- Details -->

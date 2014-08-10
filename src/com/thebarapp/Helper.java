@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.parse.ParseGeoPoint;
+
 import yelp.API_Static_Stuff;
 import yelp.Yelp;
 import yelp.YelpParser;
@@ -172,5 +174,9 @@ public class Helper {
         }
         id = id.substring(0, i).replaceAll("-", " ");
         return toTitleCase(id);
+	}
+	
+	public static ParseGeoPoint geoPointFromLocation(Location loc) {
+		return new ParseGeoPoint(loc.getLatitude(), loc.getLongitude());
 	}
 }

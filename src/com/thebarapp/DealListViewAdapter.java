@@ -21,7 +21,7 @@ public class DealListViewAdapter extends ArrayAdapter<DealRowItem> {
 
 	/* private view holder class */
 	private class ViewHolder {
-		TextView txtTitle, rating, time;
+		TextView txtTitle, rating, time, name;
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -35,6 +35,7 @@ public class DealListViewAdapter extends ArrayAdapter<DealRowItem> {
 			holder.rating = (TextView) convertView.findViewById(R.id.deal_list_rating);
 			holder.txtTitle = (TextView) convertView.findViewById(R.id.deal_list_title);
 			holder.time = (TextView) convertView.findViewById(R.id.deal_list_time);
+			holder.name = (TextView) convertView.findViewById(R.id.deal_list_name);
 			convertView.setTag(holder);
 		} else
 			holder = (ViewHolder) convertView.getTag();
@@ -42,6 +43,10 @@ public class DealListViewAdapter extends ArrayAdapter<DealRowItem> {
 		holder.rating.setText(rowItem.getRating() + "%");
 		holder.txtTitle.setText(rowItem.getTitle());
 		holder.time.setText(rowItem.getTime());
+		holder.name.setText(rowItem.getName());
+		if(!rowItem.getShowName()){
+			holder.name.setVisibility(View.GONE);
+		}
 
 		return convertView;
 	}

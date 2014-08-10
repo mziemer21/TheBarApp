@@ -220,7 +220,7 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 				queryEstSearch.setSkip(ob.size());
 			}
 			if (distanceMiles != null) {
-				queryEstSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation), Double.parseDouble(distanceMiles));
+				queryEstSearch.whereWithinMiles("location", Helper.geoPointFromLocation(currentLocation), Double.parseDouble(distanceMiles));
 			}
 			ParseQuery<ParseObject> queryEstDeals = new ParseQuery<ParseObject>("establishment_day_deals");
 			queryEstDeals.whereMatchesQuery("establishment", queryEstSearch);
@@ -250,9 +250,11 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 
 						if ((query != "") && (tempBusiness.get(0).getName().toLowerCase().contains(query.toLowerCase()))) {
 							tempBusiness.get(0).setDealCount(estabDealCount);
+							tempBusiness.get(0).setEstablishmentId(curEst.getObjectId());
 							businesses.add(tempBusiness.get(0));
 						} else if (query == "") {
 							tempBusiness.get(0).setDealCount(estabDealCount);
+							tempBusiness.get(0).setEstablishmentId(curEst.getObjectId());
 							businesses.add(tempBusiness.get(0));
 						}
 					}
@@ -417,10 +419,6 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 		}
 	}
 
-	private static ParseGeoPoint geoPointFromLocation(Location loc) {
-		return new ParseGeoPoint(loc.getLatitude(), loc.getLongitude());
-	}
-
 	private void setUpMap() {
 		// Check if we were successful in obtaining the map.
 
@@ -527,10 +525,11 @@ public class MapActivity extends NavDrawer implements LocationListener, GooglePl
 									newIntent.putExtra("distance", bus.getDistance());
 									newIntent.putExtra("mobile_url", bus.getMobileURL());
 									newIntent.putExtra("day_of_week", (day_of_week == "") ? Helper.setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
-									newIntent.putExtra("est_lat", bus.getLatitude());
-									newIntent.putExtra("est_lng", bus.getLongitude());
-									newIntent.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
-									newIntent.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));
+									newIntent.putExtra("cur_lat", currentLocation.getLatitude());
+									newIntent.putExtra("cur_lng", currentLocation.getLongitude());
+									newIntent.putExtra("distance", distanceMiles);
+									newIntent.putExtra("est_lat", Double.parseDouble(bus.getLatitude()));
+									newIntent.putExtra("est_lng", Double.parseDouble(bus.getLongitude()));
 
 									businesses.clear();
 									reload = true;

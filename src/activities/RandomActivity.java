@@ -36,6 +36,8 @@ public class RandomActivity extends Activity implements LocationListener, Google
 	private Location currentLocation = null;
 	private Intent intent;
 	private ProgressDialog randomProgressDialog;
+	private String distance, day_of_week, query;
+	private Boolean food, drinks;
 
 	// Stores the current instantiation of the location client in this object
 	private LocationClient locationClient;
@@ -49,10 +51,6 @@ public class RandomActivity extends Activity implements LocationListener, Google
 
 		intent = getIntent();
 		locationClient = new LocationClient(this, this, this);
-	}
-
-	private static ParseGeoPoint geoPointFromLocation(Location loc) {
-		return new ParseGeoPoint(loc.getLatitude(), loc.getLongitude());
 	}
 
 	private Location getLocation() {
@@ -81,8 +79,6 @@ public class RandomActivity extends Activity implements LocationListener, Google
 			// Show progressdialog
 			randomProgressDialog.show();
 
-			String distance, day_of_week, query;
-			Boolean food, drinks;
 			ParseObject deal_type = null;
 
 			currentLocation = getLocation();
@@ -103,7 +99,7 @@ public class RandomActivity extends Activity implements LocationListener, Google
 				queryRandomSearch.whereContains("day", day_of_week);
 			}
 			if (distance != null) {
-				queryRandomSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation), Double.parseDouble(distance));
+				queryRandomSearch.whereWithinMiles("location", Helper.geoPointFromLocation(currentLocation), Double.parseDouble(distance));
 			}
 			if ((food == true) || (drinks == true)) {
 				if (food == false) {
@@ -130,8 +126,6 @@ public class RandomActivity extends Activity implements LocationListener, Google
 				}
 			}
 
-			final ParseQuery<ParseObject> queryRandomSearchCount = queryRandomSearch;
-
 			queryRandomSearch.findInBackground(new FindCallback<ParseObject>() {
 				public void done(List<ParseObject> dealList, ParseException e) {
 					if (e == null) {
@@ -153,6 +147,12 @@ public class RandomActivity extends Activity implements LocationListener, Google
 							i.putExtra("establishment_id", curEst.getObjectId());
 							i.putExtra("est_name", est_name);
 							i.putExtra("created_by", user.getObjectId());
+							i.putExtra("cur_lat", currentLocation.getLatitude());
+							i.putExtra("cur_lng", currentLocation.getLongitude());
+							i.putExtra("day_of_week", day_of_week);
+							i.putExtra("distance", distance);
+							i.putExtra("est_lat", curEst.getParseGeoPoint("location").getLatitude());
+							i.putExtra("est_lng", curEst.getParseGeoPoint("location").getLongitude());
 
 							Date dateStart = ob.get(position).getDate("time_start");
 							Date dateEnd = ob.get(position).getDate("time_end");

@@ -50,6 +50,7 @@ public class DealsTabFragment extends Fragment {
 	private List<ParseObject> obDeal = new ArrayList<ParseObject>();
 	private ProgressDialog dealTabProgressDialog;
 	private String day_of_week;
+	private ParseObject est = null;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -150,7 +151,6 @@ public class DealsTabFragment extends Fragment {
 		@Override
 		protected Void doInBackground(Void... params) {
 			day_of_week = (extrasDeal.getString("day_of_week") == null) ? "" : extrasDeal.getString("day_of_week");
-			ParseObject est = null;
 			ParseQuery<ParseObject> queryEstablishment = ParseQuery.getQuery("Establishment");
 			queryEstablishment.whereEqualTo("objectId", extrasDeal.getString("establishment_id"));
 			try {
@@ -184,7 +184,7 @@ public class DealsTabFragment extends Fragment {
 			// Retrieve object "title" from Parse.com database
 			if (obDeal.size() > 0) {
 				for (ParseObject deal : obDeal) {
-					DealRowItem item = new DealRowItem(deal.get("title").toString(), deal.get("rating").toString(), Helper.formatTime(deal.getDate("time_start"), deal.getDate("time_end")));
+					DealRowItem item = new DealRowItem(deal.get("title").toString(), deal.get("rating").toString(), Helper.formatTime(deal.getDate("time_start"), deal.getDate("time_end")), est.get("name").toString(), false);
 					rowItems.add(item);
 				}
 
@@ -211,6 +211,10 @@ public class DealsTabFragment extends Fragment {
 						iDeal.putExtra("deal_restrictions", obDeal.get(position).getString("restrictions"));
 						iDeal.putExtra("deal_time", Helper.formatTime(obDeal.get(position).getDate("time_start"), obDeal.get(position).getDate("time_end")));
 						iDeal.putExtra("created_by", user.getObjectId());
+						iDeal.putExtra("cur_lat", extrasDeal.getDouble("cur_lat"));
+						iDeal.putExtra("cur_lng", extrasDeal.getDouble("cur_lng"));
+						iDeal.putExtra("day_of_week", day_of_week);
+						iDeal.putExtra("distance", extrasDeal.getInt("distance"));
 
 						// Open SingleItemView.java Activity
 						startActivity(iDeal);

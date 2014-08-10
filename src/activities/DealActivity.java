@@ -83,10 +83,6 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 		// TODO Auto-generated method stub
 	}
 
-	private ParseGeoPoint geoPointFromLocation(Location loc) {
-		return new ParseGeoPoint(loc.getLatitude(), loc.getLongitude());
-	}
-
 	private Location getLocation() {
 		return locationClient.getLastLocation();
 	}
@@ -137,7 +133,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 					queryDealSearch.whereContains("day", day_of_week);
 				}
 				if (distance != null) {
-					queryDealSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation), Double.parseDouble(distance));
+					queryDealSearch.whereWithinMiles("location", Helper.geoPointFromLocation(currentLocation), Double.parseDouble(distance));
 				}
 				if ((food == true) || (drinks == true)) {
 					if (food == false) {
@@ -234,7 +230,8 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 		// Retrieve object "title" from Parse.com
 		// database
 		for (ParseObject deal : ob) {
-			DealRowItem item = new DealRowItem(deal.get("title").toString(), deal.get("rating").toString(), Helper.formatTime(deal.getDate("time_start"), deal.getDate("time_end")));
+			ParseObject est = deal.getParseObject("establishment");
+			DealRowItem item = new DealRowItem(deal.get("title").toString(), deal.get("rating").toString(), Helper.formatTime(deal.getDate("time_start"), deal.getDate("time_end")), est.get("name").toString(), true);
 			rowItems.add(item);
 		}
 
@@ -267,43 +264,13 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 					i.putExtra("est_name", curEst.getString("name"));
 					i.putExtra("deal_time", Helper.formatTime(ob.get(position).getDate("time_start"), ob.get(position).getDate("time_end")));
 					i.putExtra("created_by", user.getObjectId());
+					i.putExtra("cur_lat", currentLocation.getLatitude());
+					i.putExtra("cur_lng", currentLocation.getLongitude());
+					i.putExtra("est_lat", curEst.getParseGeoPoint("location").getLatitude());
+					i.putExtra("est_lng", curEst.getParseGeoPoint("location").getLongitude());
+					i.putExtra("day_of_week", day_of_week);
+					i.putExtra("distance", distance);
 
-					/*
-					 * ArrayList<Business>tempBusiness =
-					 * Helper.searchYelp(false,
-					 * Double.toString(curEst.getParseGeoPoint
-					 * ("location").getLatitude()),
-					 * Double.toString(curEst.getParseGeoPoint
-					 * ("location").getLongitude()),
-					 * ob.get(position).getString("yelp_id"), true,
-					 * currentLocation, distanceMeters, 0, 0);
-					 * 
-					 * i.putExtra("rating", tempBusiness.get(0).getRating());
-					 * i.putExtra("rating_count",
-					 * tempBusiness.get(0).getRatingCount());
-					 * i.putExtra("address", tempBusiness.get(0).getAddress());
-					 * i.putExtra("city", tempBusiness.get(0).getCity());
-					 * i.putExtra("state", tempBusiness.get(0).getState());
-					 * i.putExtra("zip", tempBusiness.get(0).getZipcode());
-					 * i.putExtra("phone", tempBusiness.get(0).getPhone());
-					 * i.putExtra("display_phone",
-					 * tempBusiness.get(0).getDisplayPhone());
-					 * i.putExtra("distance",
-					 * tempBusiness.get(0).getDistance());
-					 * i.putExtra("mobile_url",
-					 * tempBusiness.get(0).getMobileURL()); Calendar calendar =
-					 * Calendar.getInstance(); i.putExtra("day_of_week",
-					 * (day_of_week == "") ?
-					 * Helper.setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) :
-					 * day_of_week); i.putExtra("est_lat",
-					 * tempBusiness.get(0).getLatitude()); i.putExtra("est_lng",
-					 * tempBusiness.get(0).getLongitude());
-					 * i.putExtra("cur_lat",
-					 * String.valueOf(currentLocation.getLatitude()));
-					 * i.putExtra("cur_lng",
-					 * String.valueOf(currentLocation.getLongitude()));
-					 */
-					// Open SingleItemView.java Activity
 					startActivity(i);
 				} else {
 					Helper.displayErrorStay("Sorry, nothing was found.  Could not connect to the internet.", DealActivity.this);

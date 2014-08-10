@@ -154,7 +154,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 				queryEstSearch.setSkip(ob.size());
 			}
 			if (distanceMiles != null) {
-				queryEstSearch.whereWithinMiles("location", geoPointFromLocation(currentLocation), Double.parseDouble(distanceMiles));
+				queryEstSearch.whereWithinMiles("location", Helper.geoPointFromLocation(currentLocation), Double.parseDouble(distanceMiles));
 			}
 			ParseQuery<ParseObject> queryEstDeals = new ParseQuery<ParseObject>("establishment_day_deals");
 			queryEstDeals.whereMatchesQuery("establishment", queryEstSearch);
@@ -184,9 +184,11 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 
 						if ((query != "") && (tempBusiness.get(0).getName().toLowerCase().contains(query.toLowerCase()))) {
 							tempBusiness.get(0).setDealCount(estabDealCount);
+							tempBusiness.get(0).setEstablishmentId(curEst.getObjectId());
 							businesses.add(tempBusiness.get(0));
 						} else if (query == "") {
 							tempBusiness.get(0).setDealCount(estabDealCount);
+							tempBusiness.get(0).setEstablishmentId(curEst.getObjectId());
 							businesses.add(tempBusiness.get(0));
 						}
 					}
@@ -314,6 +316,8 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 							Intent i = new Intent(ListActivity.this, DetailsActivity.class);
 							// Pass data "name" followed by the position
 							i.putExtra("establishment_id", establishment_id);
+							i.putExtra("est_lat", Double.parseDouble(businesses.get(position).getLatitude()));
+							i.putExtra("est_lng", Double.parseDouble(businesses.get(position).getLongitude()));
 							i.putExtra("est_name", businesses.get(position).getName());
 							i.putExtra("yelp_id", businesses.get(position).getYelpId());
 							i.putExtra("rating", businesses.get(position).getRating());
@@ -327,10 +331,10 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 							i.putExtra("distance", businesses.get(position).getDistance());
 							i.putExtra("mobile_url", businesses.get(position).getMobileURL());
 							i.putExtra("day_of_week", (day_of_week == "") ? Helper.setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
-							i.putExtra("est_lat", businesses.get(position).getLatitude());
-							i.putExtra("est_lng", businesses.get(position).getLongitude());
-							i.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
-							i.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));
+							i.putExtra("cur_lat", currentLocation.getLatitude());
+							i.putExtra("cur_lng", currentLocation.getLongitude());
+							i.putExtra("distance", distanceMiles);
+							
 
 							// Open SingleItemView.java Activity
 							startActivity(i);
@@ -391,10 +395,6 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		// TODO Auto-generated method stub
 
-	}
-
-	private static ParseGeoPoint geoPointFromLocation(Location loc) {
-		return new ParseGeoPoint(loc.getLatitude(), loc.getLongitude());
 	}
 
 	@Override

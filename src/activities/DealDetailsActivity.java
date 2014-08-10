@@ -1,9 +1,16 @@
 package activities;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+
 import navigation.NavDrawer;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +26,7 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.thebarapp.Business;
 import com.thebarapp.Helper;
 import com.thebarapp.ParseApplication;
 import com.thebarapp.R;
@@ -29,9 +37,15 @@ public class DealDetailsActivity extends NavDrawer {
 	private Integer rating, up_votes, down_votes;
 	private Intent intent;
 	private ToggleButton upVoteButton, downVoteButton;
-	private ParseObject deal = null, dealVoteUser = null;
+	private ParseObject deal = null, dealVoteUser = null, ob = null;
 	private Button deleteButton;
 	private Boolean delete = false;
+	private ProgressDialog ProgressDialog;
+	private Calendar calendar = Calendar.getInstance();
+	private String distanceMiles, yelpQuery = "", day_of_week;
+	private Location currentLocation = new Location("");
+	private Integer distanceMeters;
+	private ArrayList<Business> businesses = new ArrayList<Business>(), tempBusiness = new ArrayList<Business>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +65,8 @@ public class DealDetailsActivity extends NavDrawer {
 		deal_time = intent.getStringExtra("deal_time");
 		est_name = intent.getStringExtra("est_name");
 		created_by = intent.getStringExtra("created_by");
+		currentLocation.setLatitude(intent.getDoubleExtra("cur_lat", 0));
+		currentLocation.setLongitude(intent.getDoubleExtra("cur_lng", 0));
 
 		TextView title = (TextView) findViewById(R.id.dealTitle);
 		title.setText(deal_title);
@@ -64,8 +80,14 @@ public class DealDetailsActivity extends NavDrawer {
 		TextView time = (TextView) findViewById(R.id.dealTime);
 		time.setText(deal_time);
 
-		TextView est = (TextView) findViewById(R.id.dealEst);
+		Button est = (Button) findViewById(R.id.dealEstButton);
 		est.setText(est_name);
+		est.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				new RemoteDataTask(DealDetailsActivity.this).execute();
+			}
+		});
 
 		upVoteButton = (ToggleButton) findViewById(R.id.deal_up_vote_button);
 		upVoteButton.setOnClickListener(new OnClickListener() {
@@ -298,4 +320,95 @@ public class DealDetailsActivity extends NavDrawer {
 		super.onStop();
 		GoogleAnalytics.getInstance(this).reportActivityStop(this);
 	}
+
+	// RemoteDataTask AsyncTask
+	private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
+		Context context;
+
+		public RemoteDataTask(Context context) {
+			this.context = context;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			// Create a progressdialog
+			if (ProgressDialog != null) {
+				ProgressDialog.dismiss();
+				ProgressDialog = null;
+			}
+			ProgressDialog = new ProgressDialog(context);
+			// Set progressdialog message
+			ProgressDialog.setMessage("Searching Yelp...");
+			ProgressDialog.setIndeterminate(false);
+			ProgressDialog.setCancelable(false);
+			// Show progressdialog
+			ProgressDialog.show();
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+
+			day_of_week = (intent.getStringExtra("day_of_week") == null) ? Helper.setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : intent.getStringExtra("day_of_week");
+			distanceMiles = (intent.getStringExtra("distance") == null) ? "1" : intent.getStringExtra("distance");
+			distanceMeters = Integer.parseInt(distanceMiles) * 1609;
+			
+			ParseQuery<ParseObject> queryEst = ParseQuery.getQuery("Establishment");
+			queryEst.whereEqualTo("objectId", intent.getStringExtra("establishment_id"));
+			try {
+				ob = queryEst.getFirst();
+			} catch (Exception e) {
+				/*Log.e("Error", e.getMessage());
+				e.printStackTrace();*/
+			}
+
+			if (ob != null) {
+				yelpQuery = ob.getString("yelp_id").toString();
+
+				tempBusiness = Helper.searchYelp(false, Double.toString(ob.getParseGeoPoint("location").getLatitude()), Double.toString(ob.getParseGeoPoint("location").getLongitude()), yelpQuery,
+						true, currentLocation, distanceMeters, 0, 0);
+				tempBusiness.get(0).setEstablishmentId(ob.getObjectId());
+				businesses.add(tempBusiness.get(0));
+			}
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			if (ProgressDialog != null) {
+				// Close the progressdialog
+				ProgressDialog.dismiss();
+			}
+			
+			Business bus = businesses.get(0);
+
+			// Send single item click data to SingleItemView
+			// Class
+			Intent i = new Intent(DealDetailsActivity.this, DetailsActivity.class);
+			// Pass data "name" followed by the position
+			i.putExtra("establishment_id", bus.getEstablishmentId());
+			i.putExtra("est_name", bus.getName());
+			i.putExtra("yelp_id", bus.getYelpId());
+			i.putExtra("rating", bus.getRating());
+			i.putExtra("rating_count", bus.getRatingCount());
+			i.putExtra("address", bus.getAddress());
+			i.putExtra("city", bus.getCity());
+			i.putExtra("state", bus.getState());
+			i.putExtra("zip", bus.getZipcode());
+			i.putExtra("phone", bus.getPhone());
+			i.putExtra("display_phone", bus.getDisplayPhone());
+			i.putExtra("distance", bus.getDistance());
+			i.putExtra("mobile_url", bus.getMobileURL());
+			i.putExtra("day_of_week", (day_of_week == "") ? Helper.setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : day_of_week);
+			i.putExtra("cur_lat", currentLocation.getLatitude());
+			i.putExtra("cur_lng", currentLocation.getLongitude());
+			i.putExtra("est_lat", bus.getLatitude());
+			i.putExtra("est_lng", bus.getLongitude());
+
+			// Open SingleItemView.java Activity
+			startActivity(i);
+		}
+	}
+
 }

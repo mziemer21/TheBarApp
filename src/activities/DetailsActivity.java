@@ -115,8 +115,8 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 	public static class AppSectionsPagerAdapter extends FragmentPagerAdapter {
 
 		// Declare Variables
-		private String establishment_id, mobile_url, rating, rating_count, yelp_id, address, city, state, zip, display_phone, phone, distance, day_of_week, est_name, estLat, estLng, curLat,
-				curLng, mobUrl;
+		String establishment_id, mobile_url, rating, rating_count, yelp_id, address, city, state, zip, display_phone, phone, distance, day_of_week, est_name, mobUrl;
+		Double curLat, curLng, estLat, estLng;
 
 		public AppSectionsPagerAdapter(FragmentManager fm) {
 			super(fm);
@@ -141,11 +141,11 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 			distance = intent.getStringExtra("distance");
 			yelp_id = intent.getStringExtra("yelp_id");
 			day_of_week = intent.getStringExtra("day_of_week");
-			estLat = intent.getStringExtra("est_lat");
-			estLng = intent.getStringExtra("est_lng");
-			curLat = intent.getStringExtra("cur_lat");
-			curLng = intent.getStringExtra("cur_lng");
+			curLat = intent.getDoubleExtra("cur_lat", 0);
+			curLng = intent.getDoubleExtra("cur_lng", 0);
 			mobUrl = intent.getStringExtra("mobile_url");
+			estLat = intent.getDoubleExtra("est_lat", 0);
+			estLng = intent.getDoubleExtra("est_lng", 0);
 
 			// Create a bundle, assign it arguments
 			Bundle bundle = new Bundle();
@@ -163,11 +163,11 @@ public class DetailsActivity extends NavDrawer implements ActionBar.TabListener 
 			bundle.putString("distance", distance);
 			bundle.putString("mobile_url", mobile_url);
 			bundle.putString("day_of_week", day_of_week);
-			bundle.putString("cur_lat", curLat);
-			bundle.putString("cur_lng", curLng);
-			bundle.putString("est_lat", estLat);
-			bundle.putString("est_lng", estLng);
+			bundle.putDouble("cur_lat", curLat);
+			bundle.putDouble("cur_lng", curLng);
 			bundle.putString("mob_url", mobUrl);
+			bundle.putDouble("est_lat", estLat);
+			bundle.putDouble("est_lng", estLng);
 
 			switch (i) {
 			case 0:

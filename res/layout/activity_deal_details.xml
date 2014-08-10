@@ -107,14 +107,14 @@
         android:text="At: "
         android:textAppearance="?android:attr/textAppearanceMedium" />
     
-    <TextView
-        android:id="@+id/dealEst"
+    <Button
+        android:id="@+id/dealEstButton"
+        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/dealTime"
-        android:text="Medium Text"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:layout_alignTop="@+id/dealEstLabel"
+        android:text="Button" />
 
     <Button
         android:id="@+id/deal_delete_button"
@@ -125,6 +125,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="22dp"
         android:text="Delete Deal" />
+
 
 </RelativeLayout>
 <!-- Listview to display slider menu -->

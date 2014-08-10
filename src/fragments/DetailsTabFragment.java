@@ -1,9 +1,7 @@
 package fragments;
 
-import activities.ListActivity;
 import activities.LoginActivity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -53,25 +51,23 @@ public class DetailsTabFragment extends Fragment {
 
 		View rootDetailsView = inflater.inflate(R.layout.fragment_details, container, false);
 
-		extrasDeal = getArguments();
-
 		new RemoteDataTaskFavorite().execute();
 
 		/* get arguments from activity */
-		Bundle extraDetails = getArguments();
-		name = extraDetails.getString("est_name");
-		address = extraDetails.getString("address");
-		city = extraDetails.getString("city");
-		state = extraDetails.getString("state");
-		rating = Double.parseDouble(extraDetails.getString("rating"));
-		review_count = extraDetails.getString("rating_count");
-		phoneDisplay = extraDetails.getString("display_phone");
-		phoneCall = extraDetails.getString("phone");
-		estLat = extraDetails.getString("est_lat");
-		estLng = extraDetails.getString("est_lng");
-		curLat = extraDetails.getString("cur_lat");
-		curLng = extraDetails.getString("cur_lng");
-		mobUrl = extraDetails.getString("mob_url");
+		extrasDeal = getArguments();
+		name = extrasDeal.getString("est_name");
+		address = extrasDeal.getString("address");
+		city = extrasDeal.getString("city");
+		state = extrasDeal.getString("state");
+		rating = Double.parseDouble(extrasDeal.getString("rating"));
+		review_count = extrasDeal.getString("rating_count");
+		phoneDisplay = extrasDeal.getString("display_phone");
+		phoneCall = extrasDeal.getString("phone");
+		estLat = String.valueOf(extrasDeal.getDouble("est_lat"));
+		estLng = String.valueOf(extrasDeal.getDouble("est_lng"));
+		curLat = String.valueOf(extrasDeal.getDouble("cur_lat"));
+		curLng = String.valueOf(extrasDeal.getDouble("cur_lng"));
+		mobUrl = extrasDeal.getString("mob_url");
 
 		// Locate the TextView in xml
 		txtName = (TextView) rootDetailsView.findViewById(R.id.name);
