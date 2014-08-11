@@ -51,6 +51,7 @@ public class FavoritesActivity extends NavDrawer implements LocationListener, Go
 	private Business checkBusiness;
 	private ProgressDialog ProgressDialog;
 	private Calendar calendar = Calendar.getInstance();
+	private Boolean reload = true;
 
 	// Stores the current instantiation of the location client in this object
 	private LocationClient locationClient;
@@ -64,7 +65,7 @@ public class FavoritesActivity extends NavDrawer implements LocationListener, Go
 		intent = getIntent();
 
 		locationClient = new LocationClient(this, this, this);
-		
+
 		// Get tracker.
 		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
 	}
@@ -133,19 +134,18 @@ public class FavoritesActivity extends NavDrawer implements LocationListener, Go
 			day_of_week = (intent.getStringExtra("day_of_week") == null) ? Helper.setDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK)) : intent.getStringExtra("day_of_week");
 			sort_mode = intent.getIntExtra("search_type", 1);
 
-
 			// Locate the class table named "establishment" in Parse.com
-			 ParseQuery<ParseObject> queryUserFav = new ParseQuery<ParseObject>("user_favorite_establishments");
-			 queryUserFav.whereEqualTo("user", ParseUser.getCurrentUser());
-			 queryUserFav.include("establishment");
-			 queryUserFav.include("establishment_days");
+			ParseQuery<ParseObject> queryUserFav = new ParseQuery<ParseObject>("user_favorite_establishments");
+			queryUserFav.whereEqualTo("user", ParseUser.getCurrentUser());
+			queryUserFav.include("establishment");
+			queryUserFav.include("establishment_days");
 
-			 try {
-			 ob = queryUserFav.find();
-			 } catch (Exception e) {
-			 // Log.e("Error", e.getMessage());
-			 // e.printStackTrace();
-			 }
+			try {
+				ob = queryUserFav.find();
+			} catch (Exception e) {
+				// Log.e("Error", e.getMessage());
+				// e.printStackTrace();
+			}
 
 			if (ob.size() > 0) {
 				for (int j = 0; ob.size() > j; j++) {
@@ -177,7 +177,7 @@ public class FavoritesActivity extends NavDrawer implements LocationListener, Go
 			} else if (sort_mode == 2) {
 				Collections.sort(businesses, new BusinessRatingComparator());
 			}
-			
+
 			return null;
 		}
 
@@ -255,6 +255,7 @@ public class FavoritesActivity extends NavDrawer implements LocationListener, Go
 							i.putExtra("est_lng", businesses.get(position).getLongitude());
 							i.putExtra("cur_lat", String.valueOf(currentLocation.getLatitude()));
 							i.putExtra("cur_lng", String.valueOf(currentLocation.getLongitude()));
+							reload = false;
 
 							// Open SingleItemView.java Activity
 							startActivity(i);
@@ -280,7 +281,7 @@ public class FavoritesActivity extends NavDrawer implements LocationListener, Go
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		// TODO Auto-generated method stub
-		if (Helper.isConnectedToInternet(FavoritesActivity.this)) {
+		if (Helper.isConnectedToInternet(FavoritesActivity.this) && reload) {
 			new RemoteDataTask(FavoritesActivity.this).execute();
 		} else if (!Helper.isConnectedToInternet(FavoritesActivity.this)) {
 			Helper.displayError("Sorry, nothing was found.  Could not connect to the internet.", MainActivity.class, FavoritesActivity.this);
@@ -321,7 +322,7 @@ public class FavoritesActivity extends NavDrawer implements LocationListener, Go
 	public void onStart() {
 		super.onStart();
 		GoogleAnalytics.getInstance(this).reportActivityStart(this);
-		
+
 		// Connect to the location services client
 		locationClient.connect();
 	}

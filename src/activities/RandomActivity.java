@@ -6,24 +6,19 @@ import java.util.List;
 import java.util.Random;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
-import com.parse.CountCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.thebarapp.Helper;
@@ -93,7 +88,7 @@ public class RandomActivity extends Activity implements LocationListener, Google
 			queryRandomSearch.include("establishment");
 			queryRandomSearch.setLimit(15);
 			if (query != "") {
-				queryRandomSearch.whereContains("title", query);
+				queryRandomSearch.whereContains("title", Helper.toTitleCase(query));
 			}
 			if (day_of_week != null) {
 				queryRandomSearch.whereContains("day", day_of_week);
@@ -137,7 +132,7 @@ public class RandomActivity extends Activity implements LocationListener, Google
 							ParseObject curEst = ob.get(position).getParseObject("establishment");
 							String est_name = curEst.getString("name");
 							ParseObject user = (ParseObject) ob.get(position).get("user");
-							
+
 							// Pass data to next activity
 							i.putExtra("deal_id", ob.get(position).getObjectId().toString());
 							i.putExtra("deal_title", ob.get(position).getString("title").toString());

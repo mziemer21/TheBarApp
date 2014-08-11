@@ -28,8 +28,6 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
-import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.thebarapp.Business;
@@ -69,7 +67,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 		intent = getIntent();
 
 		locationClient = new LocationClient(this, this, this);
-		
+
 		// Get tracker.
 		((ParseApplication) getApplication()).getTracker(ParseApplication.TrackerName.APP_TRACKER);
 	}
@@ -163,7 +161,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 			if (day_of_week != "") {
 				queryEstDeals.whereGreaterThan(day_of_week.toLowerCase(), 0);
 			}
-			
+
 			try {
 				ob = queryEstDeals.find();
 			} catch (Exception e) {
@@ -219,9 +217,20 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 			} else if (sort_mode == 2) {
 				Collections.sort(businesses, new BusinessRatingComparator());
 			}
-			
+
+			if (query != "") {
+				for (int i = 0; i < businesses.size(); i++) {
+					Business check = businesses.get(i);
+					if (check.getName().toLowerCase().contains(query.toLowerCase())) {
+						Business tmp = check;
+						businesses.remove(check);
+						businesses.add(0, tmp);
+					}
+				}
+			}
+
 			listSize += businesses.size();
-			
+
 			return null;
 		}
 
@@ -334,7 +343,6 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 							i.putExtra("cur_lat", currentLocation.getLatitude());
 							i.putExtra("cur_lng", currentLocation.getLongitude());
 							i.putExtra("distance", distanceMiles);
-							
 
 							// Open SingleItemView.java Activity
 							startActivity(i);
@@ -401,7 +409,7 @@ public class ListActivity extends NavDrawer implements LocationListener, GoogleP
 	public void onStart() {
 		super.onStart();
 		GoogleAnalytics.getInstance(this).reportActivityStart(this);
-		
+
 		// Connect to the location services client
 		locationClient.connect();
 	}

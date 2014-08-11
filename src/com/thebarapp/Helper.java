@@ -4,8 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.parse.ParseGeoPoint;
-
 import yelp.API_Static_Stuff;
 import yelp.Yelp;
 import yelp.YelpParser;
@@ -18,6 +16,8 @@ import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.widget.Spinner;
+
+import com.parse.ParseGeoPoint;
 
 public class Helper {
 	public static void setDate(Integer day, Spinner selector) {
@@ -72,7 +72,7 @@ public class Helper {
 		}
 		return false;
 	}
-	
+
 	public static void displayError(String message, final Class<?> activity, final Context context) {
 		// no deals found so display a popup and return to search options
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -85,7 +85,7 @@ public class Helper {
 			public void onClick(DialogInterface dialog, int id) {
 				dialog.cancel();
 				Intent i = new Intent(context, activity);
-				((Activity)(context)).finish();
+				((Activity) (context)).finish();
 				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
 				context.startActivity(i);
 			}
@@ -96,7 +96,7 @@ public class Helper {
 		// show it
 		alertDialog.show();
 	}
-	
+
 	public static void displayErrorStay(String message, Context context) {
 		// no deals found so display a popup and return to search options
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -116,7 +116,7 @@ public class Helper {
 		// show it
 		alertDialog.show();
 	}
-	
+
 	public static String setDayOfWeek(int i) {
 		String day_of_week = "";
 		if (i == 1) {
@@ -136,8 +136,9 @@ public class Helper {
 		}
 		return day_of_week;
 	}
-	
-	public static ArrayList<Business> searchYelp(boolean location, String lat, String lng, String yelp_id, boolean businessSearch, Location currentLocation, Integer distanceMeters, Integer sort_mode, Integer loadOffset) {
+
+	public static ArrayList<Business> searchYelp(boolean location, String lat, String lng, String yelp_id, boolean businessSearch, Location currentLocation, Integer distanceMeters, Integer sort_mode,
+			Integer loadOffset) {
 		String response;
 		ArrayList<Business> result = new ArrayList<Business>();
 		API_Static_Stuff api_keys = new API_Static_Stuff();
@@ -154,28 +155,31 @@ public class Helper {
 
 		return result;
 	}
-	
+
 	public static String toTitleCase(String givenString) {
-        String[] arr = givenString.split(" ");
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < arr.length; i++) {
-        sb.append(Character.toUpperCase(arr[i].charAt(0))).append(arr[i].substring(1)).append(" ");
-        }          
-      return sb.toString().trim();
-    } 
-	
-	public static String cleanId(String id){
-        String guess = "-";
-        int i = 0;
-        int index = id.indexOf(guess);
-        while (index >= 0) {
-            i = index;
-            index = id.indexOf(guess, index + 1);
-        }
-        id = id.substring(0, i).replaceAll("-", " ");
-        return toTitleCase(id);
+		if (givenString.length() > 0) {
+			String[] arr = givenString.split(" ");
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < arr.length; i++) {
+				sb.append(Character.toUpperCase(arr[i].charAt(0))).append(arr[i].substring(1)).append(" ");
+			}
+			return sb.toString().trim();
+		}
+		return "";
 	}
-	
+
+	public static String cleanId(String id) {
+		String guess = "-";
+		int i = 0;
+		int index = id.indexOf(guess);
+		while (index >= 0) {
+			i = index;
+			index = id.indexOf(guess, index + 1);
+		}
+		id = id.substring(0, i).replaceAll("-", " ");
+		return toTitleCase(id);
+	}
+
 	public static ParseGeoPoint geoPointFromLocation(Location loc) {
 		return new ParseGeoPoint(loc.getLatitude(), loc.getLongitude());
 	}

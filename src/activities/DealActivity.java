@@ -1,7 +1,6 @@
 package activities;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import navigation.NavDrawer;
@@ -24,7 +23,6 @@ import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 import com.parse.FindCallback;
 import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.thebarapp.DealListViewAdapter;
@@ -127,7 +125,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 				}
 				queryDealSearch.include("establishment");
 				if (query != "") {
-					queryDealSearch.whereContains("title", query);
+					queryDealSearch.whereContains("title", Helper.toTitleCase(query));
 				}
 				if (day_of_week != null) {
 					queryDealSearch.whereContains("day", day_of_week);
@@ -231,7 +229,8 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 		// database
 		for (ParseObject deal : ob) {
 			ParseObject est = deal.getParseObject("establishment");
-			DealRowItem item = new DealRowItem(deal.get("title").toString(), deal.get("rating").toString(), Helper.formatTime(deal.getDate("time_start"), deal.getDate("time_end")), est.get("name").toString(), true);
+			DealRowItem item = new DealRowItem(deal.get("title").toString(), deal.get("rating").toString(), Helper.formatTime(deal.getDate("time_start"), deal.getDate("time_end")), est.get("name")
+					.toString(), true);
 			rowItems.add(item);
 		}
 
@@ -253,7 +252,7 @@ public class DealActivity extends NavDrawer implements LocationListener, GoogleP
 					Intent i = new Intent(DealActivity.this, DealDetailsActivity.class);
 					ParseObject curEst = ob.get(position).getParseObject("establishment");
 					ParseObject user = (ParseObject) ob.get(position).get("user");
-					
+
 					// Pass data to next activity
 					i.putExtra("deal_id", ob.get(position).getObjectId().toString());
 					i.putExtra("deal_title", ob.get(position).getString("title").toString());
